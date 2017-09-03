@@ -1,60 +1,90 @@
+
+#include <stdio.h>
+#include <stdlib.h>
 #include <iostream>
 #include <string>
 #include <string.h>
 #include <stdio.h>
 #include <curl/curl.h>
 
+struct MemStruct
+{
+        char * memory;
+        size_t size;
+};
+
 class FReqs
 {
-		static std::string *urlStream;
 	public:
-		std::string URLGet(char *input);
-		std::string URLPost(char *input);
+		std::string URLGet(const char * input);
+		//std::string URLPost(char *input);
 	private:
-		static int writer(char *data, size_t size, size_t nmemb, std::string *buffer_in);
+		//static size_t writer(void *contents, size_t size, size_t nmemb, void *userp);
+		//static int writer(char *data, size_t size, size_t nmemb, std::string *buffer_in);
 };
 
-std::string FReqs::URLGet(char *input)
+//like the example from https://curl.haxx.se/libcurl/c/getinmemory.html
+static size_t CallbackWriter(void * contents, size_t size, size_t nmemb, void *buf)
 {
-	CURL *curl;
-	CURLcode res;
-	struct curl_slist *headers=NULL;
+	((std::string *) buf)->append((char *) contents, size * nmemb);
+	/*std::cout << "1" << "\n";
+	size_t nL = size * nmemb;
+	size_t oL = buf->size();
 
-	curl = curl_easy_init();
-
-	if (curl)
+	try
 	{
-		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-		curl_easy_setopt(curl, CURLOPT_URL, input);
-		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);
-		res = curl_easy_perform(curl);
-
-		if (res == CURLE_OK)
-		{
-			char *ct;
-			res = curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &ct);
-			if ((CURLE_OK == res) && ct)
-				return *urlStream;
-		};
-	};
-};
-
-std::string FReqs::URLPost(char *input)
-{
-};
-
-int FReqs::writer(char *data, size_t size, size_t nmemb, std::string *buffer_in)
-{
-	if (buffer_in != NULL)
+		buf->resize(oL + nL);
+	}
+	catch (std::bad_alloc &e)
 	{
-		buffer_in->append(data, size*nmemb);
-		urlStream = buffer_in;
-		return size*nmemb;
+		std::cout << "test" << "\n";
+		return 0;
 	}
 
-	return 0;
-};
+	std::copy((char *) contents, (char *) contents + nL, buf->begin() + oL);*/
+	return size * nmemb;
+}
+
+std::string FReqs::URLGet(const char * input)
+{
+	std::cout << input << "\n";
+	CURL *curl;
+        CURLcode res;
+        struct curl_slist *headers=NULL;
+
+        curl = curl_easy_init();
+	std::cout << input << "\n";
+
+	std::string str;
+
+        if (curl)
+        {
+		std::cout << input << "\n";
+                curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+                curl_easy_setopt(curl, CURLOPT_URL, input);
+                curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+                curl_easy_setopt(curl, CURLOPT_WRITEDATA, &str);
+                curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CallbackWriter);
+		res = curl_easy_perform(curl);
+		std::cout << input << "\n";
+
+                if (res == CURLE_OK)
+                {
+                        char *ct;
+                        res = curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &ct);
+                        if ((CURLE_OK == res) && ct)
+				return str;
+                }
+        }
+
+        return str;
+}
+
+std::string URLPost(char *input)
+{
+	std::string test("");
+	return test;
+}
 
 /*
 Valid inputs:
@@ -70,10 +100,7 @@ Valid inputs:
 			"GET|application/json|http://www.bistudio.com/newsfeed/arma3_news.php?build=main&language=English" callExtension "fetcher";
 */
 
-/*char* splitChar(char input, char delimeter) {
-	std::cout << input << "," << delimeter;
-	return input;
-};*/
+FReqs * freqs;
 
 class FHandle
 {
@@ -82,14 +109,15 @@ class FHandle
 };
 
 void FHandle::callExtension(char *output, int outputSize, const char *function)
-{	
-	strncpy(output, function, outputSize);
+{
+	std::string str = (freqs->URLGet(function));
+	const char * c_str = str.c_str();
+	strncpy(output, c_str, strlen(c_str));
 };
 
-FHandle *fhandle;
+FHandle * fhandle;
 
 #ifdef __GNUC__
-
 	extern "C"
 	{
 		void RVExtension(char *output, int outputSize, const char *function);
@@ -111,3 +139,13 @@ FHandle *fhandle;
 		fhandle->callExtension(output, outputSize, function);
 	};
 #endif
+
+/*int main()
+{
+	char * output;
+	int outputSize = 0;
+	const char* function = "https://swapi.co/api/people/1/?format=json";
+	fhandle->callExtension(output, outputSize, function);
+	//RVExtension(output, outputSize, function);
+	std::cout << output << "\n";
+}*/
