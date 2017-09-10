@@ -14,7 +14,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <curl/curl.h>
-#include <algorithm>
 
 /*struct MemStruct
 {
