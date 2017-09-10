@@ -152,7 +152,7 @@ void FHandle::callExtension(char *output, const int &outputSize, const char *fun
 
 FHandle * fhandle;
 
-//#ifdef __GNUC__
+#ifdef __GNUC__
 	extern "C"
 	{
 		void RVExtension(char * output, int outputSize, const char * function);
@@ -162,7 +162,7 @@ FHandle * fhandle;
 	{
 		fhandle->callExtension(output, outputSize, function);
 	};
-/*#elif _MSC_VER
+#elif _MSC_VER
 	extern "C"
 	{
 		_declspec(dllexport) void __stdcall RVExtension(char *output, int outputSize, const char *function);
@@ -173,14 +173,4 @@ FHandle * fhandle;
 		outputSize = -1;
 		fhandle->callExtension(output, outputSize, function);
 	};
-#endif*/
-
-/*int main()
-{
-	char * output;
-	int outputSize = 0;
-	const char* function = "https://swapi.co/api/people/1/?format=json";
-	fhandle->callExtension(output, outputSize, function);
-	//RVExtension(output, outputSize, function);
-	std::cout << output << "\n";
-}*/
+#endif
