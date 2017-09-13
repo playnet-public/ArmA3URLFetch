@@ -134,7 +134,7 @@ void fetchResult(const char * function)
 	FetchResult *nRes;
 	nRes->finished = false;
 	nRes->key = fres->results.size();
-	fres->results.push_back(&nRes);
+	fres->results.push_back(nRes);
 
 	fres->resMtx.unlock();
 	nRes->result = fetchGET(function);
