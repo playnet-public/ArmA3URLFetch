@@ -128,14 +128,14 @@ FetchResulting *fres;
 
 void fetchResult(const char * function)
 {
-	fres->resMtx->lock();
+	fres->resMtx.lock();
 
 	FetchResult *nRes;
 	nRes.finished = false;
-	nRes.key = fres->results->size();
-	fres->results->push_back(&nRes);
+	nRes.key = fres->results.size();
+	fres->results.push_back(&nRes);
 
-	fres->resMtx->unlock();
+	fres->resMtx.unlock();
 	nRes.result = fetchGET(function);
 	nRes.finished = true;
 };
