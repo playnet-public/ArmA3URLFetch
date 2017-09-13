@@ -1,4 +1,5 @@
 
+
 /*
 	Author(s):
 		Vincent Heins
@@ -156,23 +157,34 @@ void newThread(const char *function)
 #define URLFETCH_DEVELOPMENT true
 #ifdef URLFETCH_DEVELOPMENT
 
-std::vector<std::string> splitString(std::string str, const char sep)
+std::vector<std::string> splitString(std::string str, const char * sep)
 {
 	std::vector<std::string> nStr;
 
-	int sSel = 0;
+	size_t sSel = 0;
 	for (std::string::size_type i = 0; i < str.size(); i++)
 	{
-		if (str[i] == sep)
+		if (str[i] == *sep)
+		{
 			if (sSel != i)
-				nStr.push_back(str.substr(sSel, i - 1));
+			{
+				nStr.push_back(str.substr(sSel, i - sSel));
 				sSel = i + 1;
+			}
+		}
 	}
+
+	if (str.size() != sSel)
+	{
+		nStr.push_back(str.substr(sSel, str.size() - sSel));
+	}
+
+	return nStr;
 };
 
 int main ()
 {
-	const char * input = "GET|HEADER|URL|";
+	const char * input = "STAT|32"; //"GET|application/json|http://swapi.co/api/people/1/?format=json";
 	const char * test = "http://swapi.co/api/people/1/?format=json";
 	const char * test2 = "http://swapi.co/api/people/2/?format=json";
 	//std::thread fR1(fetchResult, test);
@@ -181,20 +193,30 @@ int main ()
 	//fR1.join();
 	//fR2.join();
 
+	const char * sep = "|";
 	std::string str(input);
-	if (str[str.begin()] == "|")
+
+	/*if (str[0] == *sep)
+	{
+		std::cout << "remove first character" << "\n";
 		str.erase(str.begin());
+	}
 
-	if (str[str.end()] == "|")
+	if (str[str.size()-1] == *sep)
+	{
 		str.erase(str.end());
+	}*/
 
-	
+	std::vector<std::string> nStr = splitString(input, sep);
+	std::cout << nStr.size() << "\n";
+	std::cout << nStr[0] << "\n";
+	std::cout << stoi(nStr[1]) << "\n";
 
-	for (int i = 0; i < results.size(); i++) {
+	/*for (int i = 0; i < results.size(); i++) {
 		FetchResult res = results[i];
 		std::string str = res.result;
 		std::cout << str << "\n";
-	}
+	}*/
 
 	return 0;
 };
