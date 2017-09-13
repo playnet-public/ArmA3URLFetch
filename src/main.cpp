@@ -69,7 +69,7 @@ class FReqs
         return str;
 }*/
 
-char fetchGET(/*char *output, const int &outputSize,*/ const char *function)
+std::string fetchGET(/*char *output, const int &outputSize,*/ const char *function)
 {
 	CURL *curl;
 	CURLcode res;
@@ -100,14 +100,14 @@ char fetchGET(/*char *output, const int &outputSize,*/ const char *function)
 	str.resize(10240);
 	/*const char * c_str = str.c_str();
 	strncpy(output, c_str, str.size());*/
-	return str.c_str();
+	return str;
 };
 
 struct FetchResult
 {
 	bool finished;
 	int key;
-	char result[10240];
+	std::string result;
 };
 
 class FetchResulting
@@ -124,7 +124,7 @@ void newThread(const char *function)
 	std::thread fetchRequest(fetchResult, function);
 };
 
-void fetchResult(const char *function)
+void fetchResult(const char * function)
 {
 	fres->resMtx->lock();
 
@@ -134,10 +134,7 @@ void fetchResult(const char *function)
 	fres->results->push_back(&nRes);
 
 	fres->resMtx->unlock();
-
-	char *res[10240];
-	res = fetchGET(function);
-	nRes.result = res;
+	nRes.result = fetchGET(function);
 	nRes.finished = true;
 };
 
