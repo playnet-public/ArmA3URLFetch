@@ -126,11 +126,6 @@ class FetchResulting
 
 FetchResulting *fres;
 
-void newThread(const char *function)
-{
-	std::thread fetchRequest(fetchResult, function);
-};
-
 void fetchResult(const char * function)
 {
 	fres->resMtx->lock();
@@ -143,6 +138,11 @@ void fetchResult(const char * function)
 	fres->resMtx->unlock();
 	nRes.result = fetchGET(function);
 	nRes.finished = true;
+};
+
+void newThread(const char *function)
+{
+	std::thread fetchRequest(fetchResult, function);
 };
 
 #ifdef __GNUC__
