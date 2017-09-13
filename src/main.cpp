@@ -16,6 +16,7 @@
 #include <curl/curl.h>
 #include <mutex>
 #include <thread>
+#include <vector>
 
 /*struct MemStruct
 {
