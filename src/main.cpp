@@ -69,6 +69,40 @@ class FReqs
         return str;
 }*/
 
+char fetchGET(/*char *output, const int &outputSize,*/ const char *function)
+{
+	CURL *curl;
+	CURLcode res;
+	struct curl_slist *headers = NULL;
+
+	curl = curl_easy_init();
+
+	std::string str;
+
+	if (curl)
+	{
+		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+		curl_easy_setopt(curl, CURLOPT_URL, function);
+		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &str);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CallbackWriter);
+		res = curl_easy_perform(curl);
+
+		if (res == CURLE_OK)
+		{
+			char *ct;
+			res = curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &ct);
+			/*if ((CURLE_OK == res) && ct)
+                              	break;*/
+		}
+	}
+
+	str.resize(10240);
+	/*const char * c_str = str.c_str();
+	strncpy(output, c_str, str.size());*/
+	return str.c_str();
+};
+
 struct FetchResult
 {
 	bool finished;
@@ -105,40 +139,6 @@ void fetchResult(const char *function)
 	res = fetchGET(function);
 	nRes.result = res;
 	nRes.finished = true;
-};
-
-char fetchGET(/*char *output, const int &outputSize,*/ const char *function)
-{
-	CURL *curl;
-	CURLcode res;
-	struct curl_slist *headers = NULL;
-
-	curl = curl_easy_init();
-
-	std::string str;
-
-	if (curl)
-	{
-		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-		curl_easy_setopt(curl, CURLOPT_URL, function);
-		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &str);
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CallbackWriter);
-		res = curl_easy_perform(curl);
-
-		if (res == CURLE_OK)
-		{
-			char *ct;
-			res = curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &ct);
-			/*if ((CURLE_OK == res) && ct)
-                              	break;*/
-		}
-	}
-
-	str.resize(10240);
-	/*const char * c_str = str.c_str();
-	strncpy(output, c_str, str.size());*/
-	return str.c_str();
 };
 
 //like the example from https://curl.haxx.se/libcurl/c/getinmemory.html
