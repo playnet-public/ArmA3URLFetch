@@ -69,6 +69,13 @@ class FReqs
         return str;
 }*/
 
+//like the example from https://curl.haxx.se/libcurl/c/getinmemory.html
+static size_t CallbackWriter(void *contents, size_t size, size_t nmemb, void *buf)
+{
+	((std::string *)buf)->append((char *)contents, size * nmemb);
+	return size * nmemb;
+};
+
 std::string fetchGET(/*char *output, const int &outputSize,*/ const char *function)
 {
 	CURL *curl;
@@ -136,13 +143,6 @@ void fetchResult(const char * function)
 	fres->resMtx->unlock();
 	nRes.result = fetchGET(function);
 	nRes.finished = true;
-};
-
-//like the example from https://curl.haxx.se/libcurl/c/getinmemory.html
-static size_t CallbackWriter(void *contents, size_t size, size_t nmemb, void *buf)
-{
-	((std::string *)buf)->append((char *)contents, size * nmemb);
-	return size * nmemb;
 };
 
 #ifdef __GNUC__
