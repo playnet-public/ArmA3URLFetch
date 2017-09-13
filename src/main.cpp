@@ -14,6 +14,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <curl/curl.h>
+#include <mutex>
+#include <thread>
 
 /*struct MemStruct
 {
@@ -31,27 +33,6 @@ class FReqs
 		//static int writer(char *data, size_t size, size_t nmemb, std::string *buffer_in);
 };
 */
-//like the example from https://curl.haxx.se/libcurl/c/getinmemory.html
-static size_t CallbackWriter(void * contents, size_t size, size_t nmemb, void *buf)
-{
-	((std::string *) buf)->append((char *) contents, size * nmemb);
-	/*std::cout << "1" << "\n";
-	size_t nL = size * nmemb;
-	size_t oL = buf->size();
-
-	try
-	{
-		buf->resize(oL + nL);
-	}
-	catch (std::bad_alloc &e)
-	{
-		std::cout << "test" << "\n";
-		return 0;
-	}
-
-	std::copy((char *) contents, (char *) contents + nL, buf->begin() + oL);*/
-	return size * nmemb;
-}
 
 /*std::string FReqs::URLGet(const char * input)
 {
@@ -88,114 +69,134 @@ static size_t CallbackWriter(void * contents, size_t size, size_t nmemb, void *b
         return str;
 }*/
 
-/*std::string URLPost(char *input)
+struct FetchResult
 {
-	std::string test("");
-	return test;
-}*/
-
-/*
-Valid inputs:
-	0 - Type - GET or POST,
-	1 - Http Header - e.g. application/json,
-	2 - URL - e.g. http://www.bistudio.com/newsfeed/arma3_news.php?build=main&language=English
-	3 - Post Values - e.g. ?test=2&anotherOne=test -> ... n
-
-	Full example:
-		POST example:
-			"POST|application/json|http://www.bistudio.com/newsfeed/arma3_news.php|build=main|language=English" callExtension "fetcher";
-		GET example
-			"GET|application/json|http://www.bistudio.com/newsfeed/arma3_news.php?build=main&language=English" callExtension "fetcher";
-*/
-
-//FReqs * freqs;
-
-class FHandle
-{
-	public:
-		void callExtension(char *output, const int &outputSize, const char *function);
+	bool finished;
+	int key;
+	char result[10240];
 };
 
-void FHandle::callExtension(char *output, const int &outputSize, const char *function)
+class FetchResulting
 {
-        CURL *curl;
-        CURLcode res;
-        struct curl_slist *headers=NULL;
+  public:
+	std::mutex resMtx;
+	std::vector<FetchResult> results;
+};
 
-        curl = curl_easy_init();
+FetchResulting *fres;
 
-        std::string str;
+void newThread(const char *function)
+{
+	std::thread fetchRequest(fetchResult, function);
+};
 
-        if (curl)
-        {
-                curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-                curl_easy_setopt(curl, CURLOPT_URL, function);
-                curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
-                curl_easy_setopt(curl, CURLOPT_WRITEDATA, &str);
-                curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CallbackWriter);
-                res = curl_easy_perform(curl);
+void fetchResult(const char *function)
+{
+	fres->resMtx->lock();
 
-                if (res == CURLE_OK)
-                {
-                        char *ct;
-                        res = curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &ct);
-                        /*if ((CURLE_OK == res) && ct)
+	FetchResult *nRes;
+	nRes.finished = false;
+	nRes.key = fres->results->size();
+	fres->results->push_back(&nRes);
+
+	fres->resMtx->unlock();
+
+	char *res[10240];
+	res = fetchGET(function);
+	nRes.result = res;
+	nRes.finished = true;
+};
+
+char fetchGET(/*char *output, const int &outputSize,*/ const char *function)
+{
+	CURL *curl;
+	CURLcode res;
+	struct curl_slist *headers = NULL;
+
+	curl = curl_easy_init();
+
+	std::string str;
+
+	if (curl)
+	{
+		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+		curl_easy_setopt(curl, CURLOPT_URL, function);
+		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, &str);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CallbackWriter);
+		res = curl_easy_perform(curl);
+
+		if (res == CURLE_OK)
+		{
+			char *ct;
+			res = curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &ct);
+			/*if ((CURLE_OK == res) && ct)
                               	break;*/
-                }
-        }
+		}
+	}
 
 	str.resize(10240);
-	const char * c_str = str.c_str();
-	strncpy(output, c_str, str.size());
+	/*const char * c_str = str.c_str();
+	strncpy(output, c_str, str.size());*/
+	return str.c_str();
 };
 
-FHandle * fhandle;
+//like the example from https://curl.haxx.se/libcurl/c/getinmemory.html
+static size_t CallbackWriter(void *contents, size_t size, size_t nmemb, void *buf)
+{
+	((std::string *)buf)->append((char *)contents, size * nmemb);
+	return size * nmemb;
+};
 
 #ifdef __GNUC__
-	__attribute__((constructor)) void a3urlfetch_initialization() {
-		std::cout << "Sentence which should be displayed on server whilst initializing!" << "\n";
-	};
 
-	extern "C"
-	{
-		void RVExtension(char * output, int outputSize, const char * function);
-	};
+__attribute__((constructor)) void a3urlfetch_initialization()
+{
+	std::cout << "Sentence which should be displayed on server whilst initializing!"
+			  << "\n";
+};
 
-	void RVExtension(char * output, int outputSize, const char * function)
-	{
-		fhandle->callExtension(output, outputSize, function);
-	};
+extern "C" {
+void RVExtension(char *output, int outputSize, const char *function);
+};
+
+void RVExtension(char *output, int outputSize, const char *function)
+{
+	newThread(function);
+};
+
 #elif _MSC_VER
-	#include <windows.h>
-	#include <shellapi.h>
 
-	bool APIENTRY DllMain( HMODULE hMod, DWORD ul_reason_for_call, LPVOID lpReserved)
+#include <windows.h>
+#include <shellapi.h>
+
+bool APIENTRY DllMain(HMODULE hMod, DWORD ul_reason_for_call, LPVOID lpReserved)
+{
+	switch (ul_reason_for_call)
 	{
-		switch (ul_reason_for_call)
-		{
-			case DLL_PROCESS_ATTACH:
-				{
-					//call of dll
-				}
-				break;
-			case DLL_PROCESS_DETACH:
-				{
-					//stop of dll
-				}
-				break;
-		};
-
-		return true;
+	case DLL_PROCESS_ATTACH:
+	{
+		//call of dll
+	}
+	break;
+	case DLL_PROCESS_DETACH:
+	{
+		//stop of dll
+	}
+	break;
 	};
 
-	extern "C"
-	{
-		_declspec(dllexport) void __stdcall RVExtension(char *output, int outputSize, const char *function);
-	};
+	return true;
+};
 
-	void __stdcall RVExtension(char *output, int outputSize, const char *function)
-	{
-		outputSize = -1;
-		fhandle->callExtension(output, outputSize, function);
-	};
+extern "C" {
+_declspec(dllexport) void __stdcall RVExtension(char *output, int outputSize, const char *function);
+};
+
+void __stdcall RVExtension(char *output, int outputSize, const char *function)
+{
+	outputSize = -1;
+	fhandle->callExtension(output, outputSize, function);
+};
+
 #endif
