@@ -182,10 +182,10 @@ int main ()
 	//fR2.join();
 
 	std::string str(input);
-	if (str.front() == "|")
+	if (str[str.begin()] == "|")
 		str.erase(str.begin());
 
-	if (str.back() == "|")
+	if (str[str.end()] == "|")
 		str.erase(str.end());
 
 	
