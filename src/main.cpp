@@ -83,6 +83,8 @@ std::string fetchGET(/*char *output, const int &outputSize,*/ const char *functi
 	CURLcode res;
 	struct curl_slist *headers = NULL;
 
+	std::cout << function << "\n";
+
 	curl = curl_easy_init();
 
 	std::string str;
@@ -113,38 +115,69 @@ std::string fetchGET(/*char *output, const int &outputSize,*/ const char *functi
 
 struct FetchResult
 {
-	bool finished;
 	int key;
 	std::string result;
 };
 
-class FetchResulting
+/*class FetchResulting
 {
   public:
-	std::mutex resMtx;
+	std::mutex * resMtx;
 	std::vector<FetchResult *> results;
 };
 
-FetchResulting *fres;
+FetchResulting * fres;*/
+
+std::mutex resMtx;
+std::vector<FetchResult> results;
 
 void fetchResult(const char * function)
 {
-	fres->resMtx.lock();
+	std::cout << "inserting fetch for " << function << "\n";
 
-	FetchResult *nRes;
-	nRes->finished = false;
-	nRes->key = fres->results.size();
-	fres->results.push_back(nRes);
+	FetchResult nRes;
+	nRes.result = fetchGET(function);
 
-	fres->resMtx.unlock();
-	nRes->result = fetchGET(function);
-	nRes->finished = true;
+	resMtx.lock();
+
+	std::cout << results.size() << "\n";
+	nRes.key = results.size();
+	results.push_back(nRes);
+	std::cout << "fetch inserted" << function << "\n";
+
+	resMtx.unlock();
 };
 
 void newThread(const char *function)
 {
 	std::thread fetchRequest(fetchResult, function);
 };
+
+#define URLFETCH_DEVELOPMENT true
+#ifdef URLFETCH_DEVELOPMENT
+
+#include <typeinfo>
+
+int main ()
+{
+	const char * test = "http://swapi.co/api/people/1/?format=json";
+	const char * test2 = "http://swapi.co/api/people/2/?format=json";
+	std::thread fR1(fetchResult, test);
+	std::thread fR2(fetchResult, test2);
+	//newThread(test2);
+	fR1.join();
+	fR2.join();
+
+	for (int i = 0; i < results.size(); i++) {
+		FetchResult res = results[i];
+		std::string str = res.result;
+		std::cout << str << "\n";
+	}
+
+	return 0;
+};
+
+#elif
 
 #ifdef __GNUC__
 
@@ -196,5 +229,7 @@ void __stdcall RVExtension(char *output, int outputSize, const char *function)
 	outputSize = -1;
 	fhandle->callExtension(output, outputSize, function);
 };
+
+#endif
 
 #endif
