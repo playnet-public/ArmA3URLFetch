@@ -122,7 +122,7 @@ class FetchResulting
 {
   public:
 	std::mutex resMtx;
-	std::vector<FetchResult> results;
+	std::vector<FetchResult *> results;
 };
 
 FetchResulting *fres;
@@ -132,13 +132,13 @@ void fetchResult(const char * function)
 	fres->resMtx.lock();
 
 	FetchResult *nRes;
-	nRes.finished = false;
-	nRes.key = fres->results.size();
-	fres->results.push_back(&nRes);
+	nRes->finished = false;
+	nRes->key = fres->results.size();
+	fres->results->push_back(&nRes);
 
 	fres->resMtx.unlock();
-	nRes.result = fetchGET(function);
-	nRes.finished = true;
+	nRes->result = fetchGET(function);
+	nRes->finished = true;
 };
 
 void newThread(const char *function)
