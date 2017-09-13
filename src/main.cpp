@@ -152,6 +152,10 @@ void FHandle::callExtension(char *output, const int &outputSize, const char *fun
 FHandle * fhandle;
 
 #ifdef __GNUC__
+	__attribute__((constructor)) void a3urlfetch_initialization() {
+		std::cout << "Sentence which should be displayed on server whilst initializing!" << "\n";
+	};
+
 	extern "C"
 	{
 		void RVExtension(char * output, int outputSize, const char * function);
@@ -162,10 +166,31 @@ FHandle * fhandle;
 		fhandle->callExtension(output, outputSize, function);
 	};
 #elif _MSC_VER
+	#include <windows.h>
+	#include <shellapi.h>
+
+	bool APIENTRY DllMain( HMODULE hMod, DWORD ul_reason_for_call, LPVOID lpReserved)
+	{
+		switch (ul_reason_for_call)
+		{
+			case DLL_PROCESS_ATTACH:
+				{
+					//call of dll
+				}
+				break;
+			case DLL_PROCESS_DETACH:
+				{
+					//stop of dll
+				}
+				break;
+		};
+
+		return true;
+	};
+
 	extern "C"
 	{
 		_declspec(dllexport) void __stdcall RVExtension(char *output, int outputSize, const char *function);
-		//_declspec(dllexport) void __stdcall _RVExtension@12(char *output, int outputSize, const char *function);
 	};
 
 	void __stdcall RVExtension(char *output, int outputSize, const char *function)
@@ -173,10 +198,4 @@ FHandle * fhandle;
 		outputSize = -1;
 		fhandle->callExtension(output, outputSize, function);
 	};
-	
-	/*void __stdcall _RVExtension@12(char *output, int outputSize, const char *function)
-	{
-		outputSize = -1;
-		fhandle->callExtension(output, outputSize, function);
-	};*/
 #endif
