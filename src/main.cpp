@@ -156,17 +156,39 @@ void newThread(const char *function)
 #define URLFETCH_DEVELOPMENT true
 #ifdef URLFETCH_DEVELOPMENT
 
-#include <typeinfo>
+std::vector<std::string> splitString(std::string str, const char sep)
+{
+	std::vector<std::string> nStr;
+
+	int sSel = 0;
+	for (std::string::size_type i = 0; i < str.size(); i++)
+	{
+		if (str[i] == sep)
+			if (sSel != i)
+				nStr.push_back(str.substr(sSel, i - 1));
+				sSel = i + 1;
+	}
+};
 
 int main ()
 {
+	const char * input = "GET|HEADER|URL|";
 	const char * test = "http://swapi.co/api/people/1/?format=json";
 	const char * test2 = "http://swapi.co/api/people/2/?format=json";
-	std::thread fR1(fetchResult, test);
-	std::thread fR2(fetchResult, test2);
+	//std::thread fR1(fetchResult, test);
+	//std::thread fR2(fetchResult, test2);
 	//newThread(test2);
-	fR1.join();
-	fR2.join();
+	//fR1.join();
+	//fR2.join();
+
+	std::string str(input);
+	if (str.front() == "|")
+		str.erase(str.begin());
+
+	if (str.back() == "|")
+		str.erase(str.end());
+
+	
 
 	for (int i = 0; i < results.size(); i++) {
 		FetchResult res = results[i];
