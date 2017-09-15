@@ -1,6 +1,14 @@
 
 #include <mutex>
 #include <string>
+#include <string.h>
+#include <vector>
+#include <thread>
+#include <stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+#include <curl/curl.h>
 
 struct FetchResult
 {
