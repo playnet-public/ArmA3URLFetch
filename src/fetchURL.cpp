@@ -14,19 +14,21 @@ void FetchURL::fetchResultPOST(std::string * function, std::string * parameters)
 
 int FetchURL::returnStatus(int key)
 {
-    std::vector<FetchResult> res = results;
-    if (res.empty())
+    std::lock_guard<std::mutex> lock(results_lock);
+    if (results.empty())
         return 0;
 
-    for (int i = 0; i < res.size(); i++) {
-        if (res[i].key == key)
+    for (int i = 0; i < results.size(); i++)
+    {
+        if (results[i].key == key)
         {
-            if (res[i].finished)
+            if (results[i].finished)
                 return 1;
             else
                 return 0;
         }
-    };
+    }
 };
+
 std::string FetchURL::returnResult(int key)
 {};
