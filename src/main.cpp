@@ -19,23 +19,6 @@
 #include <thread>
 #include <vector>
 
-/*struct MemStruct
-{
-        char * memory;
-        size_t size;
-};
-
-class FReqs
-{
-	public:
-		std::string URLGet(const char * input);
-		//std::string URLPost(char *input);
-	private:
-		//static size_t writer(void *contents, size_t size, size_t nmemb, void *userp);
-		//static int writer(char *data, size_t size, size_t nmemb, std::string *buffer_in);
-};
-*/
-
 /*std::string FReqs::URLGet(const char * input)
 {
 	std::cout << input << "\n";
