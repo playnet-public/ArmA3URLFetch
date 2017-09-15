@@ -143,6 +143,8 @@ void newThread(const char *function)
 
 #include <typeinfo>
 
+FetchURL * fURL;
+
 int main ()
 {
 	const char * input = "STAT|32|5|2"; //"GET|application/json|http://swapi.co/api/people/1/?format=json";
