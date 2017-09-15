@@ -19,12 +19,12 @@ struct FetchResult
 
 class FetchURL
 {
+    std::mutex results_lock;
+    std::vector<FetchResult> results;
 public:
     void callExtension (const char * output, int outputSize, const char * function);
     int returnStatus(int key);
 private:
-    std::mutex results_lock;
-    std::vector<FetchResult> results;
     void startGETThread(std::string function);
     void startPOSTThread(std::string function, std::string parameters);
     void fetchResultGET(std::string * function);
