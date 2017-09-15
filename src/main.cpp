@@ -18,6 +18,7 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#include "fetchURL.h"
 
 /*std::string FReqs::URLGet(const char * input)
 {
