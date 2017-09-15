@@ -16,7 +16,7 @@ int FetchURL::returnStatus(int key)
 {
     std::lock_guard<std::mutex> lock(results_lock);
 
-    std::cout << results.empty() << "\n";
+    std::cout << this->results.empty() << "\n";
     if (results.empty())
         return 0;
 
