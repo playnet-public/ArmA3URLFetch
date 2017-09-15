@@ -157,6 +157,8 @@ void newThread(const char *function)
 #define URLFETCH_DEVELOPMENT true
 #ifdef URLFETCH_DEVELOPMENT
 
+#include <typeinfo>
+
 std::vector<std::string> splitString(std::string str, const char * sep)
 {
 	std::vector<std::string> nStr;
@@ -184,17 +186,53 @@ std::vector<std::string> splitString(std::string str, const char * sep)
 
 int main ()
 {
-	const char * input = "STAT|32"; //"GET|application/json|http://swapi.co/api/people/1/?format=json";
+	const char * input = "STAT|32|5|2"; //"GET|application/json|http://swapi.co/api/people/1/?format=json";
 	const char * test = "http://swapi.co/api/people/1/?format=json";
 	const char * test2 = "http://swapi.co/api/people/2/?format=json";
+
+	const char * sep = "|";
+
+	std::vector<std::string> nStr;
+	std::string strInput(input);
+
+	size_t index = 0;
+	for (size_t i = 0; i < strInput.size(); i++)
+	{
+		if (strInput[i] == *sep)
+		{
+			if (i == index)
+			{
+				std::string tmp("");
+				nStr.push_back(tmp);
+			}
+			else
+			{
+				std::string tmp(strInput.substr(index, i - index));
+				nStr.push_back(tmp);
+			}
+			index = i + 1;
+		}
+	}
+
+	if (index < strInput.size())
+	{
+		std::string tmp(strInput.substr(index, strInput.size() - index));
+		nStr.push_back(tmp);
+	}
+
+	for (int i = 0; i < nStr.size(); i++)
+	{
+		std::cout << nStr[i] << "\n";
+	}
+
 	//std::thread fR1(fetchResult, test);
 	//std::thread fR2(fetchResult, test2);
 	//newThread(test2);
 	//fR1.join();
 	//fR2.join();
 
-	const char * sep = "|";
-	std::string str(input);
+	//const char * sep = "|";
+	//std::string str(input);
 
 	/*if (str[0] == *sep)
 	{
@@ -207,16 +245,10 @@ int main ()
 		str.erase(str.end());
 	}*/
 
-	std::vector<std::string> nStr = splitString(input, sep);
+	/*std::vector<std::string> nStr = splitString(input, sep);
 	std::cout << nStr.size() << "\n";
 	std::cout << nStr[0] << "\n";
-	std::cout << stoi(nStr[1]) << "\n";
-
-	/*for (int i = 0; i < results.size(); i++) {
-		FetchResult res = results[i];
-		std::string str = res.result;
-		std::cout << str << "\n";
-	}*/
+	std::cout << stoi(nStr[1]) << "\n";*/
 
 	return 0;
 };
