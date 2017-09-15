@@ -15,7 +15,7 @@ void FetchURL::fetchResultPOST(std::string * function, std::string * parameters)
 int FetchURL::returnStatus(int key)
 {
     std::cout << "checking if element exists" << "\n";
-    std::lock_guard<std::mutex> lock(results_lock);
+    //std::lock_guard<std::mutex> lock(results_lock);
     std::cout << "auto mutex added" << "\n";
 
     std::cout << results.empty() << "\n";
