@@ -14,7 +14,7 @@ void FetchURL::fetchResultPOST(std::string * function, std::string * parameters)
 
 int FetchURL::returnStatus(int key)
 {
-    std::vector<FetchResult> res = fResults;
+    std::vector<FetchResult> res = results;
 
     for (int i = 0; i < res.size(); i++) {
         if (res[i].key == key)
