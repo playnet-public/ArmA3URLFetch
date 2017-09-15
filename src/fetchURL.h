@@ -13,8 +13,8 @@ class FetchURL
 {
 public:
     void callExtension (const char * output, int outputSize, const char * function);
-    std::mutex fResults_lock;
-    std::vector<FetchResult> fResults;
+    std::mutex results_lock;
+    std::vector<FetchResult> results;
     void startGETThread(std::string function, std::string parameters);
     void startPOSTThread(std::string function, std::string parameters);
     void fetchResultGET(std::string * function, std::string * parameters);
