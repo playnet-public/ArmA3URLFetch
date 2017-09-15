@@ -98,11 +98,11 @@ std::string fetchGET(/*char *output, const int &outputSize,*/ const char *functi
 	return str;
 };
 
-struct FetchResult
+/*struct FetchResult
 {
 	int key;
 	std::string result;
-};
+};*/
 
 /*class FetchResulting
 {
@@ -113,7 +113,7 @@ struct FetchResult
 
 FetchResulting * fres;*/
 
-std::mutex resMtx;
+/*std::mutex resMtx;
 std::vector<FetchResult> results;
 
 void fetchResult(const char * function)
@@ -136,37 +136,12 @@ void fetchResult(const char * function)
 void newThread(const char *function)
 {
 	std::thread fetchRequest(fetchResult, function);
-};
+};*/
 
 #define URLFETCH_DEVELOPMENT true
 #ifdef URLFETCH_DEVELOPMENT
 
 #include <typeinfo>
-
-std::vector<std::string> splitString(std::string str, const char * sep)
-{
-	std::vector<std::string> nStr;
-
-	size_t sSel = 0;
-	for (std::string::size_type i = 0; i < str.size(); i++)
-	{
-		if (str[i] == *sep)
-		{
-			if (sSel != i)
-			{
-				nStr.push_back(str.substr(sSel, i - sSel));
-				sSel = i + 1;
-			}
-		}
-	}
-
-	if (str.size() != sSel)
-	{
-		nStr.push_back(str.substr(sSel, str.size() - sSel));
-	}
-
-	return nStr;
-};
 
 int main ()
 {
