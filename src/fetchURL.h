@@ -2,8 +2,6 @@
 #include <mutex>
 #include <string>
 
-#include "fetchURL.cpp"
-
 struct FetchResult
 {
     int key;
