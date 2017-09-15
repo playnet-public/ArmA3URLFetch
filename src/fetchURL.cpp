@@ -15,6 +15,8 @@ void FetchURL::fetchResultPOST(std::string * function, std::string * parameters)
 int FetchURL::returnStatus(int key)
 {
     std::lock_guard<std::mutex> lock(results_lock);
+
+    std::cout << results.empty() << "\n";
     if (results.empty())
         return 0;
 
