@@ -19,8 +19,8 @@ struct FetchResult
 
 class FetchURL
 {
-    std::mutex results_lock;
-    std::vector<FetchResult> results;
+    std::mutex _results_lock;
+    std::vector<FetchResult> _results;
 public:
     void callExtension (const char * output, int outputSize, const char * function);
     int returnStatus(int key);
