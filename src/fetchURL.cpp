@@ -1,4 +1,6 @@
 
+#include "fetchURL.h"
+
 void FetchURL::callExtension(const char * output, int outputSize, const char * function)
 {};
 void FetchURL::startGETThread(std::string function)
