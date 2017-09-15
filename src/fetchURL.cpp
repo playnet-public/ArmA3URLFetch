@@ -14,17 +14,19 @@ void FetchURL::fetchResultPOST(std::string * function, std::string * parameters)
 
 int FetchURL::returnStatus(int key)
 {
-    std::lock_guard<std::mutex> lock(this->results_lock);
+    std::cout << "checking if element exists" << "\n";
+    std::lock_guard<std::mutex> lock(results_lock);
+    std::cout << "auto mutex added" << "\n";
 
-    std::cout << this->results.empty() << "\n";
-    if (this->results.empty())
+    std::cout << results.empty() << "\n";
+    if (results.empty())
         return 0;
 
-    for (int i = 0; i < this->results.size(); i++)
+    for (int i = 0; i < results.size(); i++)
     {
-        if (this->results[i].key == key)
+        if (results[i].key == key)
         {
-            if (this->results[i].finished)
+            if (results[i].finished)
                 return 1;
             else
                 return 0;
