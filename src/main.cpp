@@ -56,13 +56,13 @@
 }*/
 
 //like the example from https://curl.haxx.se/libcurl/c/getinmemory.html
-static size_t CallbackWriter(void *contents, size_t size, size_t nmemb, void *buf)
+/*static size_t CallbackWriter(void *contents, size_t size, size_t nmemb, void *buf)
 {
 	((std::string *)buf)->append((char *)contents, size * nmemb);
 	return size * nmemb;
 };
 
-std::string fetchGET(/*char *output, const int &outputSize,*/ const char *function)
+std::string fetchGET( const char *function)
 {
 	CURL *curl;
 	CURLcode res;
@@ -87,14 +87,14 @@ std::string fetchGET(/*char *output, const int &outputSize,*/ const char *functi
 		{
 			char *ct;
 			res = curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &ct);
-			/*if ((CURLE_OK == res) && ct)
-                              	break;*/
+			if ((CURLE_OK == res) && ct)
+                              	break;
 		}
 	}
 
 	str.resize(10240);
-	/*const char * c_str = str.c_str();
-	strncpy(output, c_str, str.size());*/
+	const char * c_str = str.c_str();
+	strncpy(output, c_str, str.size());
 	return str;
 };
 
@@ -138,20 +138,30 @@ void newThread(const char *function)
 	std::thread fetchRequest(fetchResult, function);
 };*/
 
-#define URLFETCH_DEVELOPMENT true
+FetchURL * fURL;
+//#define URLFETCH_DEVELOPMENT false
 #ifdef URLFETCH_DEVELOPMENT
 
-#include <typeinfo>
+/*#include <typeinfo>
 
-FetchURL * fURL;
+__attribute__((constructor)) void a3urlfetch_initialization()
+{
+	fURL = new FetchURL();
+};
 
 int main ()
 {
-	const char * input = "STAT|32|5|2"; //"GET|application/json|http://swapi.co/api/people/1/?format=json";
-	const char * test = "http://swapi.co/api/people/1/?format=json";
+	const char * input = "POST|application/json|http://httpbin.org/post||=|format=json"; //"GET|application/json|http://swapi.co/api/people/1/?format=json";
+	const char * test = "STAT|2";
 	const char * test2 = "http://swapi.co/api/people/2/?format=json";
 
-	const char * sep = "|";
+	char * output;
+	for (int i = 0; i < 3; i++)
+	{
+		fURL->callExtension(output, 0, input);
+	};
+
+	/*const char * sep = "|";
 
 	std::vector<std::string> nStr;
 	std::string strInput(input);
@@ -186,6 +196,13 @@ int main ()
 		std::cout << nStr[i] << "\n";
 	}
 
+	int k = 1;
+	std::string header ("application/json");
+	std::string function ("http://httpbin.org/post");
+	std::string paramters ("test=33&hzu=h4hek");
+
+	fURL->startPOSTThread(&k, &header, &function, &paramters);
+
 	//std::thread fR1(fetchResult, test);
 	//std::thread fR2(fetchResult, test2);
 	//newThread(test2);
@@ -195,7 +212,7 @@ int main ()
 	//const char * sep = "|";
 	//std::string str(input);
 
-	/*if (str[0] == *sep)
+	if (str[0] == *sep)
 	{
 		std::cout << "remove first character" << "\n";
 		str.erase(str.begin());
@@ -204,24 +221,23 @@ int main ()
 	if (str[str.size()-1] == *sep)
 	{
 		str.erase(str.end());
-	}*/
+	}
 
-	/*std::vector<std::string> nStr = splitString(input, sep);
+	std::vector<std::string> nStr = splitString(input, sep);
 	std::cout << nStr.size() << "\n";
 	std::cout << nStr[0] << "\n";
-	std::cout << stoi(nStr[1]) << "\n";*/
+	std::cout << stoi(nStr[1]) << "\n";
 
 	return 0;
-};
+};*/
 
-#elif
+#else
 
 #ifdef __GNUC__
 
 __attribute__((constructor)) void a3urlfetch_initialization()
 {
-	std::cout << "Sentence which should be displayed on server whilst initializing!"
-			  << "\n";
+	fURL = new FetchURL();
 };
 
 extern "C" {
@@ -230,7 +246,7 @@ void RVExtension(char *output, int outputSize, const char *function);
 
 void RVExtension(char *output, int outputSize, const char *function)
 {
-	newThread(function);
+	fURL->callExtension(output, outputSize, function);
 };
 
 #elif _MSC_VER
@@ -244,7 +260,7 @@ bool APIENTRY DllMain(HMODULE hMod, DWORD ul_reason_for_call, LPVOID lpReserved)
 	{
 	case DLL_PROCESS_ATTACH:
 	{
-		//call of dll
+		fURL = new FetchURL();
 	}
 	break;
 	case DLL_PROCESS_DETACH:
@@ -264,7 +280,7 @@ _declspec(dllexport) void __stdcall RVExtension(char *output, int outputSize, co
 void __stdcall RVExtension(char *output, int outputSize, const char *function)
 {
 	outputSize = -1;
-	fhandle->callExtension(output, outputSize, function);
+	fURL->callExtension(output, outputSize, function);
 };
 
 #endif
