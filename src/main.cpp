@@ -139,97 +139,38 @@ void newThread(const char *function)
 };*/
 
 FetchURL * fURL;
-//#define URLFETCH_DEVELOPMENT false
+//#define URLFETCH_DEVELOPMENT true
 #ifdef URLFETCH_DEVELOPMENT
 
-/*#include <typeinfo>
+#include <typeinfo>
+#include <chrono>
 
 __attribute__((constructor)) void a3urlfetch_initialization()
 {
 	fURL = new FetchURL();
+	fURL->initializeThreads();
 };
 
 int main ()
 {
-	const char * input = "POST|application/json|http://httpbin.org/post||=|format=json"; //"GET|application/json|http://swapi.co/api/people/1/?format=json";
-	const char * test = "STAT|2";
+	const char * input = "GET|application/json|http://httpbin.org/get||=|format=json"; //"GET|application/json|http://swapi.co/api/people/1/?format=json";
+	const char * test = "STAT|1";
+	const char * test3 = "RECV|1";
 	const char * test2 = "http://swapi.co/api/people/2/?format=json";
 
-	char * output;
-	for (int i = 0; i < 3; i++)
+	char * output = new char[8192];
+	for (int i = 0; i < 10; i++)
 	{
 		fURL->callExtension(output, 0, input);
-	};
-
-	/*const char * sep = "|";
-
-	std::vector<std::string> nStr;
-	std::string strInput(input);
-
-	size_t index = 0;
-	for (size_t i = 0; i < strInput.size(); i++)
-	{
-		if (strInput[i] == *sep)
-		{
-			if (i == index)
-			{
-				std::string tmp("");
-				nStr.push_back(tmp);
-			}
-			else
-			{
-				std::string tmp(strInput.substr(index, i - index));
-				nStr.push_back(tmp);
-			}
-			index = i + 1;
-		}
+		std::cout << output << "\n";
+		std::stringstream strstream;
+		strstream << "STAT|" << i+1;
+		fURL->callExtension(output, 0, strstream.str().c_str());
 	}
-
-	if (index < strInput.size())
-	{
-		std::string tmp(strInput.substr(index, strInput.size() - index));
-		nStr.push_back(tmp);
-	}
-
-	for (int i = 0; i < nStr.size(); i++)
-	{
-		std::cout << nStr[i] << "\n";
-	}
-
-	int k = 1;
-	std::string header ("application/json");
-	std::string function ("http://httpbin.org/post");
-	std::string paramters ("test=33&hzu=h4hek");
-
-	fURL->startPOSTThread(&k, &header, &function, &paramters);
-
-	//std::thread fR1(fetchResult, test);
-	//std::thread fR2(fetchResult, test2);
-	//newThread(test2);
-	//fR1.join();
-	//fR2.join();
-
-	//const char * sep = "|";
-	//std::string str(input);
-
-	if (str[0] == *sep)
-	{
-		std::cout << "remove first character" << "\n";
-		str.erase(str.begin());
-	}
-
-	if (str[str.size()-1] == *sep)
-	{
-		str.erase(str.end());
-	}
-
-	std::vector<std::string> nStr = splitString(input, sep);
-	std::cout << nStr.size() << "\n";
-	std::cout << nStr[0] << "\n";
-	std::cout << stoi(nStr[1]) << "\n";
+	while (true) {}
 
 	return 0;
-};*/
+};
 
 #else
 
@@ -238,6 +179,7 @@ int main ()
 __attribute__((constructor)) void a3urlfetch_initialization()
 {
 	fURL = new FetchURL();
+	fURL->initializeThreads();
 };
 
 extern "C" {

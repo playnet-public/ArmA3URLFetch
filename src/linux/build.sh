@@ -1,3 +1,2 @@
 #!/bin/bash
-
-g++ -shared -fPIC -m32 -o arma3urlfetch.so ../main.cpp libcurl.a
+g++ -shared -fPIC -pthread -m32 -o arma3urlfetch.so fetchURL.cpp main.cpp linux/libcurl.a -std=c++11

@@ -8,14 +8,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <cstdlib>
 #include <curl/curl.h>
+#include <sstream>
+#include <queue>
+#include <map>
+
+/*
+input(output, outputSize, function) ->
+    "GET" -> addToWorkhorseQueue(QueueItem) - - -> Workhorse() -> mutex_lock() -> pop_front() -> mutex_unlock() -> fetchGETURLResult() -> 
+    "POST" -> -> addToWorkhorseQueue(QueueItem) - - -> Workhorse() -> mutex_lock() -> pop_front() -> mutex_unlock() -> fetchPOSTURLResult() -> 
+*/
 
 class FetchURL
 {
   public:
     struct FetchResult
     {
-        int key;
         std::string result;
         int status; //can be 0 = not completed yet; 1 = completed; 2 = error
     };
@@ -24,16 +33,29 @@ class FetchURL
         std::string name;
         std::string value;
     };
+    struct FetchQueueItem
+    {
+        int key;
+        std::string action, header, url;
+        std::vector<FetchURL::FetchParameters> params;
+    };
     void callExtension(char *output, int outputSize, const char *function);
-
+    void initializeThreads();
+    void queueThread();
   private:
     const char *req_seperator = "|";
-    std::mutex vec_mutex;
-    std::vector<FetchURL::FetchResult> vec;
-    void startGETThread(int *key, std::string *header, std::string *function, std::vector<FetchURL::FetchParameters> *parameters);
-    void fetchResultGET(int *key, std::string *header, std::string *function, std::vector<FetchURL::FetchParameters> *parameters);
-    void startPOSTThread(int *key, std::string *header, std::string *function, std::vector<FetchURL::FetchParameters> *parameters);
-    void fetchResultPOST(int *key, std::string *header, std::string *function, std::vector<FetchURL::FetchParameters> *parameters);
+    std::mutex list_queue_mutex;
+    std::queue<FetchURL::FetchQueueItem> list_queue;
+    #ifdef _MSC_VER
+    bool workerInitialized = false;
+    #endif
+
+    std::mutex res_map_mutex;
+    std::map<int, FetchURL::FetchResult> res_map;
+
+    int addResult();
+    void fetchGETResult(FetchURL::FetchQueueItem * qItem);
+    void fetchPOSTResult(FetchURL::FetchQueueItem * qItem);
     int returnStatus(int key);
     std::string returnResult(int key);
 };
