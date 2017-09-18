@@ -153,7 +153,7 @@ __attribute__((constructor)) void a3urlfetch_initialization()
 
 int main ()
 {
-	const char * input = "GET|application/json|http://httpbin.org/get||=|format=json"; //"GET|application/json|http://swapi.co/api/people/1/?format=json";
+	const char * input = "GET|application/json|https://httpbin.org/get||=|format=json"; //"GET|application/json|http://swapi.co/api/people/1/?format=json";
 	const char * test = "STAT|1";
 	const char * test3 = "RECV|1";
 	const char * test2 = "http://swapi.co/api/people/2/?format=json";

@@ -25,8 +25,8 @@ private _tKey = "";
 waitUntil
 {
 	_tKey = ("arma3urlfetch" callExtension format["STAT|%1", _rKey]);
-	(_tKey == "" || (parseNumber _tKey) == 1 || (parseNumber _tKey) == 2);
 	uiSleep 0.1;
+	(_tKey == "" || _tKey == "1" || _tKey == "2");
 };
 
 if (_tKey != "1") exitWith { ""; };

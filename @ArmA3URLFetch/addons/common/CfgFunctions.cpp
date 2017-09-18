@@ -5,6 +5,8 @@ class a3uf_common
     {
         file = "\x\a3uf\addons\common\functions";
         class getRequest {};
+        class getRequestCallback {};
         class postRequest {};
+        class postRequestCallback {};
     };
 };
