@@ -1,13 +1,7 @@
 
-#define DEBUG
-
 params [
 	["_jsonString", "", [""]]
 ];
-
-#ifdef DEBUG
-diag_log str "---------------------------------------------------------";
-#endif
 
 private _latestSigns = [];
 private _currentScope = 0;
@@ -59,9 +53,6 @@ for [{_i = 0}, {_i < _stringC}, {_i = _i + 1}] do
 		case "{";
 		case "[":
 		{
-			#ifdef DEBUG
-			diag_log str _lSign;
-			#endif
 			if (_lSign != '"') then
 			{
 				_currentScope = _currentScope + 1;
@@ -71,18 +62,10 @@ for [{_i = 0}, {_i < _stringC}, {_i = _i + 1}] do
 					if (_lSign == "[") then
 					{
 						_resultArray pushBack [_currentScope, nil];
-						
-						#ifdef DEBUG
-						diag_log format["3: %1", [_currentScope, nil]];
-						#endif
 					}
 					else
 					{
 						_resultArray pushBack [_currentScope, _lText];
-						
-						#ifdef DEBUG
-						diag_log format["3: %1", [_currentScope, _lText]];
-						#endif
 					};
 				};
 				
@@ -113,11 +96,6 @@ for [{_i = 0}, {_i < _stringC}, {_i = _i + 1}] do
 			if (_lSign == ":") then
 			{
 				_resultArray pushBack [_currentScope, _lText, (_jsonString select [(_lSignI + 1), (_i - _lSignI) - 1])];
-				
-				#ifdef DEBUG
-				diag_log format["1: %1", [_currentScope, _lText, (_jsonString select [(_lSignI + 1), (_i - _lSignI) - 1])]];
-				#endif
-				
 				_latestSigns deleteRange [((count _latestSigns) - 2), 2];
 				
 				_lSignI = (_latestSigns select ((count _latestSigns) - 1));
@@ -133,10 +111,6 @@ for [{_i = 0}, {_i < _stringC}, {_i = _i + 1}] do
 					if (_lSign == "[") then
 					{
 						_resultArray pushBack [_currentScope, nil, (_jsonString select [_lCI, (_i - _lCI)])];
-						
-						#ifdef DEBUG
-						diag_log format["2: %1", [_currentScope, nil, (_jsonString select [_lCI, (_i - _lCI)])]];
-						#endif
 					};
 					_latestSigns deleteRange [((count _latestSigns) - 2), 2];
 					_lSignI = (_latestSigns select ((count _latestSigns) - 1));
@@ -151,10 +125,6 @@ for [{_i = 0}, {_i < _stringC}, {_i = _i + 1}] do
 						if (_isText) then
 						{
 							_resultArray pushBack [_currentScope, _sLText, _lText];
-							
-							#ifdef DEBUG
-							diag_log format["3: %1", [_currentScope, _sLText, _lText]];
-							#endif
 						};
 					}
 				};
@@ -183,10 +153,6 @@ for [{_i = 0}, {_i < _stringC}, {_i = _i + 1}] do
 								if !(_endingBracket) then
 								{
 									_resultArray pushBack [_currentScope, _sLText, _lText];
-									
-									#ifdef DEBUG
-									diag_log format["4: %1", [_currentScope, _sLText, _lText]];
-									#endif
 								};
 							};
 							
@@ -195,10 +161,6 @@ for [{_i = 0}, {_i < _stringC}, {_i = _i + 1}] do
 								if !(_endingBracket) then
 								{
 									_resultArray pushBack [_currentScope, nil, _lText];
-									
-									#ifdef DEBUG
-									diag_log format["5: %1", [_currentScope, nil, _lText]];
-									#endif
 								};
 							};
 						};
@@ -218,11 +180,6 @@ for [{_i = 0}, {_i < _stringC}, {_i = _i + 1}] do
 					else
 					{
 						_resultArray pushBack [_currentScope, nil, (_jsonString select [_lCI, (_i - _lCI)])];
-						
-						#ifdef DEBUG
-						diag_log format["6: %1", [_currentScope, nil, (_jsonString select [_lCI, (_i - _lCI)])]];
-						#endif
-
 						_lCI = (_i + 1);
 					};
 				};
@@ -231,16 +188,7 @@ for [{_i = 0}, {_i < _stringC}, {_i = _i + 1}] do
 				{
 					if !(_endingBracket) then
 					{
-						#ifdef DEBUG
-						diag_log str _lText;
-						#endif
-
 						_resultArray pushBack [_currentScope, _lText, (_jsonString select [(_lSignI + 1), (_i - _lSignI) - 1])];
-						
-						#ifdef DEBUG
-						diag_log format["7: %1", [_currentScope, _lText, (_jsonString select [(_lSignI + 1), (_i - _lSignI) - 1])]];
-						#endif
-
 						_latestSigns deleteRange [((count _latestSigns) - 2), 2];
 					}
 					else
@@ -272,10 +220,6 @@ for [{_i = 0}, {_i < _stringC}, {_i = _i + 1}] do
 					};
 					_sLText = _lText;
 					_lText = (_jsonString select [(_lSignI), (_i - _lSignI) + 1]);
-					
-					#ifdef DEBUG
-					diag_log str _lText;
-					#endif
 				};
 			}
 			else
@@ -297,15 +241,7 @@ for [{_i = 0}, {_i < _stringC}, {_i = _i + 1}] do
 			};
 		};
 	};
-	
-	#ifdef DEBUG
-	diag_log format["%1 -> %2", _char,(_latestSigns apply { (_jsonString select [_x, 1]); })];
-	#endif
 };
-
-#ifdef DEBUG
-diag_log _resultArray;
-#endif
 
 {
 	_x set [1, (call compile (_x select 1))];
