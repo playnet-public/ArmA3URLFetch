@@ -5,7 +5,10 @@ class a3uf_json
     {
         file = "\x\a3uf\addons\json\functions";
         class decode {};
-        class decode_formResult {};
         class encode {};
+        class preInit
+        {
+            preInit = 1;
+        };
     };
 };

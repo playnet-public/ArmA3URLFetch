@@ -1,298 +1,291 @@
 
 #include "fetchURL.h"
 
-void FetchURL::callExtension(char *output, int outputSize, const char *function)
+/*
+    Publicity: private
+    Return type: int
+    Name/Type: callExtensionArgs()
+    Description: default request function.
+*/
+int FetchURL::CallExtensionArgs(char *output, int outputSize, const char *function, const char **args, int argsCnt)
 {
-    //split the shit
-    std::vector<std::string> args;
-    std::string input_str(function);
-
-    size_t index = 0;
-    for (size_t i = 0; i < input_str.size(); i++)
-    {
-        if (input_str[i] == *req_seperator)
-        {
-            if (i == index)
-            {
-                std::string tmp("");
-                args.push_back(tmp);
-            }
-            else
-            {
-                std::string tmp(input_str.substr(index, i - index));
-                args.push_back(tmp);
-            }
-            index = i + 1;
-        }
-    }
-
-    if (index < input_str.size())
-    {
-        std::string tmp(input_str.substr(index, input_str.size() - index));
-        args.push_back(tmp);
-    }
-
-    if (args.size() <= 1)
-    {
-        outputSize = 2;
-        strncpy(output, "-1", outputSize);
-        return;
-    }
-
-    if (strcmp(args[0].c_str(), "GET") == 0)
-    {
-        if (strcmp(args[1].c_str(), "") == 0)
-        {
-            outputSize = 2;
-            strncpy(output, "-1", outputSize);
-            return;
-        }
-
-        if (strcmp(args[2].c_str(), "") == 0)
-        {
-            outputSize = 2;
-            strncpy(output, "-1", outputSize);
-            return;
-        }
-        
-        FetchURL::FetchResult fres;
-        int key = addResult();
-
-        std::vector<FetchURL::FetchParameters> params;
-        for (int i = 3; i < args.size(); i++)
-        {
-            FetchURL::FetchParameters param;
-            int found = args[i].find("=");
-            if (found != std::string::npos)
-            {
-                param.name = args[i].substr(0, found);
-                param.value = args[i].substr((found + 1), args[i].size()-1);
-                if (strcmp(param.name.c_str(), "") != 0 && strcmp(param.value.c_str(), "") != 0)
-                    params.push_back(param);
-            }
-        }
-
-        std::stringstream str_stream;
-        str_stream << key << '\0';
-        strncpy(output, str_stream.str().c_str(), str_stream.str().size());
-        
-        #ifdef _MSC_VER
-        if (!workerInitialized)
-        {
-            initializeThreads();
-            workerInitialized = true;
-        }
-        #endif
-        
-        FetchURL::FetchQueueItem qItem;
-        qItem.key = key;
-        qItem.action = args[0];
-        qItem.header = args[1];
-        qItem.url = args[2];
-        qItem.params = params;
-
-        list_queue_mutex.lock();
-        list_queue.push(qItem);
-        list_queue_mutex.unlock();
-    }
-    else if (strcmp(args[0].c_str(), "POST") == 0)
-    {
-        if (strcmp(args[1].c_str(), "") == 0)
-        {
-            outputSize = 2;
-            strncpy(output, "-1", outputSize);
-            return;
-        }
-
-        if (strcmp(args[2].c_str(), "") == 0)
-        {
-            outputSize = 2;
-            strncpy(output, "-1", outputSize);
-            return;
-        }
-
-        FetchURL::FetchResult fres;
-        int key = addResult();
-
-        std::vector<FetchURL::FetchParameters> params;
-
-        for (int i = 3; i < args.size(); i++)
-        {
-            FetchURL::FetchParameters param;
-            int found = args[i].find("=");
-            if (found != std::string::npos)
-            {
-                param.name = args[i].substr(0, found);
-                param.value = args[i].substr((found + 1), args[i].size()-1);
-                if (strcmp(param.name.c_str(), "") != 0 && strcmp(param.value.c_str(), "") != 0)
-                    params.push_back(param);
-            }
-        }
-
-        std::stringstream str_stream;
-        str_stream << key << '\0';
-        strncpy(output, str_stream.str().c_str(), str_stream.str().size());
-
-        #ifdef _MSC_VER
-        if (!workerInitialized)
-        {
-            initializeThreads();
-            workerInitialized = true;
-        }
-        #endif
-        
-        FetchURL::FetchQueueItem qItem;
-        qItem.key = key;
-        qItem.action = args[0];
-        qItem.header = args[1];
-        qItem.url = args[2];
-        qItem.params = params;
-
-        list_queue_mutex.lock();
-        list_queue.push(qItem);
-        list_queue_mutex.unlock();
-    }
-    else if (strcmp(args[0].c_str(), "STAT") == 0)
-    {
-        std::stringstream str_stream;
-        str_stream << returnStatus(stoi(args[1])) << '\0';
-        strncpy(output, str_stream.str().c_str(), str_stream.str().size());
-        return;
-    }
-    else if (strcmp(args[0].c_str(), "RECV") == 0)
-    {
-        std::stringstream str_stream;
-        str_stream << returnResult(stoi(args[1])) << '\0';
-        strncpy(output, str_stream.str().c_str(), str_stream.str().size());
-    }
-    else
-    {
-        outputSize = 2;
-        strncpy(output, "-1", outputSize);
-        return;
-    }
-};
-
-void FetchURL::initializeThreads()
-{
-    int cnt_thr = 2; //(std::thread::hardware_concurrency() / 2);
-    if (cnt_thr == 0)
-        cnt_thr = 1;
+    if (argsCnt <= 0)
+        return 200;
     
-    for (int i = 0; i < cnt_thr; i++)
+    if (strcmp(function, "RQST") == 0)
     {
-        std::thread myThread(&FetchURL::queueThread, this);
-        myThread.detach();
+        std::stringstream str_stream;
+        str_stream << AddRequestToQueue(args, argsCnt) << '\0';
+        strncpy(output, str_stream.str().c_str(), outputSize);
+        return 200;
     }
+    else if (strcmp(function, "STAT") == 0)
+    {
+        //TODO: Find a more convenient way to convert the int to a string with an ending line.
+        std::stringstream str_stream;
+        str_stream << GetStatus(atoi(args[0])) << '\0';
+        strncpy(output, str_stream.str().c_str(), outputSize);
+        return 300;
+    }
+    else if (strcmp(function, "RECV") == 0)
+    {
+        //TODO: Find a more convenient way to convert the int to a string with an ending line.
+        std::stringstream str_stream;
+        str_stream << GetResult(atoi(args[0])) << '\0';
+        strncpy(output, str_stream.str().c_str(), outputSize);
+        return 400;
+    }
+
+    return 0;
 };
 
-int FetchURL::addResult()
+/*
+    Publicity: private
+    Return type: std::map<std::string, std::string>
+    Name/Type: parseRequestArgs()
+    Description: Converts input **args to a map<std::string, std::string>.
+*/
+std::map<std::string, std::string> FetchURL::parseRequestArgs(const char **args, int argsCnt)
+{
+    std::map<std::string, std::string> params;
+
+    for (int x = 0; x < argsCnt; x++)
+    {
+        std::string param(args[x]);
+
+        if (param.size() > 0)
+        {
+            if (param.compare(param.size() - 1, 1, "\"") == 0)
+                param.erase(param.size() - 1);
+
+            if (param.compare(0, 1, "\"") == 0)
+                param.erase(0, 1);
+
+            size_t i = param.find(*paramSep);
+
+            if (i != std::string::npos)
+            {
+                params[param.substr(0, i)] = param.substr(i+1, param.length() - i);
+            }
+        }
+    }
+
+    return params;
+};
+
+/*
+    Publicity: private
+    Return type: int
+    Name/Type: addResultToQueue()
+    Description: This function adds a result to a special queue for later usage.
+*/
+int FetchURL::addResultToQueue()
 {
     int key = -1;
     int i = 0;
 
-    res_map_mutex.lock();
+    resList_mutex.lock();
     while (key == -1)
     {
-        if (res_map.find(i) == res_map.end())
+        if (resList.find(i) == resList.end())
             key = i;
         i++;
     }
+
     FetchURL::FetchResult fres;
     fres.status = 0;
-    res_map.insert(std::pair<int, FetchURL::FetchResult>(key, fres));
-    res_map_mutex.unlock();
+    fres.result = std::string("");
+    resList.insert(std::pair<int, FetchURL::FetchResult>(key, fres));
+    resList_mutex.unlock();
 
     return key;
 };
 
-void FetchURL::queueThread()
+/*
+    Publicity: public
+    Return type: int
+    Name/Type: AddRequestToQueue()
+    Description: Adds a full request to the queue(s).
+*/
+int FetchURL::AddRequestToQueue(const char **args, int argsCnt)
+{
+    /*
+    Initialization of Windows worker Threads. Otherwise the .dll crashes.
+    */
+    #ifdef _MSC_VER
+    InitializeThreads();
+    #endif
+
+    int key = addResultToQueue();
+
+    FetchURL::FetchQueueItem qItem;
+    qItem.key = key;
+    qItem.params = parseRequestArgs(args, argsCnt);
+
+    queue_mutex.lock();
+    queue.push(qItem);
+    queue_mutex.unlock();
+
+    return key;
+};
+
+/*
+    Publicity: public
+    Return type: void
+    Name/Type: InitializeThreads()
+    Description: Setups worker threads for url fetching.
+*/
+void FetchURL::InitializeThreads()
+{
+    if (!workerInitialized)
+    {
+        workerInitialized = true;
+        int cnt_thr = 2; //(std::thread::hardware_concurrency() / 2);
+        if (cnt_thr == 0)
+            cnt_thr = 1;
+        
+        for (int i = 0; i < cnt_thr; i++)
+        {
+            /*
+            Create a thread and immediately detach it.
+            */
+            std::thread myThread(&FetchURL::QueueWorkerThread, this);
+            myThread.detach();
+        }
+    }
+};
+
+/*
+    Publicity: public
+    Return type: void
+    Name/Type: QueueWorkerThread()
+    Description: Worker thread loop: processes incoming requests asyncroniously to ArmA 3.
+*/
+void FetchURL::QueueWorkerThread()
 {
     while (true) {
-        if (!list_queue.empty())
+        if (!queue.empty())
         {
-            list_queue_mutex.lock();
-            if (list_queue.empty())
+            queue_mutex.lock();
+            if (queue.empty())
             {
-                list_queue_mutex.unlock();
+                queue_mutex.unlock();
             }
             else
             {
                 FetchURL::FetchQueueItem qItem;
-                qItem = list_queue.front();
-                list_queue.pop();
-                list_queue_mutex.unlock();
+                qItem = queue.front();
+                queue.pop();
+                queue_mutex.unlock();
                 
-                if (strcmp(qItem.action.c_str(), "GET") == 0)
+                std::string action = qItem.params["#method"];
+                
+                if (
+                    action.compare(actionGET) == 0 ||
+                    action.compare(actionPOST) == 0 ||
+                    action.compare(actionPUT) == 0 ||
+                    action.compare(actionPATCH) == 0 ||
+                    action.compare(actionDELETE) == 0 ||
+                    action.compare(actionTRACE) == 0
+                )
                 {
-                    fetchGETResult(&qItem);
+                    fetchResult(&qItem);
                 }
-                else if (strcmp(qItem.action.c_str(), "POST") == 0)
+                else
                 {
-                    fetchPOSTResult(&qItem);
-                }
-
-                std::cout << "output: " << qItem.key << "\n";
+                    resList_mutex.lock();
+                    FetchURL::FetchResult fres;
+                    fres = resList[qItem.key];
+                    fres.status = 2;
+                    resList[qItem.key] = fres;
+                    resList_mutex.unlock();
+                };
             }
         }
     }
 };
 
-static size_t FetchURLcallbackWriter(void *contents, size_t size, size_t nmemb, void *buf)
+/*
+    Publicity: public/static
+    Return type: size_t
+    Name/Type: FetchURLCallbackWriter()
+    Description: Writes incoming data from curl to a string/buffer.
+*/
+static size_t FetchURLCallbackWriter(void *contents, size_t size, size_t nmemb, void *buf)
 {
     ((std::string *)buf)->append((char *)contents, size * nmemb);
     return size * nmemb;
 };
 
-void FetchURL::fetchGETResult(FetchURL::FetchQueueItem * qItem)
+/*
+    Publicity: private
+    Return type: void
+    Name/Type: fetchResult()
+    Description: processes a single url request.
+*/
+void FetchURL::fetchResult(FetchURL::FetchQueueItem * qItem)
 {
     FetchURL::FetchResult fres;
 
     int key = qItem->key;
-    std::string url = qItem->url;
-    std::string header = qItem->header;
-    std::vector<FetchURL::FetchParameters> params = qItem->params;
+    std::string url = qItem->params["#url"];
+    std::string method = qItem->params["#method"];
+    //std::string mime = qItem.params["#mime"]; currently unused
 
-    if (res_map.empty())
+    if (resList.empty())
         return;
 
-    fres = res_map[key];
+    fres = resList[key];
+    fres.status = 3;
 
     CURL *curl;
     CURLcode res;
 
-    struct curl_slist *headers = NULL;
     curl = curl_easy_init();
 
-    if (params.size() > 0)
-    url.append("?");
+    if (qItem->params.size() > 0)
+        url.append("?");
     
-    for (int i = 0; i < params.size(); i++)
+    bool fBind = false;
+    for (std::map<std::string, std::string>::iterator iter = qItem->params.begin(); iter != qItem->params.end(); ++iter)
     {
-        if (i != 0)
-        url.append("&");
-        char * encoded_val = curl_easy_escape(curl, params[i].value.c_str(), 0);
-        char * encoded_name = curl_easy_escape(curl, params[i].name.c_str(), 0);
-        url.append(encoded_name);
-        url.append("=");
-        url.append(encoded_val);
+        if (
+            iter->first.compare(cmdUrl) != 0 &&
+            iter->first.compare(cmdMethod) != 0 &&
+            iter->first.compare(cmdJSONDec) != 0
+        )
+        {
+            if (fBind) {
+                url.append("&");
+            } else {
+                fBind = true;
+            }
+
+            char * encVal = curl_easy_escape(curl, iter->second.c_str(), 0);
+            char * encKey = curl_easy_escape(curl, iter->first.c_str(), 0);
+            url.append(encKey);
+            url.append("=");
+            url.append(encVal);
+        }
     }
     
     std::string str;
+    struct curl_slist *headers = NULL;
 
     if (curl)
     {
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_HTTPGET, 1);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, method.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &str);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, FetchURLcallbackWriter);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, FetchURLCallbackWriter);
         res = curl_easy_perform(curl);
 
         if (res == CURLE_OK)
         {
             char *ct;
             res = curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &ct);
+
             if ((CURLE_OK == res) && ct)
             {
                 if (str.size() > 10240)
@@ -303,125 +296,151 @@ void FetchURL::fetchGETResult(FetchURL::FetchQueueItem * qItem)
             }
         }
     }
-    
-    res_map_mutex.lock();
-    res_map[key] = fres;
-    res_map_mutex.unlock();
-};
 
-void FetchURL::fetchPOSTResult(FetchURL::FetchQueueItem * qItem)
-{
-    FetchURL::FetchResult fres;
-
-    int key = qItem->key;
-    std::string url = qItem->url;
-    std::string header = qItem->header;
-    std::vector<FetchURL::FetchParameters> params = qItem->params;
-
-    if (res_map.empty())
-        return;
-    
-    fres = res_map[key];
-
-    CURL *curl;
-    CURLcode res;
-
-    struct curl_slist *headers = NULL;
-    curl = curl_easy_init();
-    
-    std::string p_params;
-    for (int i = 0; i < params.size(); i++)
+    if (qItem->params["#jsonToArray"].compare("true") == 0)
     {
-        if (i != 0)
-            p_params.append("&");
-        char * encoded_val = curl_easy_escape(curl, params[i].value.c_str(), 0);
-        char * encoded_name = curl_easy_escape(curl, params[i].name.c_str(), 0);
-        p_params.append(encoded_name);
-        p_params.append("=");
-        p_params.append(encoded_val);
+        fres.result = JsonToArray(str);
     }
 
-    std::string str;
-
-    if (curl)
-    {
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, p_params.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &str);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, FetchURLcallbackWriter);
-        res = curl_easy_perform(curl);
-
-        if (res == CURLE_OK)
-        {
-            char *ct;
-            res = curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &ct);
-            if ((CURLE_OK == res) && ct)
-            {
-                if (str.size() > 10240)
-                    str.resize(10240);
-                fres.result = str;
-                fres.status = 1;
-            }
-        }
-    }
-
-    res_map_mutex.lock();
-    res_map[key] = fres;
-    res_map_mutex.unlock();
+    resList_mutex.lock();
+    resList[key] = fres;
+    resList_mutex.unlock();
 };
 
-int FetchURL::returnStatus(int key)
+/*
+    Publicity: public
+    Return type: int
+    Name/Type: GetStatus()
+    Description: returns the status of an result queue item.
+*/
+int FetchURL::GetStatus(int key)
 {
-    if (res_map.empty() || res_map.find(key) == res_map.end())
+    if (resList.empty() || resList.find(key) == resList.end())
         return 0;
     
     FetchURL::FetchResult fres;
-    fres = res_map[key];
+    fres = resList[key];
 
     return fres.status;
 };
 
-std::string FetchURL::returnResult(int key)
+/*
+    Publicity: public
+    Return type: std::string
+    Name/Type: GetResult()
+    Description: returns the result of an request. If a request finished successful or errored the selected item is removed after the request.
+*/
+std::string FetchURL::GetResult(int key)
 {
-    if (res_map.empty()/* || res_map.find(key) == res_map.end()*/)
+    if (resList.empty()/* || resList.find(key) == resList.end()*/)
         return std::string();
     
     FetchURL::FetchResult fres;
-    fres = res_map[key];
-
-    res_map_mutex.lock();
-    res_map.erase(key);
-    res_map_mutex.unlock();
+    fres = resList[key];
+    
+    if (fres.status != 0) {
+        resList_mutex.lock();
+        resList.erase(key);
+        resList_mutex.unlock();
+    }
 
     return fres.result;
 };
 
-/*FetchURL::~FetchURL()
+/*
+    Publicity: private
+    Return type: std::string
+    Name/Type: jsonToArray_object()
+    Description: subfunction of JsonToArray() and jsonToArray_array() for object iterations.
+*/
+std::string FetchURL::jsonToArray_object(nlohmann::json j)
 {
-    thread_active = false;
-};
+    std::stringstream res;
 
-void FetchURL::queueThread()
-{
-    thread_active = true;
-    while (thread_active)
+    res << "[";
+    for (nlohmann::json::iterator it = j.begin(); it != j.end(); ++it)
     {
-        if (!queue_commands_post_get.empty())
+        if (it != j.begin())
+            res << ",";
+        
+        if (it.value().is_number() || it.value().is_boolean() || it.value().is_string())
         {
-            queue_mutex.lock();
-            FetchQueueItem qItem = queue_commands_post_get[0];
-            queue_commands_post_get.erase(queue_commands_post_get.begin());
-            queue_mutex.unlock();
-
-            if (strcmp(qItem.type.c_str(), "GET") == 0)
-            {
-                fetchResultGET(qItem.key, qItem.header, qItem.function, qItem.params);
-            }
-            else
-            {
-                fetchResultPOST(qItem.key, qItem.header, qItem.function, qItem.params);
-            }
+            res << "[\"" << it.key() << "\"," << it.value() << "]";
+        }
+        else if (it.value().is_null())
+        {
+            res << "[\"" << it.key() << ",null]";
+        }
+        else if (it.value().is_object())
+        {
+            res << "[\"" << it.key() << "\",[\"object\"," << jsonToArray_object(it.value()) << "]]";
+        }
+        else if (it.value().is_array())
+        {
+            res << "[\"" << it.key() << "\",[\"array\"," << jsonToArray_array(it.value()) << "]]";
         }
     }
-};*/
+    res << "]";
+
+    return res.str();
+};
+
+/*
+    Publicity: private
+    Return type: std::string
+    Name/Type: jsonToArray_array()
+    Description: subfunction of JsonToArray() and jsonToArray_object() for array iterations.
+*/
+std::string FetchURL::jsonToArray_array(nlohmann::json j)
+{
+    std::stringstream res;
+
+    res << "[";
+    for (int i = 0; i < j.size(); i++)
+    {
+        if (i != 0)
+            res << ",";
+        
+        if (j[i].is_number() || j[i].is_boolean() || j[i].is_string())
+        {
+            res << j[i];
+        }
+        else if (j[i].is_null())
+        {
+            res << "null";
+        }
+        else if (j[i].is_object())
+        {
+            res << "[\"object\"," << jsonToArray_object(j[i]) << "]";
+        }
+        else if (j[i].is_array())
+        {
+            res << "[\"array\"," << jsonToArray_array(j[i]) << "]";
+        }
+    }
+    res << "]";
+
+    return res.str();
+};
+
+/*
+    Publicity: private
+    Return type: std::string
+    Name/Type: jsonToArray()
+    Description: Parses a JSON input to an ArmA 3 friendly array.
+*/
+std::string FetchURL::JsonToArray(std::string jsonStr)
+{
+    nlohmann::json j = nlohmann::json::parse(jsonStr);
+    std::stringstream res;
+
+    if (j.is_array()) {
+        res << "[\"array\"," << jsonToArray_array(j) << "]";
+    }
+    else if (j.is_object())
+    {
+        res << "[\"object\"," << jsonToArray_object(j) << "]";
+    }
+
+    return res.str();
+};
