@@ -49,7 +49,7 @@ class FetchURL
     const char *actionGET = "GET";
     const char *actionPUT = "PUT";
     const char *actionPOST = "POST";
-    const char *actionPATCH = "PATH";
+    const char *actionPATCH = "PATCH";
     const char *actionDELETE = "DELETE";
     const char *actionTRACE = "TRACE";
     const char *paramSep = "=";
