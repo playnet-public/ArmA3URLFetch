@@ -82,7 +82,7 @@ std::map<std::string, std::string> FetchURL::parseRequestArgs(const char **args,
 int FetchURL::addResultToQueue()
 {
     int key = -1;
-    int i = 0;
+    int i = 1;
 
     resList_mutex.lock();
     while (key == -1)
