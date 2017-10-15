@@ -1,24 +1,17 @@
 
 params[
-	["_code", "", [{}, ""]],
-	["_mimeType", "", [""]],
-	["_url"]
-	//... params
+	["_code", {}, [{}, ""]],
+	["_url", "", [""]],
+	["_method", "", [""]],
+	["_params", [], [[]]],
+	["_decodeJson", false, [false]]
 ];
 
-private _args = [_mimeType, _url];
-if ((count _this) > 2) then
-{
-	{
-		_args pushBack ([_x] param [0, "", [""]]);
-	} forEach (_this select [2, (count _this)]);
-};
-
-private _res = (_args call a3uf_common_fnc_getRequest);
+private _res = ([_url, _method, _params, _decodeJson] call a3uf_fnc_request);
 
 if (_code isEqualType "") then
 {
 	private _code = (compile _code);
 };
 
-[_res] call _code;
+[_res, _url, _method] call _code;

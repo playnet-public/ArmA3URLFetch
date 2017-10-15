@@ -1,35 +1,50 @@
 
 params [
-	["_mimeType", "application/json", [""]],
-	["_url", "", [""]]
-	//params
+	["_url", "", [""]],
+	["_method", "", [""]],
+	["_params", [], [[]]],
+	["_decodeJson", false, [false]]
 ];
 
-if (_mimeType == "") exitWith { ""; };
-if (_url == "") exitWith { ""; };
+_method = (toUpper _method);
 
-private _params = "|";
-if ((count _this) > 2) then
+if (_url == "") exitWith { ""; };
+if (_method == "" || !(_method in ["GET", "PUT", "POST", "PATCH", "DELETE", "TRACE"])) exitWith { ""; };
+
+_params pushBack format["#url=%1", _url];
+_params pushBack format["#method=%1", _method];
+
+if (_decodeJson) then
 {
-	_params = "";
-	for [{private _i = 2}, {_i < (count _this)}, {_i = _i + 1}] do
+	_params pushBack "#jsonToArray=true";
+};
+
+private _reqRes = ("arma3urlfetch" callExtension ["RQST", _params]);
+private _id = (parseNumber (_reqRes select 0));
+
+if ((_reqRes select 2) != 0) exitWith { ""; };
+if ((_reqRes select 0) <= 0) exitWith { ""; };
+
+private _status = 0;
+waitUntil
+{
+	private _statRes = ("arma3urlfetch" callExtension format["STAT", [(str _id)]]);
+	if ((_statRes select 2) != 0) exitWith {};
+
+	_status = (_statRes select 0);
+	uiSleep 0.1;
+	(_status != 0);
+};
+
+_result = "";
+if (_status == 1) then
+{
+	private _recvRes = ("arma3urlfetch" callExtension ["RECV", [(str _id)]]);
+
+	if ((_recvRes select 2) == 0) then
 	{
-		_params = format["%1|%2", _params, (_this param [_i, "", [""]])];
+		_result = (_recvRes select 0);
 	};
 };
 
-systemchat str _params;
-
-private _rKey = ("arma3urlfetch" callExtension format["GET|%1|%2%3", _mimeType, _url, _params]);
-if (_rKey == "-1") exitWith { ""; };
-
-private _tKey = "";
-waitUntil
-{
-	_tKey = ("arma3urlfetch" callExtension format["STAT|%1", _rKey]);
-	uiSleep 0.1;
-	(_tKey == "" || _tKey == "1" || _tKey == "2");
-};
-
-if (_tKey != "1") exitWith { ""; };
-("arma3urlfetch" callExtension format["RECV|%1", _rKey]);
+_result;
