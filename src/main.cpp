@@ -6,15 +6,6 @@
 */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-#include <string>
-#include <string.h>
-#include <stdio.h>
-#include <curl/curl.h>
-#include <mutex>
-#include <thread>
-#include <vector>
 #include "fetchURL.h"
 
 #define VERSION "0.7.5"

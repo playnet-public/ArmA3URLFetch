@@ -5,7 +5,6 @@
 #include <vector>
 #include <thread>
 #include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
 #include <cstdlib>
@@ -14,12 +13,7 @@
 #include <queue>
 #include <map>
 #include "json.hpp"
-
-/*
-input(output, outputSize, function) ->
-    "GET" -> addToWorkhorseQueue(QueueItem) - - -> Workhorse() -> mutex_lock() -> pop_front() -> mutex_unlock() -> fetchGETURLResult() -> 
-    "POST" -> -> addToWorkhorseQueue(QueueItem) - - -> Workhorse() -> mutex_lock() -> pop_front() -> mutex_unlock() -> fetchPOSTURLResult() -> 
-*/
+#include "common.h"
 
 class FetchURL
 {
@@ -42,6 +36,9 @@ class FetchURL
     int GetStatus(int key);
     std::string GetResult(int key);
     std::string JsonToArray(std::string json);
+    void SetFetchResult(int key, FetchURL::FetchResult fres);
+    int AddFetchResult(FetchURL::FetchResult fres);
+    bool RemoveFetchResult(int key);
   private:
     const char *cmdUrl = "#url";
     const char *cmdMethod = "#method";

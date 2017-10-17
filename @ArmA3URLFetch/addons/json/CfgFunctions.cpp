@@ -6,9 +6,13 @@ class a3uf_json
         file = "\x\a3uf\addons\json\functions";
         class decode {};
         class encode {};
-        class preInit
-        {
-            preInit = 1;
-        };
+        class get {};
+    };
+
+    class json
+    {
+        file = "\x\a3uf\ddons\json\functions\json";
+        class lexExtract {};
+        class pathParst {};
     };
 };

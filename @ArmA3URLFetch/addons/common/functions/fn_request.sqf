@@ -23,18 +23,24 @@ private _reqRes = ("arma3urlfetch" callExtension ["RQST", _params]);
 private _id = (parseNumber (_reqRes select 0));
 
 if ((_reqRes select 2) != 0) exitWith { ""; };
-if ((_reqRes select 0) <= 0) exitWith { ""; };
+if (_id <= 0) exitWith { ""; };
 
 private _status = 0;
 waitUntil
 {
-	private _statRes = ("arma3urlfetch" callExtension format["STAT", [(str _id)]]);
-	if ((_statRes select 2) != 0) exitWith {};
+	private _statRes = ("arma3urlfetch" callExtension ["STAT", [(str _id)]]);
+	_status = (parseNumber (_statRes select 0));
+	
+	if ((_statRes select 2) != 0) then
+	{
+		_status = 4;
+	};
 
-	_status = (_statRes select 0);
 	uiSleep 0.1;
 	(_status != 0);
 };
+
+if (_status != 1) exitWith { ""; };
 
 _result = "";
 if (_status == 1) then
