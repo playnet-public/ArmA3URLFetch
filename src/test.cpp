@@ -1,5 +1,12 @@
 
-//GCC: g++ -pthread -o m json.hpp fetchURL.cpp test.cpp linux/libcurl_x64.a -lz -std=c++11
+/*
+    Filename:
+        test.cpp
+    Author:
+        Vincent Heins / TheMysteriousVincent
+    Description:
+        This is just a test 
+*/
 
 #include "fetchURL.h"
 #include <chrono>

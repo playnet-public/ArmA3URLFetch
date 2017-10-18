@@ -1,4 +1,13 @@
 
+/*
+    Filename:
+        fetchURL.h
+    Author:
+        Vincent Heins / TheMysteriousVincent
+    Description:
+        FetchURL deploys main functions for managing url requests.
+*/
+
 #include <mutex>
 #include <string>
 #include <string.h>

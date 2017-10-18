@@ -1,4 +1,13 @@
 
+/*
+    Filename:
+        fetchURL.cpp
+    Author:
+        Vincent Heins / TheMysteriousVincent
+    Description:
+        FetchURL deploys main functions for managing url requests.
+*/
+
 #include "fetchURL.h"
 
 /*

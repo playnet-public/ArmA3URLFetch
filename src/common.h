@@ -1,4 +1,13 @@
 
+/*
+    Filename:
+        common.h
+    Author:
+        Vincent Heins / TheMysteriousVincent
+    Description:
+        This header file holds static functions of common.cpp, like converting an string to an int, e.g...
+*/
+
 #include <string>
 #include <string.h>
 #include <stdexcept>

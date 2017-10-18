@@ -1,9 +1,14 @@
 
-#include "common.h"
-
 /*
-File for common used functions
+    Filename:
+        common.cpp
+    Author:
+        Vincent Heins / TheMysteriousVincent
+    Description:
+        This class holds static functions for common things, like converting an string to an int, e.g...
 */
+
+#include "common.h"
 
 /*
     Publicity: public

@@ -1,8 +1,11 @@
+
 /*
-	Author(s):
-		Vincent Heins
-	Description:
-		This is the main file.
+	Filename:
+		main.cpp
+    Author:
+        Vincent Heins / TheMysteriousVincent
+    Description:
+		This is the main file means every function needed by ArmA 3 is exported here as a C function.
 */
 
 #include <stdio.h>
