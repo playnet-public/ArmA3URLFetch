@@ -10,7 +10,7 @@ class a3uf_json
 
     class json
     {
-        file = "\x\a3uf\ddons\json\functions\json";
+        file = "\x\a3uf\addons\json\functions\json";
         class lexExtract {};
         class pathParst {};
     };
