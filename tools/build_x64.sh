@@ -5,11 +5,14 @@ g++ -shared \
     -fPIC \
     -pthread \
     -o arma3urlfetch_x64.so \
-    src/fetchURL.cpp \
+    src/Common.cpp \
+    src/Requests.cpp \
+    src/Clients.cpp \
+    src/Output.cpp \
+    src/Handler.cpp \
     src/json.hpp \
     src/main.cpp \
-    src/common.cpp \
-    src/lib/linux/libcurl_x64.a \
-    src/lib/linux/libssl_x64.a \
-    src/lib/linux/libcrypto_x64.a \
+    lib/linux/libcurl_x64.a \
+    lib/linux/libssl_x64.a \
+    lib/linux/libcrypto_x64.a \
     -std=c++11

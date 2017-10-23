@@ -6,11 +6,14 @@ g++ -shared \
     -pthread \
     -m32 \
     -o arma3urlfetch.so \
-    src/fetchURL.cpp \
+    src/Common.cpp \
+    src/Requests.cpp \
+    src/Clients.cpp \
+    src/Output.cpp \
+    src/Handler.cpp \
     src/json.hpp \
     src/main.cpp \
-    src/common.cpp \
-    src/lib/linux/libcurl.a \
-    src/lib/linux/libssl.a \
-    src/lib/linux/libcrypto.a \
+    lib/linux/libcurl.a \
+    lib/linux/libssl.a \
+    lib/linux/libcrypto.a \
     -std=c++11

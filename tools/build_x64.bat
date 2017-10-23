@@ -1,12 +1,16 @@
 
 cd ..\
 cl /MD /LD /Fe:arma3urlfetch_x64.dll^
-    src\fetchURL.cpp^
-    src\main.cpp^
-    src\common.cpp^
+    src/Common.cpp^
+    src/Requests.cpp^
+    src/Clients.cpp^
+    src/Output.cpp^
+    src/Handler.cpp^
+    src/json.hpp^
+    src/main.cpp^
     /DCURL_STATICLIB^
-    /I src\lib\windows\libcurl\x64\include^
-    src\lib\windows\libcurl\x64\lib\libcurl_a.lib
+    /I include\windows\x64^
+    lib\windows\libcurl_a_x64.lib
 rm *.obj
 rm *.lib
 rm *.exp
