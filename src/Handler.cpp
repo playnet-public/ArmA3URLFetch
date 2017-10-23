@@ -16,24 +16,24 @@ int Handler::CallExtensionArgs(char * output, int outputSize, const char *functi
     Output *op = Output::Create();
     int rC = 2;
 
-    if (strcmp(function, "addClient") == 0)
+    if (strcmp(function, "ADDCLI") == 0)
     {
         std::map<std::string, std::string> params = parseArgs(args, argsCnt);
         rC = clients->AddClient(op, params);
     }
-    else if (strcmp(function, "removeClient") == 0)
+    else if (strcmp(function, "REMCLI") == 0)
     {
         int id = A3URLCommon::StrToInt(std::string(args[0]));
         rC = clients->RemoveClient(op, id);
     }
-    else if (strcmp(function, "setClientParams") == 0)
+    else if (strcmp(function, "SETCLIP") == 0)
     {
         std::map<std::string, std::string> params = parseArgs(args, argsCnt);
         int id = A3URLCommon::StrToInt(params["#clientid"]);
         params.erase(params.find("#clientid"));
         rC = clients->SetParameters(op, id, params);
     }
-    else if (strcmp(function, "setClientHeaders") == 0)
+    else if (strcmp(function, "SETCLIH") == 0)
     {
         std::map<std::string, std::string> params = parseArgs(args, argsCnt);
         int id = A3URLCommon::StrToInt(params["#clientid"]);
@@ -44,7 +44,7 @@ int Handler::CallExtensionArgs(char * output, int outputSize, const char *functi
 
         rC = clients->SetHeaders(op, id, headers);
     }
-    else if (strcmp(function, "sendRequest") == 0)
+    else if (strcmp(function, "SENDRQ") == 0)
     {
         std::map<std::string, std::string> params = parseArgs(args, argsCnt);
         int cID = A3URLCommon::StrToInt(params["#clientid"]);
@@ -64,7 +64,7 @@ int Handler::CallExtensionArgs(char * output, int outputSize, const char *functi
             rC = requests->AddRequest(op, params);
         }
     }
-    else if (strcmp(function, "getRequestResult") == 0)
+    else if (strcmp(function, "GETRQ") == 0)
     {
         int id = A3URLCommon::StrToInt(std::string(args[0]));
         rC = requests->GetResult(op, id);
