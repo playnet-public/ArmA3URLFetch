@@ -1,8 +1,20 @@
 
 /*
 	Author(s):
-		Muzzleflash
+		Muzzleflash (original)
 		TheMysteriousVincent (modified)
+	
+	Description:
+		This function is used to select a part from a json ArmA 3 array.
+	
+	Example(s):
+		(Example 1)
+		private _json = [["object", [["test", 1], ["test2", 2]]]];
+		private _res = [_json, "test"] call a3uf_json_fnc_get;
+		//_res = 1;
+
+	Notice:
+		"Currently there is no support for selecting arrays." -Muzzleflash
 */
 
 private _node = (_this select 0);

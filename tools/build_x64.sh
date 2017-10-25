@@ -10,7 +10,6 @@ g++ -shared \
     src/Clients.cpp \
     src/Output.cpp \
     src/Handler.cpp \
-    src/json.hpp \
     src/main.cpp \
     lib/linux/libcurl_x64.a \
     lib/linux/libssl_x64.a \

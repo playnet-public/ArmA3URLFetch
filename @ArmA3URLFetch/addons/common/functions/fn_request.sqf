@@ -1,4 +1,18 @@
 
+/*
+	Author(s):
+		Vincent Heins (original)
+
+	Description:
+		The default request function for usage without clients.
+		More about the usage here: https://github.com/TheMysteriousVincent/ArmA3URLFetch/wiki/Usage
+	
+	Example(s):
+		(Example 1)
+		private _res = ["https://httpbin.org/get", "GET", ["test=tester"], false] call a3uf_common_fnc_request;
+		//_res = <string>
+*/
+
 params [
 	["_url", "", [""]],
 	["_method", "", [""]],

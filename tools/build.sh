@@ -11,7 +11,6 @@ g++ -shared \
     src/Clients.cpp \
     src/Output.cpp \
     src/Handler.cpp \
-    src/json.hpp \
     src/main.cpp \
     lib/linux/libcurl.a \
     lib/linux/libssl.a \

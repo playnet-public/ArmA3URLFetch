@@ -1,7 +1,7 @@
 
 /*
 	Author(s):
-		Muzzleflash
+		Muzzleflash (original)
 		TheMysteriousVincent (modified)
 */
 
