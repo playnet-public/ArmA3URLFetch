@@ -33,38 +33,27 @@ if (_decodeJson) then
 	_params pushBack "#jsonToArray=true";
 };
 
-private _reqRes = ("arma3urlfetch" callExtension ["RQST", _params]);
-private _id = (parseNumber (_reqRes select 0));
+private _res = [];
+_res = ("arma3urlfetch" callExtension ["SENDRQ", _params]);
 
-if ((_reqRes select 2) != 0) exitWith { ""; };
-if (_id <= 0) exitWith { ""; };
+if ((_res select 1) == 501) exitWith { ""; };
 
-private _status = 0;
-waitUntil
+private _rID = (parseNumber (_res select 0));
+if (_rID <= 0) exitWith { ""; };
+
+_res = [];
+_res = ("arma3urlfetch" callExtension ["GETRQ", [_rID]]);
+
+private _text = (_res select 0);
+if ((_res select 1) == 602) then
 {
-	private _statRes = ("arma3urlfetch" callExtension ["STAT", [(str _id)]]);
-	_status = (parseNumber (_statRes select 0));
-	
-	if ((_statRes select 2) != 0) then
+	waitUntil
 	{
-		_status = 4;
-	};
-
-	uiSleep 0.1;
-	(_status != 0);
-};
-
-if (_status != 1) exitWith { ""; };
-
-_result = "";
-if (_status == 1) then
-{
-	private _recvRes = ("arma3urlfetch" callExtension ["RECV", [(str _id)]]);
-
-	if ((_recvRes select 2) == 0) then
-	{
-		_result = (_recvRes select 0);
+		uiSleep 0.1;
+		_res = ("arma3urlfetch" callExtension ["GETRQ", [_rID]]);
+		_text = _text + (_res select 0);
+		((_res select 0) == "" && (_res select 1) == 600);
 	};
 };
 
-_result;
+_text;

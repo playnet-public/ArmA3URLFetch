@@ -217,8 +217,9 @@ int Requests::getResult(int id, Requests::Result *req)
     *req = results[id]; //error 3 on request...
     resultsMtx.unlock();
 
-    if (req->status > 0)
-        removeResult(id);
+
+
+    if (req->status > 0) removeResult(id);
 
     return req->status;
 }; //0, 1, 2, 3
@@ -302,8 +303,8 @@ void Requests::fetchRequest(Requests::Request req)
                             resStr = A3URLCommon::ToArray(resStr);
                         }
 
-                        if (resStr.size() > 10240)
-                            resStr.resize(10240);
+                        /*if (resStr.size() > 10240)
+                            resStr.resize(10240);*/
                         
                         res.result = resStr;
                         res.status = 1;
@@ -349,12 +350,45 @@ int Requests::AddRequest(Output *op, std::map<std::string, std::string> params, 
     return 500;
 };
 
+int Requests::getResultString(int id, std::string *str)
+{
+    if (results.find(id) == results.end())
+        return 1;
+    
+    Requests::Result res;
+
+    resultsMtx.lock();
+    res = results[id]; //error 3 on request...
+    resultsMtx.unlock();
+
+    if (res.status == 2 || res.status == 3)
+    {
+        removeResult(id);
+    }
+    else if (res.status == 1)
+    {
+        if (res.result.size() > 10200)
+        {
+            *str = res.result.substr(0, 10200);
+            res.result.erase(res.result.begin(), (res.result.begin() + 10200));
+            setResult(id, res);
+        }
+        else if (res.result.size() <= 10200)
+        {
+            *str = res.result;
+            removeResult(id);
+        }
+    }
+
+    return res.status;
+};
+
 int Requests::GetResult(Output *op, int id)
 {
-    Requests::Result res;
-    int status = getResult(id, &res);
+    std::string str("");
+    int status = getResultString(id, &str);
 
-    op->Write(res.result.c_str());
+    op->Write(str.c_str());// IF str IS EQUAL TO "", str IS FULLY EMPTIED
 
     switch (status)
     {

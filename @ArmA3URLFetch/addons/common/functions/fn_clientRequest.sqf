@@ -33,16 +33,16 @@ if (_rID <= 0) exitWith { ""; };
 _res = [];
 _res = ("arma3urlfetch" callExtension ["GETRQ", [_rID]]);
 
+private _text = "";
 if ((_res select 1) == 602) then
 {
 	waitUntil
 	{
 		uiSleep 0.1;
 		_res = ("arma3urlfetch" callExtension ["GETRQ", [_rID]]);
-		((_res select 1) != 602);
+		_text = _text + (_res select 0);
+		((_res select 0) == "" && (_res select 1) == 600);
 	};
 };
 
-//if ((_res select 1) == 601) then {};
-
-(_res select 0);
+_text;

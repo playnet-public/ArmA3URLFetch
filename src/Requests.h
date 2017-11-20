@@ -60,4 +60,5 @@ private:
     void setResult(int id, Requests::Result res);
     bool removeResult(int id);
     int getResult(int id, Requests::Result *req); //0, 1, 2
+    int getResultString(int id, std::string *str);
 };
