@@ -65,6 +65,7 @@ int A3URLCommon::StrToInt(std::string s)
     return i;
 };
 
+//A3URLCommon::StrUnquote unquotes a given string pointer
 void A3URLCommon::StrUnqoute(std::string *s)
 {
     if (s->size() > 0)
@@ -77,6 +78,7 @@ void A3URLCommon::StrUnqoute(std::string *s)
     }
 };
 
+//A3URLCommon::MergeStringMaps merges two given std::map<std::string, std::string> maps
 std::map<std::string, std::string> A3URLCommon::MergeStringMaps(std::map<std::string, std::string> m1, std::map<std::string, std::string> m2)
 {
     //m2 -> overwrites -> m1
@@ -86,6 +88,7 @@ std::map<std::string, std::string> A3URLCommon::MergeStringMaps(std::map<std::st
     return m1;
 };
 
+//A3URLCommon::ToArray is the init function for the json array to ArmA 3 array convertion
 std::string A3URLCommon::ToArray(std::string jTxt)
 {
     nlohmann::json j = nlohmann::json::parse(jTxt);
@@ -103,6 +106,7 @@ std::string A3URLCommon::ToArray(std::string jTxt)
     return res.str();
 };
 
+//A3URLCommon::toArray_array formats only JSON arrays to an ArmA 3 array
 std::string A3URLCommon::toArray_array(nlohmann::json j)
 {
     std::stringstream res;
@@ -134,6 +138,8 @@ std::string A3URLCommon::toArray_array(nlohmann::json j)
 
     return res.str();
 };
+
+//A3URLCommon::toArray_object formats a JSON object to an ArmA 3 array
 std::string A3URLCommon::toArray_object(nlohmann::json j)
 {
     std::stringstream res;

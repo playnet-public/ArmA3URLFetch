@@ -53,13 +53,14 @@ bool APIENTRY DllMain(HMODULE hMod, DWORD ul_reason_for_call, LPVOID lpReserved)
 
 extern "C"
 {
+	//Entry point for (I think) gcc compilers
     #ifdef __linux__
 
 
     int RVExtensionArgs(char *output, int outputSize, const char *function, const char **args, int argsCnt);
     void RVExtensionVersion(char *output, int outputSize);
 
-
+	//Entry point for others (currently just for Windows)
     #else
 
 
@@ -71,7 +72,7 @@ extern "C"
 };
 
 
-
+//Linux exported functions
 #ifdef __linux__
 
 
@@ -86,6 +87,7 @@ int RVExtensionArgs(char *output, int outputSize, const char *function, const ch
 };
 
 
+//Windows exported functions
 #else
 
 

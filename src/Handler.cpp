@@ -2,12 +2,14 @@
 #include "Handler.h"
 #include <iostream>
 
+//Handler::Handler initializes used class instances
 Handler::Handler()
 {
     clients = new Clients();
     requests = new Requests();
 };
 
+//Handler::CallExtensionArgs is an link-function for the predefined RVExtension C export function
 int Handler::CallExtensionArgs(char * output, int outputSize, const char *function, const char **args, int argsCnt)
 {
     if (argsCnt <= 0)
@@ -76,6 +78,7 @@ int Handler::CallExtensionArgs(char * output, int outputSize, const char *functi
     return rC;
 };
 
+//Handler::parseArgs parses input args of C exported function RVExtensionArgs
 std::map<std::string, std::string> Handler::parseArgs(const char **args, int argsCnt)
 {
     std::map<std::string, std::string> params;

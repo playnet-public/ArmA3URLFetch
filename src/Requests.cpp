@@ -7,32 +7,38 @@ Requests::Requests() {
 };
 #endif
 
+//Requests::getPopRequest returns the first request of a queue
 void Requests::getPopRequest(Requests::Request *req)
 {
     *req = requestsQueue.front();
     requestsQueue.pop();
 };
 
+//Requests::Request::SetParameters sets the parameters of the inherited struct instance
 void Requests::Request::SetParameters(std::map<std::string, std::string> params)
 {
     Parameters = params;
 };
 
+//Requests::Request::SetHeaders sets the headers of the inherited struct instance
 void Requests::Request::SetHeaders(std::vector<std::string> headers)
 {
     Headers = headers;
 };
 
+//Requests::Result::SetStatus sets the status of the struct Requests::Result
 void Requests::Result::SetStatus(int n)
 {
     status = n;
 };
 
+//Requests::Result::SetResult sets the result of the struct Requests::Result
 void Requests::Result::SetResult(std::string r)
 {
     result = r;
 };
 
+//Request::workerThread is the main function for the worker thread(s)
 void Requests::workerThread()
 {
     while (true)
@@ -55,6 +61,7 @@ void Requests::workerThread()
     }
 };
 
+//Requests::startWorkers initialize and setups the used worker threads once a time
 void Requests::startWorkers()
 {
     if (!workersStarted)
@@ -70,12 +77,14 @@ void Requests::startWorkers()
     }
 };
 
+//RequestsCurlCallbackWriter is a function used by cURL to receive the incoming byte packes of the URL content
 static size_t RequestsCurlCallbackWriter(void *contents, size_t size, size_t nmemb, void *buf)
 {
     ((std::string *)buf)->append((char *)contents, size * nmemb);
     return size * nmemb;
 };
 
+//Requests::isValidMethod checks for the existance of a given http method
 bool Requests::isValidMethod(std::string method)
 {
     if (
@@ -89,6 +98,7 @@ bool Requests::isValidMethod(std::string method)
     return false;
 };
 
+//Requests::isValidParameter checks if given parameter is existing or valid
 bool Requests::isValidParameter(std::string param)
 {
     if (
@@ -100,6 +110,7 @@ bool Requests::isValidParameter(std::string param)
     return true;
 };
 
+//Requests::addResult adds a struct of Requests::Result to the result map and returns its id
 int Requests::addResult()
 {
     int key = 1;
@@ -124,6 +135,7 @@ int Requests::addResult()
     return key;
 };
 
+//Requests::addRequest adds an given request struct to the task queue
 int Requests::addRequest(std::map<std::string, std::string> params)
 {
     int key = addResult();
@@ -142,6 +154,7 @@ int Requests::addRequest(std::map<std::string, std::string> params)
     return key;
 };
 
+//Requests::addRequest adds an given request struct to the task queue
 int Requests::addRequest(std::vector<std::string> headers)
 {
     int key = addResult();
@@ -160,6 +173,7 @@ int Requests::addRequest(std::vector<std::string> headers)
     return key;
 };
 
+//Requests::addRequest adds an given request struct to the task queue
 int Requests::addRequest(std::map<std::string, std::string> params, std::vector<std::string> headers)
 {
     int key = addResult();
@@ -179,6 +193,7 @@ int Requests::addRequest(std::map<std::string, std::string> params, std::vector<
     return key;
 };
 
+//Requests::setResult sets a specific result by its id
 void Requests::setResult(int id, Requests::Result res)
 {
     if (id <= 0)
@@ -194,6 +209,7 @@ void Requests::setResult(int id, Requests::Result res)
     resultsMtx.unlock();
 };
 
+//Requests::removeResult removes an existing result from the map
 bool Requests::removeResult(int id)
 {
     std::map<int, Requests::Result>::iterator f;
@@ -208,6 +224,7 @@ bool Requests::removeResult(int id)
     return true;
 };
 
+//Requests::getResult sets the address of an given result pointer and return its status
 int Requests::getResult(int id, Requests::Result *req)
 {
     if (results.find(id) == results.end())
@@ -224,6 +241,7 @@ int Requests::getResult(int id, Requests::Result *req)
     return req->status;
 }; //0, 1, 2, 3
 
+//Requests::fetchRequest processes a given request by the parameters of Requests::Request
 void Requests::fetchRequest(Requests::Request req)
 {
     if (!results.empty())
@@ -317,6 +335,7 @@ void Requests::fetchRequest(Requests::Request req)
     }
 };
 
+//Requests::AddRequest call Requests::addRequest and writes the output to an pointer class Output
 int Requests::AddRequest(Output *op, std::map<std::string, std::string> params)
 {
     int id = addRequest(params);
@@ -328,6 +347,7 @@ int Requests::AddRequest(Output *op, std::map<std::string, std::string> params)
     return 500;
 };
 
+//Requests::AddRequest call Requests::addRequest and writes the output to an pointer class Output
 int Requests::AddRequest(Output *op, std::vector<std::string> headers)
 {
     int id = addRequest(headers);
@@ -339,6 +359,7 @@ int Requests::AddRequest(Output *op, std::vector<std::string> headers)
     return 500;
 };
 
+//Requests::AddRequest call Requests::addRequest and writes the output to an pointer class Output
 int Requests::AddRequest(Output *op, std::map<std::string, std::string> params, std::vector<std::string> headers)
 {
     int id = addRequest(params, headers);
@@ -350,6 +371,7 @@ int Requests::AddRequest(Output *op, std::map<std::string, std::string> params, 
     return 500;
 };
 
+//Requests::getResultString copies the result of an Requests::Result class to an std::string pointer
 int Requests::getResultString(int id, std::string *str)
 {
     if (results.find(id) == results.end())
@@ -383,6 +405,7 @@ int Requests::getResultString(int id, std::string *str)
     return res.status;
 };
 
+//Requests::GetResult copies the result of an result to an sstream Output
 int Requests::GetResult(Output *op, int id)
 {
     std::string str("");
