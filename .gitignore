@@ -1,0 +1,6 @@
+.vscode
+build/
+*.log
+tools/tmp
+src/test.cpp
+*.biprivatekey
