@@ -1,7 +1,6 @@
 
 #include "Clients.h"
 
-//Clients::GetClient returns a client by a given id
 bool Clients::GetClient(int id, Clients::Client *client)
 {
     if (clients.find(id) == clients.end())
@@ -14,7 +13,6 @@ bool Clients::GetClient(int id, Clients::Client *client)
     return true;
 };
 
-//Clients::setClient sets a client struct by given id and Clients::Client struct
 void Clients::setClient(int id, Clients::Client cli)
 {
     clientsMtx.lock();
@@ -23,7 +21,6 @@ void Clients::setClient(int id, Clients::Client cli)
     clientsMtx.unlock();
 };
 
-//Clients::setParameters set the parameters of a available client struct Clients::Client by an id and given parameters
 bool Clients::setParameters(int id, std::map<std::string, std::string> params)
 {
     Clients::Client client;
@@ -38,7 +35,6 @@ bool Clients::setParameters(int id, std::map<std::string, std::string> params)
     return true;
 };
 
-//Clients::setHeaders set the header(s) of a Clients::Client struct
 bool Clients::setHeaders(int id, std::vector<std::string> headers)
 {
     Clients::Client client;
@@ -51,7 +47,6 @@ bool Clients::setHeaders(int id, std::vector<std::string> headers)
     return true;
 };
 
-//Clients::addClient adds a new struct of Clients::Client by given parameters
 int Clients::addClient(std::map<std::string, std::string> params)
 {
     Clients::Client client;
@@ -72,7 +67,6 @@ int Clients::addClient(std::map<std::string, std::string> params)
     return key;
 };
 
-//Clients::AddClient calls Clients::addClient but writes the result to an output
 int Clients::AddClient(Output *op, std::map<std::string, std::string> params)
 {
     int id = addClient(params);
@@ -83,7 +77,6 @@ int Clients::AddClient(Output *op, std::map<std::string, std::string> params)
     return 100;
 };
 
-//Clients::RemoveClient calls Clients::removeClient but writes the result to an output
 int Clients::RemoveClient(Output *op, int id)
 {
     op->Write(id);
@@ -93,7 +86,6 @@ int Clients::RemoveClient(Output *op, int id)
     return 200;
 };
 
-//Client::SetParameters calls setParameters but writes the result to an output
 int Clients::SetParameters(Output *op, int id, std::map<std::string, std::string> params)
 {
     op->Write(id);
@@ -103,7 +95,6 @@ int Clients::SetParameters(Output *op, int id, std::map<std::string, std::string
     return 300;
 };
 
-//Clients::SetHeaders calls Client::setHeaders but writes the result to an output
 int Clients::SetHeaders(Output *op, int id, std::vector<std::string> headers)
 {
     op->Write(id);
@@ -113,7 +104,6 @@ int Clients::SetHeaders(Output *op, int id, std::vector<std::string> headers)
     return 400;
 };
 
-//Clients::removeClient removes an client from the list of this instantiated class
 bool Clients::removeClient(int id)
 {
     std::map<int, Clients::Client>::iterator f;

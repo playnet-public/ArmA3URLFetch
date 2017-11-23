@@ -14,30 +14,6 @@ void Requests::getPopRequest(Requests::Request *req)
     requestsQueue.pop();
 };
 
-//Requests::Request::SetParameters sets the parameters of the inherited struct instance
-void Requests::Request::SetParameters(std::map<std::string, std::string> params)
-{
-    Parameters = params;
-};
-
-//Requests::Request::SetHeaders sets the headers of the inherited struct instance
-void Requests::Request::SetHeaders(std::vector<std::string> headers)
-{
-    Headers = headers;
-};
-
-//Requests::Result::SetStatus sets the status of the struct Requests::Result
-void Requests::Result::SetStatus(int n)
-{
-    status = n;
-};
-
-//Requests::Result::SetResult sets the result of the struct Requests::Result
-void Requests::Result::SetResult(std::string r)
-{
-    result = r;
-};
-
 //Request::workerThread is the main function for the worker thread(s)
 void Requests::workerThread()
 {
