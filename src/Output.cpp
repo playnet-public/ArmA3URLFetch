@@ -31,7 +31,7 @@ std::string Output::Get()
     return buf.str();
 };
 
-/std::string Output::GetFlush()
+std::string Output::GetFlush()
 {
     std::string str = Get();
     Flush();
