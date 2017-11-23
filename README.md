@@ -2,4 +2,4 @@
  An OpenSource ArmA 3 URL fetching extension.
 
 ## Documentation
-For more information on what functions are available visit this page: https://playnet-public.github.io/ArmA3URLFetch/ .
+For more information on what functions are available visit this page: https://playnet-public.github.io/ArmA3URLFetch/html .
