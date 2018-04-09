@@ -4,3 +4,4 @@ build/
 tools/tmp
 src/test.cpp
 *.biprivatekey
+.keys/
