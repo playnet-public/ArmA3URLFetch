@@ -1,17 +1,24 @@
 language: cpp
 dist: trusty
 compiler: g++
+install:
+- apt-get install libc6-dev-i386 g++-5-multilib:i386
 script:
-- make linux32 CXX=g++-5
-- make linux64 CXX=g++-5
-- make test CXX=g++-5
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    - llvm-toolchain-precise-3.6
-    packages:
-    - gcc-5
-    - g++-5
+- make linux32
+- make linux64
+- make test
+matrix:
+  include:
+    # works on Precise and Trusty
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+            - gcc-5
+      env:
+         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
 env:
 - CXX=g++-5
