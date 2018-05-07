@@ -15,8 +15,6 @@ matrix:
           packages:
             - g++-5
             - gcc-5
-            - g++-5-multilib:i386
-            - libc6-dev-i386 
       env:
          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
 env:
