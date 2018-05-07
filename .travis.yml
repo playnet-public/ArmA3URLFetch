@@ -1,5 +1,4 @@
 language: cpp
-dist: trusty
 script:
 - make linux32
 - make linux64
