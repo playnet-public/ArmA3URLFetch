@@ -22,7 +22,7 @@ matrix:
             - libx32stdc++6
             - linux-libc-dev:i386
             - libssl-dev
-            - libcurl-dev
+            - libcurl4-openssl-dev
       env:
          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
       script:
