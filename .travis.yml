@@ -7,7 +7,7 @@ matrix:
   include:
     # works on Precise and Trusty
     - os: linux
-      install:
+      before_script:
       - sudo apt-get install -y -f g++-5-multilib g++-5-multilib:i386
       addons:
         apt:
