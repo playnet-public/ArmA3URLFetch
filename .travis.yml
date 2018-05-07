@@ -1,6 +1,6 @@
 language: cpp
 dist: trusty
-compiler: g++
+compiler: g++-5.4.0
 script:
 - make linux32
 - make linux64
