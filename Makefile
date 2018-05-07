@@ -46,7 +46,7 @@ test: testLinux64
 
 testLinux32: cleanTest
 	@echo " TEST Linux x32"
-	@$(CXX) -m32 -pthread -Iinclude/windows/x86/ \
+	@$(CXX) -m32 -pthread -fPIC -Iinclude/windows/x86/ \
 		-Isrc/ \
 		-std=c++11 \
 		src/common.cpp \
@@ -65,7 +65,7 @@ testLinux32: cleanTest
 
 testLinux64: cleanTest
 	@echo " TEST Linux x64"
-	@$(CXX) -pthread -Iinclude/windows/x86/ \
+	@$(CXX) -pthread -fPIC -Iinclude/windows/x86/ \
 		-Isrc/ \
 		-std=c++11 \
 		src/common.cpp \
