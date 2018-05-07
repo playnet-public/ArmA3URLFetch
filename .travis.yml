@@ -13,3 +13,5 @@ addons:
     packages:
     - gcc-5
     - g++-5
+env:
+- CXX=g++-5
