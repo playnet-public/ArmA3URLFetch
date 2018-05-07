@@ -20,7 +20,7 @@ matrix:
             - lib32gcc-5-dev
             - libx32gcc-5-dev
             - libx32stdc++6
-            - linux-libc-dev
+            - linux-libc-dev:i386
       env:
          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
       script:
