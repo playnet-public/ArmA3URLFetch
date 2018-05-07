@@ -42,7 +42,7 @@ clean:
 	@echo " Cleaning up objects"
 	@rm -f src/*.o
 
-test: testLinux32 testLinux64
+test: testLinux64
 
 testLinux32: cleanTest
 	@echo " TEST Linux x32"
