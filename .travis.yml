@@ -22,6 +22,7 @@ matrix:
             - g++-5:i386
             - gcc-5-multilib:i386
             - cpp-5
+            - gcc-5-multilib
       env:
          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
 env:
