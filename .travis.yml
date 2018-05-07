@@ -2,9 +2,9 @@ language: cpp
 dist: trusty
 compiler: g++
 script:
-- make linux32
-- make linux64
-- make test
+- make linux32 CXX=g++-5
+- make linux64 CXX=g++-5
+- make test CXX=g++-5
 addons:
   apt:
     sources:
