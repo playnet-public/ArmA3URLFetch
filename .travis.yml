@@ -1,14 +1,9 @@
 language: cpp
-script:
-- make linux32
-- make linux64
-- make test
+compiler: g++
 matrix:
   include:
     # works on Precise and Trusty
     - os: linux
-      before_script:
-      - sudo apt-get install -y -f g++-5-multilib g++-5-multilib:i386
       addons:
         apt:
           sources:
@@ -16,7 +11,20 @@ matrix:
           packages:
             - g++-5
             - gcc-5
+            - g++-5-multilib
+            - lib32stdc++-5-dev
+            - libx32stdc++-5-dev
+            - cpp-5
+            - gcc-5-multilib
+            - libc6-dev-x32
+            - lib32gcc-5-dev
+            - libx32gcc-5-dev
+            - libx32stdc++6
       env:
          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+      script:
+      - make linux32
+      - make linux64
+      - make test
 env:
 - CXX=g++-5
