@@ -1,7 +1,6 @@
 .vscode
-build/
+.build/
+.builds/
 *.log
-tools/tmp
 src/test.cpp
-*.biprivatekey
-.keys/
+*.o

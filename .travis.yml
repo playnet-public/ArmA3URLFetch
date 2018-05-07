@@ -1,0 +1,8 @@
+language: cpp
+compiler:
+- g++
+- gcc
+script:
+- make linux32
+- make linux64
+- make test

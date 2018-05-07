@@ -1,5 +1,5 @@
 
-#include "Requests.h"
+#include "requests.h"
 
 #ifdef __linux__
 Requests::Requests() {
@@ -274,7 +274,7 @@ void Requests::fetchRequest(Requests::Request req)
                 }
 
                 struct curl_slist *headers = NULL;
-                for (int i = 0; i < req.Headers.size(); i++)
+                for (unsigned int i = 0; i < req.Headers.size(); i++)
                 {
                     headers = curl_slist_append(headers, req.Headers[i].c_str());
                 }
@@ -285,7 +285,7 @@ void Requests::fetchRequest(Requests::Request req)
                 {
                     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
                     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-                    curl_easy_setopt(curl, CURLOPT_USERAGENT, "ArmA3URLFetch " + VERSION);
+                    curl_easy_setopt(curl, CURLOPT_USERAGENT, HTTP_VERSION);
                     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, req.Parameters["#method"].c_str());
                     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resStr);
                     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, RequestsCurlCallbackWriter);

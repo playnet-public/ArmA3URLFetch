@@ -1,5 +1,5 @@
 
-#include "Output.h"
+#include "output.h"
 
 void Output::Write(std::string * str)
 {

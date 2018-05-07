@@ -18,8 +18,9 @@
 #include <curl/curl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "Output.h"
-#include "Common.h"
+#include "output.h"
+#include "macros.h"
+#include "common.h"
 
 /*!
     \class Requests

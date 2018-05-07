@@ -1,8 +1,7 @@
 
+#include "macros.h"
 #include <stdio.h>
-#include "Handler.h"
-
-#define VERSION "0.7.5"
+#include "handler.h"
 
 #ifndef __linux__
 

@@ -8,7 +8,7 @@
         This class holds static functions for common things, like converting an string to an int, e.g...
 */
 
-#include "Common.h"
+#include "common.h"
 
 /*
     Publicity: public
@@ -112,7 +112,7 @@ std::string A3URLCommon::toArray_array(nlohmann::json j)
     std::stringstream res;
 
     res << "[";
-    for (int i = 0; i < j.size(); i++)
+    for (unsigned int i = 0; i < j.size(); i++)
     {
         if (i != 0)
             res << ",";

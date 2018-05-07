@@ -5,10 +5,10 @@
     \see https://github.com/playnet-public/ArmA3URLFetch/blob/master/src/Handler.cpp
 */
 
-#include "Common.h"
-#include "Clients.h"
-#include "Requests.h"
-#include "Output.h"
+#include "common.h"
+#include "clients.h"
+#include "requests.h"
+#include "output.h"
 
 /*!
     \class Handler
