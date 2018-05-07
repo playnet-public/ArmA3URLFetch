@@ -9,7 +9,7 @@ matrix:
     # works on Precise and Trusty
     - os: linux
       install:
-      - sudo apt-get install -y g++-5-multilib g++-5-multilib:i386
+      - sudo apt-get install -y -f g++-5-multilib g++-5-multilib:i386
       addons:
         apt:
           sources:
