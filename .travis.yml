@@ -1,7 +1,15 @@
 language: cpp
 dist: trusty
-compiler: g++-5.4.0
+compiler: g++
 script:
 - make linux32
 - make linux64
 - make test
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    - llvm-toolchain-precise-3.6
+    packages:
+    - gcc-5
+    - g++-5
