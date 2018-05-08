@@ -1,11 +1,9 @@
-language: cpp
-compiler:
-- g++
-- gcc
 matrix:
   include:
     # works on Precise and Trusty
     - os: linux
+      compiler: g++
+      language: cpp
       sudo: required
       dist: trusty
       before_install:
