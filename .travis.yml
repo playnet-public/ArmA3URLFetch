@@ -4,6 +4,10 @@ matrix:
   include:
     # works on Precise and Trusty
     - os: linux
+      sudo: required
+      dist: trusty
+      before_install:
+      - sudo dpkg --add-architecture i386
       addons:
         apt:
           sources:
@@ -21,9 +25,12 @@ matrix:
           - libx32gcc-5-dev
           - libx32stdc++6
           - linux-libc-dev:i386
-          - libcurl4-openssl-dev
+          - libssl-dev:i386
+          - libssl-dev
       env:
       - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+      before_script:
+      - make curl
       script:
       - find /usr -name "libcurl*"
       - find /usr -name "libssl*"

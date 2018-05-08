@@ -4,3 +4,4 @@
 *.log
 src/test.cpp
 *.o
+*.out
