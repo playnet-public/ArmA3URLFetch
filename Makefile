@@ -55,9 +55,9 @@ testLinux32: cleanTest
 		src/output.cpp \
 		src/handler.cpp \
 		test/main_x32.cpp \
-		/usr/lib/x86_64-linux-gnu/libcurl.a \
-		/usr/lib/x86_64-linux-gnu/libssl.a \
-		/usr/lib/x86_64-linux-gnu/libcrypto.a \
+		lib/linux/libcurl.a \
+		lib/linux/libssl.a \
+		lib/linux/libcrypto.a \
 		-ldl \
 		-o .build/test.a
 	@echo " TEST test.a x32"
@@ -65,7 +65,7 @@ testLinux32: cleanTest
 
 testLinux64: cleanTest
 	@echo " TEST Linux x64"
-	@$(CXX) -pthread -fPIC -Iinclude/windows/x86/ \
+	@$(CXX) -Wall -pthread -fPIC -Iinclude/windows/x86/ \
 		-Isrc/ \
 		-std=c++11 \
 		src/common.cpp \
@@ -73,10 +73,10 @@ testLinux64: cleanTest
 		src/clients.cpp \
 		src/output.cpp \
 		src/handler.cpp \
-		test/main_x32.cpp \
-		/usr/lib/x86_64-linux-gnu/libcurl.a \
-		/usr/lib/x86_64-linux-gnu/libssl.a \
-		/usr/lib/x86_64-linux-gnu/libcrypto.a \
+		test/main_x64.cpp \
+		lib/linux/libcurl_x64.a \
+		lib/linux/libssl_x64.a \
+		lib/linux/libcrypto_x64.a \
 		-ldl \
 		-o .build/test.a
 	@echo " TEST test.a x64"

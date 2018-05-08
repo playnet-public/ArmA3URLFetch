@@ -12,7 +12,7 @@ int Handler::CallExtensionArgs(char * output, int outputSize, const char *functi
 {
     if (argsCnt <= 0)
         return 2;
-    
+
     Output *op = Output::Create();
     int rC = 2;
 

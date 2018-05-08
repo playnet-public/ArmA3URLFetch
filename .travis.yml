@@ -4,6 +4,10 @@ matrix:
   include:
     # works on Precise and Trusty
     - os: linux
+      before_install:
+      - dpkg --add-architecture i386
+      - apt-get update
+      - apt-get install g++-5:i386
       addons:
         apt:
           sources:
