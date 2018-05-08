@@ -8,6 +8,7 @@ matrix:
       dist: trusty
       before_install:
       - sudo dpkg --add-architecture i386
+      - sudo apt-get update
       addons:
         apt:
           sources:
