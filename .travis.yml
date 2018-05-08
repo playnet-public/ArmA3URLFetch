@@ -1,5 +1,7 @@
 language: cpp
-compiler: g++
+compiler:
+- g++
+- gcc
 matrix:
   include:
     # works on Precise and Trusty
@@ -21,6 +23,8 @@ matrix:
           - libx32stdc++-5-dev
           - cpp-5
           - gcc-5-multilib
+          - gcc-multilib
+          - gcc
           - libc6-dev-x32
           - lib32gcc-5-dev
           - libx32gcc-5-dev
