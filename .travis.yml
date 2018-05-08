@@ -9,7 +9,6 @@ matrix:
           sources:
           - ubuntu-toolchain-r-test
           packages:
-          - build-essentials
           - g++-5
           - gcc-5
           - g++-5-multilib
