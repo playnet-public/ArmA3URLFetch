@@ -26,7 +26,6 @@ matrix:
       - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
       script:
       - find /usr -name "libcurl*"
-      - find /var -name "libcurl*"
       - find /usr -name "libssl*"
       - find /usr -name "libcrypto*"
       - make linux32 CXX=g++-5
