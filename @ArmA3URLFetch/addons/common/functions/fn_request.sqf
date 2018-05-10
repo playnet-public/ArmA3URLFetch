@@ -17,24 +17,37 @@ params [
 	["_url", "", [""]],
 	["_method", "", [""]],
 	["_params", [], [[]]],
+	["_headers", [], [[]]],
 	["_decodeJson", false, [false]]
 ];
-
-_method = (toUpper _method);
 
 if (_url == "") exitWith { ""; };
 if (_method == "" || !(_method in ["GET", "PUT", "POST", "PATCH", "DELETE", "TRACE"])) exitWith { ""; };
 
-_params pushBack format["#url=%1", _url];
-_params pushBack format["#method=%1", _method];
+private _args = [];
 
-if (_decodeJson) then
-{
-	_params pushBack "#jsonToArray=true";
+_args append ["#url", _url];
+
+if (_method != "") then {
+	_args append ["#method", _method];
+};
+
+if (_decodeJson) then {
+	_args pushBack "#jsonToArray";
+};
+
+if ((count _params) > 0) then {
+	_args pushBack "#parameters";
+	_args append _params;
+};
+
+if ((count _headers) > 0) then {
+	_args pushBack "#headers";
+	_args append _headers;
 };
 
 private _res = [];
-_res = ("arma3urlfetch" callExtension ["SENDRQ", _params]);
+_res = ("arma3urlfetch" callExtension ["SENDRQ", _args]);
 
 if ((_res select 1) == 501) exitWith { ""; };
 

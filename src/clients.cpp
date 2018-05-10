@@ -21,36 +21,30 @@ void Clients::setClient(int id, Clients::Client cli)
     clientsMtx.unlock();
 };
 
-bool Clients::setParameters(int id, std::map<std::string, std::string> params)
-{
-    Clients::Client client;
-    if (!GetClient(id, &client))
-        return false;
-
-    for (std::map<std::string, std::string>::iterator it = params.begin(); it != params.end(); ++it)
-        client.Parameters[it->first] = it->second;
-    
-    setClient(id, client);
-
-    return true;
-};
-
-bool Clients::setHeaders(int id, std::vector<std::string> headers)
+bool Clients::setClient(int id, Arguments::Parameters params)
 {
     Clients::Client client;
     if (!GetClient(id, &client))
         return false;
     
-    client.Headers = headers;
+    client.Url = params.Url;
+    client.Method = params.Method;
+    client.Headers = params.Headers;
+    client.JsonToArray = params.JsonToArray;
+    client.Forms = params.Forms;
     setClient(id, client);
 
     return true;
 };
 
-int Clients::addClient(std::map<std::string, std::string> params)
+int Clients::addClient(Arguments::Parameters params)
 {
     Clients::Client client;
-    client.Parameters = params;
+    client.Forms = params.Forms;
+    client.Headers = params.Headers;
+    client.JsonToArray = params.JsonToArray;
+    client.Url = params.Url;
+    client.Method = params.Url;
     
     int key = 1;
     while (true)
@@ -67,7 +61,7 @@ int Clients::addClient(std::map<std::string, std::string> params)
     return key;
 };
 
-int Clients::AddClient(Output *op, std::map<std::string, std::string> params)
+int Clients::AddClient(Output *op, Arguments::Parameters params)
 {
     int id = addClient(params);
     if (id <= 0)
@@ -86,22 +80,13 @@ int Clients::RemoveClient(Output *op, int id)
     return 200;
 };
 
-int Clients::SetParameters(Output *op, int id, std::map<std::string, std::string> params)
+int Clients::SetClient(Output *op, int id, Arguments::Parameters params)
 {
     op->Write(id);
-    if (!setParameters(id, params))
+    if (!setClient(id, params))
         return 301;
-    
-    return 300;
-};
 
-int Clients::SetHeaders(Output *op, int id, std::vector<std::string> headers)
-{
-    op->Write(id);
-    if (!setHeaders(id, headers))
-        return 401;
-    
-    return 400;
+    return 300;
 };
 
 bool Clients::removeClient(int id)

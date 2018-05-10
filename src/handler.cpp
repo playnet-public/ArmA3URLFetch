@@ -1,6 +1,7 @@
 
 #include "handler.h"
 #include <iostream>
+#include <array>
 
 Handler::Handler()
 {
@@ -18,83 +19,67 @@ int Handler::CallExtensionArgs(char * output, int outputSize, const char *functi
 
     if (strcmp(function, "ADDCLI") == 0)
     {
-        std::map<std::string, std::string> params = parseArgs(args, argsCnt);
-        rC = clients->AddClient(op, params);
+        rC = this->addClient(op, args, argsCnt);
     }
     else if (strcmp(function, "REMCLI") == 0)
     {
-        int id = A3URLCommon::StrToInt(std::string(args[0]));
-        rC = clients->RemoveClient(op, id);
+        rC = this->removeClient(op, args, argsCnt);
     }
-    else if (strcmp(function, "SETCLIP") == 0)
+    else if (strcmp(function, "SETCLI") == 0)
     {
-        std::map<std::string, std::string> params = parseArgs(args, argsCnt);
-        int id = A3URLCommon::StrToInt(params["#clientid"]);
-        params.erase(params.find("#clientid"));
-        rC = clients->SetParameters(op, id, params);
-    }
-    else if (strcmp(function, "SETCLIH") == 0)
-    {
-        std::map<std::string, std::string> params = parseArgs(args, argsCnt);
-        int id = A3URLCommon::StrToInt(params["#clientid"]);
-        params.erase(params.find("#clientid"));
-        std::vector<std::string> headers;
-        for (std::map<std::string, std::string>::iterator it = params.begin(); it != params.end(); ++it)
-            headers.push_back(it->first);
-
-        rC = clients->SetHeaders(op, id, headers);
+        rC = this->setClient(op, args, argsCnt);
     }
     else if (strcmp(function, "SENDRQ") == 0)
     {
-        std::map<std::string, std::string> params = parseArgs(args, argsCnt);
-        int cID = A3URLCommon::StrToInt(params["#clientid"]);
-
-        if (cID > 0)
-        {
-            Clients::Client cli;
-            if (clients->GetClient(cID, &cli))
-            {
-                std::map<std::string, std::string> nParams;
-                nParams = A3URLCommon::MergeStringMaps(cli.Parameters, params);
-                rC = requests->AddRequest(op, nParams, cli.Headers);
-            }
-        }
-        else
-        {
-            rC = requests->AddRequest(op, params);
-        }
+        rC = this->sendRequest(op, args, argsCnt);
     }
     else if (strcmp(function, "GETRQ") == 0)
     {
-        int id = A3URLCommon::StrToInt(std::string(args[0]));
-        rC = requests->GetResult(op, id);
+        rC = this->getRequest(op, args, argsCnt);
     }
-    
+
     op->WriteBufFlush(output, outputSize);
     
     delete op;
-    return rC;
+    return rC == 0 ? 2 : rC;
 };
 
-std::map<std::string, std::string> Handler::parseArgs(const char **args, int argsCnt)
+int Handler::addClient(Output *op, const char **args, int argsCnt)
 {
-    std::map<std::string, std::string> params;
-    
-    for (int x = 0; x < argsCnt; x++)
-    {
-        std::string param(args[x]);
+    Arguments::Parameters params;
+    params.Method = "GET";
+    int err = Arguments::ParseArguments(&params, args, argsCnt);
+    if (err > 0)
+        return err;
+    return this->clients->AddClient(op, params);
+};
 
-        if (param.size() > 0)
-        {
-            A3URLCommon::StrUnqoute(&param);
-            size_t i = param.find("=");
+int Handler::getRequest(Output *op, const char **args, int argsCnt)
+{
+    std::cout << args[0] << std::endl;
+    std::cout << A3URLCommon::StrToInt(std::string(args[0])) << std::endl;
+    return requests->GetResult(op, A3URLCommon::StrToInt(std::string(args[0])));
+}
 
-            if (i != std::string::npos)
-                params[param.substr(0, i)] = param.substr(i + 1, param.length() - i);
-            else
-                params[param] = std::string("");
-        }
-    }
+int Handler::sendRequest(Output *op, const char **args, int argsCnt)
+{
+    Arguments::Parameters params;
+    params.Method = "GET";
+    int err = Arguments::ParseArguments(&params, args, argsCnt);
+    if (err > 0) return err;
+    return requests->AddRequest(op, params);
+};
 
-    return params;
+int Handler::removeClient(Output *op, const char **args, int argsCnt)
+{
+    return this->clients->RemoveClient(op, A3URLCommon::StrToInt(std::string(args[0])));
+};
+
+int Handler::setClient(Output *op, const char **args, int argsCnt)
+{
+    Arguments::Parameters params;
+    int err = Arguments::ParseArguments(&params, args, argsCnt);
+    if (err > 0)
+        return err;
+    return this->clients->SetClient(op, params.ClientID, params);
 };

@@ -14,16 +14,16 @@
 */
 
 params [
-	["_cid", 0, [0]],
-	["_params", [], [[]]]
+	["_cid", 0, [0]]
 ];
 
 if (_cid <= 0) exitWith { ""; };
 
-_params pushBack format["#clientid=%1", _cid];
+private _args = [];
+_args append ["#clientid", str _cid];
 
 private _res = [];
-_res = ("arma3urlfetch" callExtension ["SENDRQ", _params]);
+_res = ("arma3urlfetch" callExtension ["SENDRQ", _args]);
 
 if ((_res select 1) == 501) exitWith { ""; };
 

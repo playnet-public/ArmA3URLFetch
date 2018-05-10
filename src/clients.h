@@ -11,6 +11,7 @@
 #include <vector>
 #include <mutex>
 #include "output.h"
+#include "arguments.h"
 
 /*!
     \class Clients
@@ -29,20 +30,21 @@ public:
     */
     struct Client
     {
-        std::map<std::string, std::string> Parameters; ///< The parameters of a persistent URL request.
+        bool JsonToArray;
+        std::string Url, Method, Forms; ///< The parameters of a persistent URL request.
         std::vector<std::string> Headers; ///< The headers of a persistent URL request.
     };
 
     /*!
-        \fn int AddClient(Output *op, std::map<std::string, std::string> params)
+        \fn int AddClient(Output *op, Handler::Parameters params)
         \brief The public function to add a client.
         \param op A pointer to an output stream.
-        \param params The map of parameters for the client.
+        \param params The Handler::Parameters of parameters for the client.
         \return The error code of the request.
         
         This function calls Clients::addClient but writes the result to an output.
     */
-    int AddClient(Output *op, std::map<std::string, std::string> params);
+    int AddClient(Output *op, Arguments::Parameters params);
 
     /*!
         \fn int RemoveClient(Output *op, int id)
@@ -63,17 +65,7 @@ public:
         \param params The map of parameters for the client.
         \return The error code of the request.
     */
-    int SetParameters(Output *op, int id, std::map<std::string, std::string> params);
-
-    /*!
-        \fn int SetHeaders(Output *op, int id, std::vector<std::string> headers)
-        \brief The public function to set sepcific client headers.
-        \param op A pointer to an output stream.
-        \param id A client unique id.
-        \param headers The map of headers for the client.
-        \return The error code of the request.
-    */
-    int SetHeaders(Output *op, int id, std::vector<std::string> headers);
+    int SetClient(Output *op, int id, Arguments::Parameters params);
 
     /*!
         \fn bool GetClient(int id, Clients::Client *client)
@@ -88,10 +80,10 @@ private:
     std::mutex clientsMtx; ///< The mutex for the available clients Clients::clients.
 
     /*!
-        \fn int addClient(std::map<std::string, std::string> params)
+        \fn int addClient(Arguments::Parameters params)
         \brief Adds a client to Clients::clients.
     */
-    int addClient(std::map<std::string, std::string> params);
+    int addClient(Arguments::Parameters params);
 
     /*!
         \fn bool removeClient(int id)
@@ -106,14 +98,8 @@ private:
     void setClient(int id, Clients::Client cli);
 
     /*!
-        \fn bool setParameters(int id, std::map<std::string, std::string> params)
+        \fn bool setClient(int id, Arguments::Parameters params)
         \brief Sets the parameters of a client by its id 
     */
-    bool setParameters(int id, std::map<std::string, std::string> params);
-
-    /*!
-        \fn bool setHeaders(int id, std::vector<std::string> headers)
-        \brief Sets the headers of a client by its id
-    */
-    bool setHeaders(int id, std::vector<std::string> headers);
+    bool setClient(int id, Arguments::Parameters params);
 };

@@ -1,13 +1,14 @@
 
 /*!
-    \file Handler.h
+    \file handler.h
     \brief Handler is the main class for input parameters of RVExtensionArgs().
     \see https://github.com/playnet-public/ArmA3URLFetch/blob/master/src/Handler.cpp
 */
 
+#pragma once
 #include "common.h"
-#include "clients.h"
 #include "requests.h"
+#include "clients.h"
 #include "output.h"
 
 /*!
@@ -41,5 +42,9 @@ private:
         \fn std::map<std::string, std::string> parseArgs(const char **args, int argsCnt)
         \brief Converts args pointer array of RVExtensionArgs() to a string map.
     */
-    std::map<std::string, std::string> parseArgs(const char **args, int argsCnt);
+    int sendRequest(Output *op, const char **args, int argsCnt);
+    int addClient(Output *op, const char **args, int argsCnt);
+    int removeClient(Output *op, const char **args, int argsCnt);
+    int setClient(Output *op, const char **args, int argsCnt);
+    int getRequest(Output *op, const char **args, int argsCnt);
 };

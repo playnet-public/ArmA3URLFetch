@@ -10,7 +10,6 @@ class a3uf_common
         class removeClient {};
         class request {};
         class requestCallback {};
-        class setClientHeaders {};
-        class setClientParameters {};
+        class setClient {};
     };
 };

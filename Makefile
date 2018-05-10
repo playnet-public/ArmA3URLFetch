@@ -2,12 +2,18 @@
 CPPFLAGS=-Wall -fPIC -pthread -std=c++11
 INCLUDES=-I.build/usr/lib/curl/include
 INCLUDES_x32=-I.build/usr/lib/curl/i386/include
-OBJS=src/common.o src/requests.o src/clients.o src/output.o src/handler.o src/main.o
+OBJS=src/common.o src/arguments.o src/requests.o src/clients.o src/output.o src/handler.o src/main.o
 LIBS=.build/usr/lib/curl/lib/libcurl.a /usr/lib/x86_64-linux-gnu/libssl.a /usr/lib/x86_64-linux-gnu/libcrypto.a
 LIBS_x32=.build/usr/lib/curl/i386/lib/libcurl.a /usr/lib/i386-linux-gnu/libssl.a /usr/lib/i386-linux-gnu/libcrypto.a
 LDFLAGS=-shared -pthread -fPIC
+OUTPUTPATH=".build/@ArmA3URLFetch/"
 OUTPUT=""
 CURLSRC=https://github.com/curl/curl/releases/download/curl-7_59_0/curl-7.59.0.zip
+ARMAKE=$(abspath .build/bin/armake)
+TAG=$(shell git describe --tag | sed "s/-.*-/-/")
+
+
+all: linux64 linux32 build_mod
 
 linux64: prepare clean build_obj_linux_x64 link
 linux32: prepare clean build_obj_linux_x32 link
@@ -37,9 +43,12 @@ curl: get_curl build_curl build_i386_curl
 
 prepare:
 	@mkdir -p .build/
+	@mkdir -p .build/\@ArmA3URLFetch/addons
+	@mkdir -p .build/keys
+	@mkdir -p .build/bin
 
 build_obj_linux_x64: $(OBJS)
-	$(eval OUTPUT=.build/arma3urlfetch_x64.so)
+	$(eval OUTPUT=$(OUTPUTPATH)/arma3urlfetch_x64.so)
 
 build_prep_linux_x32:
 	$(eval CPPFLAGS+= -m32)
@@ -48,7 +57,7 @@ build_prep_linux_x32:
 
 build_obj_linux_x32: build_prep_linux_x32 $(OBJS)
 	$(eval LIBS=$(LIBS_x32))
-	$(eval OUTPUT=.build/arma3urlfetch.so)
+	$(eval OUTPUT=$(OUTPUTPATH)/arma3urlfetch.so)
 
 %.o: %.cpp
 	@echo "\tCXX\t\t$@"
@@ -70,11 +79,12 @@ testLinux32: cleanTest
 		-Isrc/ \
 		-std=c++11 \
 		src/common.cpp \
+		src/arguments.cpp \
 		src/requests.cpp \
 		src/clients.cpp \
 		src/output.cpp \
 		src/handler.cpp \
-		test/main_x32.cpp \
+		test/main.cpp \
 		$(LIBS_x32) \
 		-ldl \
 		-o .build/test.a
@@ -87,11 +97,12 @@ testLinux64: cleanTest
 		-Isrc/ \
 		-std=c++11 \
 		src/common.cpp \
+		src/arguments.cpp \
 		src/requests.cpp \
 		src/clients.cpp \
 		src/output.cpp \
 		src/handler.cpp \
-		test/main_x64.cpp \
+		test/main.cpp \
 		$(LIBS) \
 		-ldl \
 		-o .build/test.a
@@ -100,3 +111,26 @@ testLinux64: cleanTest
 
 cleanTest:
 	@rm -f .build/test.a
+
+build_armake: prepare
+	if [ ! -d .build/armake ]; then git clone https://github.com/TheMysteriousVincent/armake.git .build/armake ; \
+		cd .build/armake \
+		&& make \
+		&& cd ../../ \
+		&& cp -f .build/armake/bin/armake .build/bin/ ; \
+	fi
+
+createKey: prepare
+ifndef PRVKEYFILE
+	cd .build/keys/ && $(ARMAKE) keygen -f a3uf_$(TAG)
+	$(eval KEY := a3uf_$(TAG))
+	$(eval PRVKEYFILE := .build/keys/$(KEY).biprivatekey)
+endif
+
+build_mod: build_armake createKey a3uf_common a3uf_json
+
+a3uf_common: prepare
+	$(ARMAKE) build -p --force -k $(PRVKEYFILE) -e prefix=x\\a3uf\\addons\\common @ArmA3URLFetch/addons/common .build/@ArmA3URLFetch/addons/$@.pbo
+
+a3uf_json: prepare
+	$(ARMAKE) build -p --force -k $(PRVKEYFILE) -e prefix=x\\a3uf\\addons\\json @ArmA3URLFetch/addons/json .build/@ArmA3URLFetch/addons/$@.pbo

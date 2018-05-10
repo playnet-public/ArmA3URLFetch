@@ -16,6 +16,7 @@
 #include <queue>
 #include <thread>
 #include <curl/curl.h>
+#include "arguments.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "output.h"
@@ -54,7 +55,8 @@ public:
     struct Request
     {
         int RequestID; ///< Unique ID of the request.
-        std::map<std::string, std::string> Parameters; ///< Parameters of the request.
+        bool JsonToArray;
+        std::string Url, Method, Forms; ///< Parameters of the request.
         std::vector<std::string> Headers; ///< Headers of the request.
     };
 
@@ -62,35 +64,12 @@ public:
         \fn int AddRequest(Output *op, std::map<std::string, std::string> params)
         \brief Adds an request with parameters.
         \param op A pointer to an output stream.
-        \param params The map of parameters for the request.
+        \param params The struct of Arguments::Parameters for the request.
         \return The error code of the request.
         
         Writes to an Output buffer.
     */
-    int AddRequest(Output *op, std::map<std::string, std::string> params);
-
-    /*!
-        \fn int AddRequest(Output *op, std::vector<std::string> headers)
-        \brief Adds an request with headers.
-        \param op A pointer to an output stream.
-        \param headers The map of headers for the request.
-        \return The error code of the request.
-        
-        Writes to an Output buffer.
-    */
-    int AddRequest(Output *op, std::vector<std::string> headers);
-
-    /*!
-        \fn int AddRequest(Output *op, std::map<std::string, std::string> params, std::vector<std::string> headers)
-        \brief Adds an request with parameters and headers.
-        \param op A pointer to an output stream.
-        \param params The map of parameters for the request.
-        \param headers The map of headers for the request.
-        \return The error code of the request.
-        
-        Writes to an Output buffer. 
-    */
-    int AddRequest(Output *op, std::map<std::string, std::string> params, std::vector<std::string> headers);
+    int AddRequest(Output *op, Arguments::Parameters params);
 
     /*!
         \fn int GetResult(Output *op, int id)
@@ -149,19 +128,7 @@ private:
         \fn void addRequest(std::map<std::string, std::string> params)
         \brief Adds a Requests::Request with parameters to the Requests::requestsQueue.
     */
-    int addRequest(std::map<std::string, std::string> params);
-
-    /*!
-        \fn void addRequest(std::vector<std::string> headers)
-        \brief Adds a Requests::Request with headers to the Requests::requestsQueue.
-    */
-    int addRequest(std::vector<std::string> headers);
-
-    /*!
-        \fn void addRequest(std::map<std::string, std::string> params, std::vector<std::string> headers)
-        \brief Adds a Requests::Request with parameters and headers to the Requests::requestsQueue.
-    */
-    int addRequest(std::map<std::string, std::string> params, std::vector<std::string> headers);
+    int addRequest(Arguments::Parameters params);
 
     /*!
         \fn int addResult()

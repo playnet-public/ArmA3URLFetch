@@ -1,5 +1,6 @@
 
 #include "requests.h"
+#include <iostream>
 
 #ifdef __linux__
 Requests::Requests() {
@@ -111,63 +112,27 @@ int Requests::addResult()
     return key;
 };
 
-//Requests::addRequest adds an given request struct to the task queue
-int Requests::addRequest(std::map<std::string, std::string> params)
+int Requests::addRequest(Arguments::Parameters params)
 {
     int key = addResult();
-
+    
     if (key < 1)
         return 0;
     
     Requests::Request req;
     req.RequestID = key;
-    req.Parameters = params;
+    req.Url = params.Url;
+    req.Method = params.Method;
+    req.Forms = params.Forms;
+    req.Headers = params.Headers;
+    req.JsonToArray = params.JsonToArray;
 
     requestsQueueMtx.lock();
     requestsQueue.push(req);
     requestsQueueMtx.unlock();
 
     return key;
-};
-
-//Requests::addRequest adds an given request struct to the task queue
-int Requests::addRequest(std::vector<std::string> headers)
-{
-    int key = addResult();
-
-    if (key < 1)
-        return 0;
-    
-    Requests::Request req;
-    req.RequestID = key;
-    req.Headers = headers;
-
-    requestsQueueMtx.lock();
-    requestsQueue.push(req);
-    requestsQueueMtx.unlock();
-    
-    return key;
-};
-
-//Requests::addRequest adds an given request struct to the task queue
-int Requests::addRequest(std::map<std::string, std::string> params, std::vector<std::string> headers)
-{
-    int key = addResult();
-
-    if (key < 1)
-        return 0;
-
-    Requests::Request req;
-    req.RequestID = key;
-    req.Parameters = params;
-    req.Headers = headers;
-
-    requestsQueueMtx.lock();
-    requestsQueue.push(req);
-    requestsQueueMtx.unlock();
-    
-    return key;
-};
+}
 
 //Requests::setResult sets a specific result by its id
 void Requests::setResult(int id, Requests::Result res)
@@ -201,20 +166,20 @@ bool Requests::removeResult(int id)
 };
 
 //Requests::getResult sets the address of an given result pointer and return its status
-int Requests::getResult(int id, Requests::Result *req)
+int Requests::getResult(int id, Requests::Result *res)
 {
     if (results.find(id) == results.end())
         return 2;
     
     resultsMtx.lock();
-    *req = results[id]; //error 3 on request...
+    *res = results[id]; //error 3 on request...
     resultsMtx.unlock();
 
 
 
-    if (req->status > 0) removeResult(id);
+    if (res->status > 0) removeResult(id);
 
-    return req->status;
+    return res->status;
 }; //0, 1, 2, 3
 
 //Requests::fetchRequest processes a given request by the parameters of Requests::Request
@@ -223,16 +188,16 @@ void Requests::fetchRequest(Requests::Request req)
     if (!results.empty())
     {
         Requests::Result res;
+
+        int status = getResult(req.RequestID, &res);
         
-        if (getResult(req.RequestID, &res) == 0) {
-            if (!isValidMethod(req.Parameters["#method"]))
+        if (status == 0) {
+            if (!isValidMethod(req.Method))
             {
                 res.status = 2;
             }
             else
             {
-                std::string url = req.Parameters["#url"];
-
                 res.status = 3;
 
                 CURL *curl;
@@ -240,38 +205,7 @@ void Requests::fetchRequest(Requests::Request req)
 
                 curl = curl_easy_init();
 
-                std::string params("");
-                int nPCnt = 0;
-                bool fB = false;
-                for (
-                    std::map<std::string, std::string>::iterator it = req.Parameters.begin();
-                    it != req.Parameters.end();
-                    ++it
-                )
-                {
-                    if (isValidParameter(it->first))
-                    {
-                        if (fB)
-                            params.append("&");
-                        else
-                            fB = true;
-                        
-                        params.append(it->first);
-
-                        if (it->first.compare("") != 0)
-                        {
-                            params.append("=");
-                            params.append(it->second);
-                        }
-                        nPCnt++;
-                    }
-                }
-
-                if (nPCnt > 0)
-                {
-                    url.append("?");
-                    url.append(params);
-                }
+                req.Url.append(req.Forms);
 
                 struct curl_slist *headers = NULL;
                 for (unsigned int i = 0; i < req.Headers.size(); i++)
@@ -284,22 +218,19 @@ void Requests::fetchRequest(Requests::Request req)
                 if (curl)
                 {
                     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-                    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+                    curl_easy_setopt(curl, CURLOPT_URL, req.Url.c_str());
                     curl_easy_setopt(curl, CURLOPT_USERAGENT, HTTP_VERSION);
-                    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, req.Parameters["#method"].c_str());
+                    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, req.Method.c_str());
                     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resStr);
                     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, RequestsCurlCallbackWriter);
                     cS = curl_easy_perform(curl);
                     
                     if (cS == CURLE_OK)
                     {                        
-                        if (req.Parameters["#jsonToArray"].compare("true") == 0)
+                        if (req.JsonToArray)
                         {
                             resStr = A3URLCommon::ToArray(resStr);
                         }
-
-                        /*if (resStr.size() > 10240)
-                            resStr.resize(10240);*/
                         
                         res.result = resStr;
                         res.status = 1;
@@ -313,40 +244,16 @@ void Requests::fetchRequest(Requests::Request req)
 };
 
 //Requests::AddRequest call Requests::addRequest and writes the output to an pointer class Output
-int Requests::AddRequest(Output *op, std::map<std::string, std::string> params)
+int Requests::AddRequest(Output *op, Arguments::Parameters params)
 {
     int id = addRequest(params);
     op->Write(id);
 
-    if (id == 0)
+    if (id <= 0)
         return 501;
 
     return 500;
-};
-
-//Requests::AddRequest call Requests::addRequest and writes the output to an pointer class Output
-int Requests::AddRequest(Output *op, std::vector<std::string> headers)
-{
-    int id = addRequest(headers);
-    op->Write(id);
-
-    if (id == 0)
-        return 501;
-
-    return 500;
-};
-
-//Requests::AddRequest call Requests::addRequest and writes the output to an pointer class Output
-int Requests::AddRequest(Output *op, std::map<std::string, std::string> params, std::vector<std::string> headers)
-{
-    int id = addRequest(params, headers);
-    op->Write(id);
-
-    if (id == 0)
-        return 501;
-    
-    return 500;
-};
+}
 
 //Requests::getResultString copies the result of an Requests::Result class to an std::string pointer
 int Requests::getResultString(int id, std::string *str)

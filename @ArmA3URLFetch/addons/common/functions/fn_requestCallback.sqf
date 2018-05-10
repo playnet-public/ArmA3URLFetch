@@ -20,10 +20,11 @@ params [
 	["_url", "", [""]],
 	["_method", "", [""]],
 	["_params", [], [[]]],
+	["_headers", [], [[]]],
 	["_decodeJson", false, [false]]
 ];
 
-private _res = ([_url, _method, _params, _decodeJson] call a3uf_common_fnc_request);
+private _res = ([_url, _method, _params, _headers, _decodeJson] call a3uf_common_fnc_request);
 
 if (_code isEqualType "") then
 {
