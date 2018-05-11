@@ -1,5 +1,5 @@
 
-CPPFLAGS=-Wall -fPIC -pthread -std=c++14
+CPPFLAGS=-Wall -fPIC -pthread -std=c++11
 INCLUDES=-I.build/usr/lib/curl/include
 INCLUDES_x32=-I.build/usr/lib/curl/i386/include
 OBJS=src/common.o src/arguments.o src/requests.o src/clients.o src/output.o src/handler.o src/main.o
@@ -77,7 +77,7 @@ testLinux32: cleanTest
 	@echo "\tTEST\t\tLinux x32"
 	@$(CXX) -m32 -pthread -fPIC -I.build/usr/lib/curl/i386/include/ \
 		-Isrc/ \
-		-std=c++14 \
+		-std=c++11 \
 		src/common.cpp \
 		src/arguments.cpp \
 		src/requests.cpp \
@@ -95,7 +95,7 @@ testLinux64: cleanTest
 	@echo "\tTEST\t\tLinux x64"
 	@$(CXX) -Wall -pthread -fPIC -I.build/usr/lib/curl/include/ \
 		-Isrc/ \
-		-std=c++14 \
+		-std=c++11 \
 		src/common.cpp \
 		src/arguments.cpp \
 		src/requests.cpp \
@@ -122,6 +122,7 @@ build_armake: prepare
 
 createKey: prepare
 ifndef PRVKEYFILE
+	rm -f .build/keys/*
 	cd .build/keys/ && $(ARMAKE) keygen -f a3uf_$(TAG)
 	$(eval KEY := a3uf_$(TAG))
 	$(eval PRVKEYFILE := .build/keys/$(KEY).biprivatekey)
@@ -130,6 +131,7 @@ endif
 build_mod: build_armake createKey a3uf_common a3uf_json
 
 prepare_deploy:
+	rm -f .builds/$(TAG)
 	mkdir -p .builds/$(TAG)
 
 deploy_mod: prepare_deploy
