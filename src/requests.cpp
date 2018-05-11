@@ -171,9 +171,9 @@ int Requests::getResult(int id, Requests::Result *res)
     if (results.find(id) == results.end())
         return 2;
     
-    resultsMtx.lock_shared();
+    resultsMtx.lock();
     *res = results[id]; //error 3 on request...
-    resultsMtx.unlock_shared();
+    resultsMtx.lock();
 
     if (res->status > 0) removeResult(id);
 
@@ -261,9 +261,9 @@ int Requests::getResultString(int id, std::string *str)
     
     Requests::Result res;
 
-    resultsMtx.lock_shared();
+    resultsMtx.lock();
     res = results[id]; //error 3 on request...
-    resultsMtx.unlock_shared();
+    resultsMtx.lock();
 
     if (res.status == 2 || res.status == 3)
     {
@@ -312,8 +312,8 @@ int Requests::GetStatus(int id)
     if (results.find(id) == results.end())
         return 704;
     Requests::Result res;
-    resultsMtx.lock_shared();
+    resultsMtx.lock();
     res = results[id]; //error 3 on request...
-    resultsMtx.unlock_shared();
+    resultsMtx.lock();
     return 700 + res.status;
 }
