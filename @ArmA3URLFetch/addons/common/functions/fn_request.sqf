@@ -47,7 +47,7 @@ if ((count _headers) > 0) then {
 };
 
 private _res = [];
-_res = ("arma3urlfetch" callExtension ["SENDRQ", _args]);
+_res = "arma3urlfetch" callExtension ["SENDRQ", _args];
 
 if ((_res select 1) == 501) exitWith { ""; };
 
@@ -55,7 +55,7 @@ private _rID = (parseNumber (_res select 0));
 if (_rID <= 0) exitWith { ""; };
 
 _res = [];
-_res = ("arma3urlfetch" callExtension ["GETRQ", [_rID]]);
+_res = "arma3urlfetch" callExtension ["GETRQ", [_rID]];
 
 private _text = (_res select 0);
 if ((_res select 1) == 602) then
