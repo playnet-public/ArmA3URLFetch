@@ -37,6 +37,10 @@ int Handler::CallExtensionArgs(char * output, int outputSize, const char *functi
     {
         rC = this->getRequest(op, args, argsCnt);
     }
+    else if (strcmp(function, "GETST") == 0)
+    {
+        rC = this->getStatus(op, args, argsCnt);
+    }
 
     op->WriteBufFlush(output, outputSize);
     
@@ -51,15 +55,19 @@ int Handler::addClient(Output *op, const char **args, int argsCnt)
     int err = Arguments::ParseArguments(&params, args, argsCnt);
     if (err > 0)
         return err;
+    op->Write(params.Url.c_str());
     return this->clients->AddClient(op, params);
+};
+
+int Handler::getStatus(Output *op, const char **args, int argsCnt)
+{
+    return requests->GetStatus(A3URLCommon::StrToInt(std::string(args[0])));
 };
 
 int Handler::getRequest(Output *op, const char **args, int argsCnt)
 {
-    std::cout << args[0] << std::endl;
-    std::cout << A3URLCommon::StrToInt(std::string(args[0])) << std::endl;
     return requests->GetResult(op, A3URLCommon::StrToInt(std::string(args[0])));
-}
+};
 
 int Handler::sendRequest(Output *op, const char **args, int argsCnt)
 {

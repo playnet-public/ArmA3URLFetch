@@ -6,10 +6,12 @@
 
 int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, int argsCnt) {
     std::string tmp;
+    std::string tmpArg;
 
     for (int i = 0; i < argsCnt; i++)
     {
         std::string value(args[i]);
+        A3URLCommon::StrUnqoute(&value);
 
         if (value.compare("#url") == 0)
         {
@@ -17,6 +19,7 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
             {
                 i++;
                 tmp.append(args[i]);
+                A3URLCommon::StrUnqoute(&tmp);
                 if (tmp.at(0) == '#' || tmp.empty()) return 2;
                 params->Url = tmp;
                 tmp.clear();
@@ -32,6 +35,7 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
             {
                 i++;
                 tmp.append(args[i]);
+                A3URLCommon::StrUnqoute(&tmp);
                 if (tmp.at(0) == '#' || tmp.empty()) return 4;
                 params->Method = tmp;
                 tmp.clear();
@@ -46,11 +50,17 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
             while (i < argsCnt)
             {
                 if (i+2 >= argsCnt) break;
-                if (strncmp(args[i+1], "#", 1) == 0 || strncmp(args[i+2], "#", 1) == 0) break;
+                if (strncmp(args[i+1], "\"#", 2) == 0 || strncmp(args[i+2], "\"#", 2) == 0) break;
                 tmp.append(params->Forms.length() <= 0 ? "?" : "&");
-                tmp.append(args[i+1]);
+                tmpArg.append(args[i+1]);
+                A3URLCommon::StrUnqoute(&tmpArg);
+                tmp.append(tmpArg);
+                tmpArg.clear();
                 tmp.append("=");
-                tmp.append(args[i+2]);
+                tmpArg.append(args[i+2]);
+                A3URLCommon::StrUnqoute(&tmpArg);
+                tmp.append(tmpArg);
+                tmpArg.clear();
                 params->Forms.append(tmp);
                 tmp.clear();
                 i += 2;
@@ -61,10 +71,16 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
             while (i < argsCnt)
             {
                 if (i+2 >= argsCnt) break;
-                if (strncmp(args[i+1], "#", 1) == 0 || strncmp(args[i+2], "#", 1) == 0) break;
-                tmp.append(args[i+1]);
+                if (strncmp(args[i+1], "\"#", 2) == 0 || strncmp(args[i+2], "\"#", 2) == 0) break;
+                tmpArg.append(args[i+1]);
+                A3URLCommon::StrUnqoute(&tmpArg);
+                tmp.append(tmpArg);
+                tmpArg.clear();
                 tmp.append(": ");
-                tmp.append(args[i+2]);
+                tmpArg.append(args[i+2]);
+                A3URLCommon::StrUnqoute(&tmpArg);
+                tmp.append(tmpArg);
+                tmpArg.clear();
                 params->Headers.push_back(tmp);
                 tmp.clear();
                 i += 2;
@@ -80,6 +96,7 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
             {
                 i++;
                 tmp.append(args[i]);
+                A3URLCommon::StrUnqoute(&tmp);
                 if (tmp.at(0) == '#' || tmp.empty()) return 5;
                 params->ClientID = A3URLCommon::StrToInt(tmp);
                 tmp.clear();
@@ -89,6 +106,7 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
                 return 6;
             }
         }
+        tmpArg.clear();
         tmp.clear();
     }
 

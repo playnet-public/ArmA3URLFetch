@@ -1,5 +1,6 @@
 
 #include "requests.h"
+#include "macros.h"
 #include <iostream>
 
 #ifdef __linux__
@@ -44,9 +45,8 @@ void Requests::startWorkers()
     if (!workersStarted)
     {
         workersStarted = true;
-        int ct = 2;
 
-        for (int i = 0; i < ct; i++)
+        for (int i = 0; i < THREADS; i++)
         {
             std::thread newThread(&Requests::workerThread, this);
             newThread.detach();
@@ -118,7 +118,7 @@ int Requests::addRequest(Arguments::Parameters params)
     
     if (key < 1)
         return 0;
-    
+
     Requests::Request req;
     req.RequestID = key;
     req.Url = params.Url;
@@ -171,11 +171,9 @@ int Requests::getResult(int id, Requests::Result *res)
     if (results.find(id) == results.end())
         return 2;
     
-    resultsMtx.lock();
+    resultsMtx.lock_shared();
     *res = results[id]; //error 3 on request...
-    resultsMtx.unlock();
-
-
+    resultsMtx.unlock_shared();
 
     if (res->status > 0) removeResult(id);
 
@@ -205,8 +203,6 @@ void Requests::fetchRequest(Requests::Request req)
 
                 curl = curl_easy_init();
 
-                req.Url.append(req.Forms);
-
                 struct curl_slist *headers = NULL;
                 for (unsigned int i = 0; i < req.Headers.size(); i++)
                 {
@@ -217,6 +213,8 @@ void Requests::fetchRequest(Requests::Request req)
 
                 if (curl)
                 {
+                    res.result.append(req.Url);
+                    res.result.append(req.Method);
                     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
                     curl_easy_setopt(curl, CURLOPT_URL, req.Url.c_str());
                     curl_easy_setopt(curl, CURLOPT_USERAGENT, HTTP_VERSION);
@@ -226,7 +224,7 @@ void Requests::fetchRequest(Requests::Request req)
                     cS = curl_easy_perform(curl);
                     
                     if (cS == CURLE_OK)
-                    {                        
+                    {
                         if (req.JsonToArray)
                         {
                             resStr = A3URLCommon::ToArray(resStr);
@@ -263,9 +261,9 @@ int Requests::getResultString(int id, std::string *str)
     
     Requests::Result res;
 
-    resultsMtx.lock();
+    resultsMtx.lock_shared();
     res = results[id]; //error 3 on request...
-    resultsMtx.unlock();
+    resultsMtx.unlock_shared();
 
     if (res.status == 2 || res.status == 3)
     {
@@ -295,7 +293,7 @@ int Requests::GetResult(Output *op, int id)
     std::string str("");
     int status = getResultString(id, &str);
 
-    op->Write(str.c_str());// IF str IS EQUAL TO "", str IS FULLY EMPTIED
+    op->Write(str.c_str()); // IF str IS EQUAL TO "", str IS FULLY EMPTIED
 
     switch (status)
     {
@@ -308,3 +306,14 @@ int Requests::GetResult(Output *op, int id)
 
     return 600;
 };
+
+int Requests::GetStatus(int id)
+{
+    if (results.find(id) == results.end())
+        return 704;
+    Requests::Result res;
+    resultsMtx.lock_shared();
+    res = results[id]; //error 3 on request...
+    resultsMtx.unlock_shared();
+    return 700 + res.status;
+}

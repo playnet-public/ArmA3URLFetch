@@ -47,4 +47,5 @@ private:
     int removeClient(Output *op, const char **args, int argsCnt);
     int setClient(Output *op, const char **args, int argsCnt);
     int getRequest(Output *op, const char **args, int argsCnt);
+    int getStatus(Output *op, const char **args, int argsCnt);
 };

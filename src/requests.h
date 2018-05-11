@@ -12,6 +12,7 @@
 #include <map>
 #include <vector>
 #include <atomic>
+#include <shared_mutex>
 #include <mutex>
 #include <queue>
 #include <thread>
@@ -81,9 +82,11 @@ public:
         Writes to an Output buffer.
     */
     int GetResult(Output *op, int id);
+
+    int GetStatus(int id);
 private:
     std::map<int, Requests::Result> results; ///< The list of all pending results/requests.
-    std::mutex resultsMtx; ///< The list mutex.
+    std::shared_mutex resultsMtx; ///< The list mutex.
     std::queue<Requests::Request> requestsQueue; ///< The queue for all requests.
     std::mutex requestsQueueMtx; ///< The mutex of the queue.
     bool workersStarted = false; ///< The lock for a initialization once a time.

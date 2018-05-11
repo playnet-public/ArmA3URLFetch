@@ -60,12 +60,13 @@ _res = ("arma3urlfetch" callExtension ["GETRQ", [_rID]]);
 private _text = (_res select 0);
 if ((_res select 1) == 602) then
 {
-	waitUntil
-	{
-		uiSleep 0.1;
-		_res = ("arma3urlfetch" callExtension ["GETRQ", [_rID]]);
+	waitUntil { uiSleep 0.1; (("arma3urlfetch" callExtension ["GETST", [_rID]]) select 1) != 700; };
+
+	while {
+		_res = "arma3urlfetch" callExtension ["GETRQ", [_rID]];
+		(_res select 0) != "";
+	} do {
 		_text = _text + (_res select 0);
-		((_res select 0) == "" && (_res select 1) == 600);
 	};
 };
 

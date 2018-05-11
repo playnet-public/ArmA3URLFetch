@@ -1,5 +1,5 @@
 
-cl /MD /LD /EHsc /Fe:arma3urlfetch_x64.dll^
+cl /MD /LD /Fe:arma3urlfetch_x64.dll^
     src\common.cpp^
     src\arguments.cpp^
     src\requests.cpp^
