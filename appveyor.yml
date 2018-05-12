@@ -1,0 +1,25 @@
+
+version: "{build}"
+
+image: Visual Studio 2017
+
+branches:
+  only:
+  - master
+
+configuration:
+- RelWithDebInfo
+
+build:
+  parallel: true
+  verbosity: minimal
+
+build_script:
+  - "tools/build.bat"
+  - "tools/build_x64.bat"
+
+artifacts:
+- path: arma3urlfetch.dll
+  name: arma3urlfetch_win32
+- path: arma3urlfetch_x64.dll
+  name: arma3urlfetch_win64
