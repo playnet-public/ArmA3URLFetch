@@ -1,11 +1,11 @@
 
-CPPFLAGS=-Wall -fPIC -pthread -std=c++11
+CPPFLAGS=-Wall -fPIC -pthread -std=c++14
 INCLUDES=-I.build/usr/lib/curl/include
 INCLUDES_x32=-I.build/usr/lib/curl/i386/include
 OBJS=src/common.o src/arguments.o src/requests.o src/clients.o src/output.o src/handler.o src/main.o
 LIBS=.build/usr/lib/curl/lib/libcurl.a /usr/lib/x86_64-linux-gnu/libssl.a /usr/lib/x86_64-linux-gnu/libcrypto.a
 LIBS_x32=.build/usr/lib/curl/i386/lib/libcurl.a /usr/lib/i386-linux-gnu/libssl.a /usr/lib/i386-linux-gnu/libcrypto.a
-LDFLAGS=-shared -pthread -fPIC
+LDFLAGS=-shared -fPIC -pthread
 OUTPUT=""
 CURLSRC=https://github.com/curl/curl/releases/download/curl-7_59_0/curl-7.59.0.zip
 ARMAKE=$(abspath .build/bin/armake)
@@ -13,7 +13,7 @@ TAG=$(shell git describe --tag | sed "s/-.*-/-/")
 OUTPUTPATH=".build/@ArmA3URLFetch/"
 
 
-all: linux64 linux32 build_mod
+all: linux64 linux32 build_mod deploy_mod
 
 linux64: prepare clean build_obj_linux_x64 link
 linux32: prepare clean build_obj_linux_x32 link
@@ -43,7 +43,8 @@ curl: get_curl build_curl build_i386_curl
 
 prepare:
 	@mkdir -p .build/
-	@mkdir -p .build/\@ArmA3URLFetch/addons
+	@mkdir -p .build/@ArmA3URLFetch/addons
+	@mkdir -p .build/@ArmA3URLFetch/keys
 	@mkdir -p .build/keys
 	@mkdir -p .build/bin
 
@@ -65,7 +66,7 @@ build_obj_linux_x32: build_prep_linux_x32 $(OBJS)
 
 link:
 	@echo "\tLD\t\t$(OUTPUT)"
-	@$(CXX) $(LDFLAGS) $(OBJ) $(LIBS) -ldl -o $(OUTPUT)
+	@$(CXX) $(LIBS) $(OBJS) $(LDFLAGS) -ldl -o $(OUTPUT)
 
 clean:
 	@echo "\tCLEANUP"
@@ -74,10 +75,10 @@ clean:
 test: testLinux64 testLinux32
 
 testLinux32: cleanTest
-	@echo "\tTEST\t\tLinux x32"
+	@echo "\tTEST\t\tLinux (x86/x32)"
 	@$(CXX) -m32 -pthread -fPIC -I.build/usr/lib/curl/i386/include/ \
 		-Isrc/ \
-		-std=c++11 \
+		-std=c++14 \
 		src/common.cpp \
 		src/arguments.cpp \
 		src/requests.cpp \
@@ -88,14 +89,14 @@ testLinux32: cleanTest
 		$(LIBS_x32) \
 		-ldl \
 		-o .build/test.a
-	@echo "\tTEST\t\ttest.a x32"
+	@echo "\tTEST\t\ttest.a (x86/x32)"
 	@.build/test.a
 
 testLinux64: cleanTest
-	@echo "\tTEST\t\tLinux x64"
+	@echo "\tTEST\t\tLinux (x64)"
 	@$(CXX) -Wall -pthread -fPIC -I.build/usr/lib/curl/include/ \
 		-Isrc/ \
-		-std=c++11 \
+		-std=c++14 \
 		src/common.cpp \
 		src/arguments.cpp \
 		src/requests.cpp \
@@ -106,10 +107,11 @@ testLinux64: cleanTest
 		$(LIBS) \
 		-ldl \
 		-o .build/test.a
-	@echo "\tTEST\t\ttest.a x64"
+	@echo "\tTEST\t\ttest.a (x64)"
 	@.build/test.a
 
 cleanTest:
+	@echo "\tRM\t\tCleaning up tests"
 	@rm -f .build/test.a
 
 build_armake: prepare
@@ -126,17 +128,18 @@ ifndef PRVKEYFILE
 	cd .build/keys/ && $(ARMAKE) keygen -f a3uf_$(TAG)
 	$(eval KEY := a3uf_$(TAG))
 	$(eval PRVKEYFILE := .build/keys/$(KEY).biprivatekey)
+	cp -f .build/keys/*.bikey .build/@ArmA3URLFetch/keys
 endif
 
 build_mod: build_armake createKey a3uf_common a3uf_json
 
 prepare_deploy:
-	rm -f .builds/$(TAG)
-	mkdir -p .builds/$(TAG)
+	@rm -fR .builds/$(TAG)
+	@mkdir -p .builds/$(TAG)
 
 deploy_mod: prepare_deploy
-	mv .build/@ArmA3URLFetch .builds/$(TAG)
-	mv .build/keys .builds/$(TAG)
+	@mv .build/@ArmA3URLFetch .builds/$(TAG)
+	@mv .build/keys .builds/$(TAG)
 
 a3uf_common: prepare
 	$(ARMAKE) build -p --force -k $(PRVKEYFILE) -e prefix=x\\a3uf\\addons\\common @ArmA3URLFetch/addons/common .build/@ArmA3URLFetch/addons/$@.pbo

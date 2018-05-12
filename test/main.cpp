@@ -43,7 +43,7 @@ int main() {
     args[8] = tmp9;
     args[9] = tmp10;
 
-    /*std::cout << hndl->CallExtensionArgs(output, outputSize, function, args, 10) << std::endl;
+    std::cout << hndl->CallExtensionArgs(output, outputSize, function, args, 10) << std::endl;
     std::cout << output << std::endl;
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -52,7 +52,7 @@ int main() {
     args2[0] = "\"1\"";
 
     std::cout << hndl->CallExtensionArgs(output, outputSize, "GETRQ", args2, 1) << std::endl;
-    std::cout << output << std::endl;*/
+    std::cout << output << std::endl;
 
     return 0;
 }

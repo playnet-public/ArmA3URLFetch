@@ -92,16 +92,18 @@ int Requests::addResult()
 {
     int key = 1;
 
-    resultsMtx.lock();
+    resultsMtx.lock_shared();
     while (true)
     {
         if (results.find(key) == results.end())
             break;
         key++;
     };
+    resultsMtx.unlock_shared();
 
     Requests::Result res;
     res.status = 0;
+    resultsMtx.lock();
     results.insert(std::pair<int, Requests::Result>(key, res));
     resultsMtx.unlock();
 
@@ -171,9 +173,9 @@ int Requests::getResult(int id, Requests::Result *res)
     if (results.find(id) == results.end())
         return 2;
     
-    resultsMtx.lock();
+    resultsMtx.lock_shared();
     *res = results[id]; //error 3 on request...
-    resultsMtx.lock();
+    resultsMtx.unlock_shared();
 
     if (res->status > 0) removeResult(id);
 
@@ -260,10 +262,7 @@ int Requests::getResultString(int id, std::string *str)
         return 1;
     
     Requests::Result res;
-
-    resultsMtx.lock();
-    res = results[id]; //error 3 on request...
-    resultsMtx.lock();
+    res.status = getResult(id, &res);
 
     if (res.status == 2 || res.status == 3)
     {
@@ -312,8 +311,8 @@ int Requests::GetStatus(int id)
     if (results.find(id) == results.end())
         return 704;
     Requests::Result res;
-    resultsMtx.lock();
+    resultsMtx.lock_shared();
     res = results[id]; //error 3 on request...
-    resultsMtx.lock();
+    resultsMtx.unlock_shared();
     return 700 + res.status;
 }
