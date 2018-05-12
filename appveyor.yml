@@ -15,8 +15,8 @@ build:
   verbosity: minimal
 
 build_script:
-  - "tools/build.bat"
-  - "tools/build_x64.bat"
+  - cmd: "tools/build.bat"
+  - cmd: "tools/build_x64.bat"
 
 artifacts:
 - path: arma3urlfetch.dll
