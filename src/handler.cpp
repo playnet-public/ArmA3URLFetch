@@ -55,7 +55,6 @@ int Handler::addClient(Output *op, const char **args, int argsCnt)
     int err = Arguments::ParseArguments(&params, args, argsCnt);
     if (err > 0)
         return err;
-    op->Write(params.Url.c_str());
     return this->clients->AddClient(op, params);
 };
 
@@ -73,8 +72,21 @@ int Handler::sendRequest(Output *op, const char **args, int argsCnt)
 {
     Arguments::Parameters params;
     params.Method = "GET";
+    params.JsonToArray = false;
     int err = Arguments::ParseArguments(&params, args, argsCnt);
     if (err > 0) return err;
+    
+    if (params.ClientID > 0) {
+        Clients::Client cli;
+        if (clients->GetClient(params.ClientID, &cli)) {
+            params.Url = cli.Url;
+            params.Method = cli.Method;
+            params.Forms = cli.Forms;
+            params.Headers = cli.Headers;
+            params.JsonToArray = cli.JsonToArray;
+        }
+    }
+
     return requests->AddRequest(op, params);
 };
 

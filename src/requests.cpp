@@ -134,7 +134,7 @@ int Requests::addRequest(Arguments::Parameters params)
     requestsQueueMtx.unlock();
 
     return key;
-}
+};
 
 //Requests::setResult sets a specific result by its id
 void Requests::setResult(int id, Requests::Result res)
@@ -211,12 +211,12 @@ void Requests::fetchRequest(Requests::Request req)
                     headers = curl_slist_append(headers, req.Headers[i].c_str());
                 }
 
+                req.Url.append(req.Forms);
+
                 std::string resStr;
 
                 if (curl)
                 {
-                    res.result.append(req.Url);
-                    res.result.append(req.Method);
                     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
                     curl_easy_setopt(curl, CURLOPT_URL, req.Url.c_str());
                     curl_easy_setopt(curl, CURLOPT_USERAGENT, HTTP_VERSION);
@@ -231,7 +231,7 @@ void Requests::fetchRequest(Requests::Request req)
                         {
                             resStr = A3URLCommon::ToArray(resStr);
                         }
-                        
+
                         res.result = resStr;
                         res.status = 1;
                     }

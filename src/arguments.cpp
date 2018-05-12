@@ -52,15 +52,19 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
                 if (i+2 >= argsCnt) break;
                 if (strncmp(args[i+1], "\"#", 2) == 0 || strncmp(args[i+2], "\"#", 2) == 0) break;
                 tmp.append(params->Forms.length() <= 0 ? "?" : "&");
+
                 tmpArg.append(args[i+1]);
                 A3URLCommon::StrUnqoute(&tmpArg);
                 tmp.append(tmpArg);
                 tmpArg.clear();
+
                 tmp.append("=");
+
                 tmpArg.append(args[i+2]);
                 A3URLCommon::StrUnqoute(&tmpArg);
                 tmp.append(tmpArg);
                 tmpArg.clear();
+
                 params->Forms.append(tmp);
                 tmp.clear();
                 i += 2;
