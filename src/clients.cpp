@@ -31,7 +31,7 @@ bool Clients::setClient(int id, Arguments::Parameters params)
     client.Method = params.Method;
     client.Headers = params.Headers;
     client.JsonToArray = params.JsonToArray;
-    client.Forms = params.Forms;
+    client.PostData = params.PostData;
     setClient(id, client);
 
     return true;
@@ -40,7 +40,7 @@ bool Clients::setClient(int id, Arguments::Parameters params)
 int Clients::addClient(Arguments::Parameters params)
 {
     Clients::Client client;
-    client.Forms = params.Forms;
+    client.PostData = params.PostData;
     client.Headers = params.Headers;
     client.JsonToArray = params.JsonToArray;
     client.Url = params.Url;

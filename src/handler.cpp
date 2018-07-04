@@ -81,7 +81,7 @@ int Handler::sendRequest(Output *op, const char **args, int argsCnt)
         if (clients->GetClient(params.ClientID, &cli)) {
             params.Url = cli.Url;
             params.Method = cli.Method;
-            params.Forms = cli.Forms;
+            params.PostData = cli.PostData;
             params.Headers = cli.Headers;
             params.JsonToArray = cli.JsonToArray;
         }

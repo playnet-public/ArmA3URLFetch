@@ -45,29 +45,20 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
                 return 3;
             }
         }
-        else if (value.compare("#parameters") == 0)
+        else if (value.compare("#postData") == 0)
         {
-            while (i < argsCnt)
+            if (i+1 < argsCnt)
             {
-                if (i+2 >= argsCnt) break;
-                if (strncmp(args[i+1], "\"#", 2) == 0 || strncmp(args[i+2], "\"#", 2) == 0) break;
-                tmp.append(params->Forms.length() <= 0 ? "?" : "&");
-
-                tmpArg.append(args[i+1]);
-                A3URLCommon::StrUnqoute(&tmpArg);
-                tmp.append(tmpArg);
-                tmpArg.clear();
-
-                tmp.append("=");
-
-                tmpArg.append(args[i+2]);
-                A3URLCommon::StrUnqoute(&tmpArg);
-                tmp.append(tmpArg);
-                tmpArg.clear();
-
-                params->Forms.append(tmp);
+                i++;
+                tmp.append(args[i]);
+                A3URLCommon::StrUnqoute(&tmp);
+                if (tmp.at(0) == '#' || tmp.empty()) return 5;
+                params->PostData.append(tmp);
                 tmp.clear();
-                i += 2;
+            }
+            else
+            {
+                return 5;
             }
         }
         else if (value.compare("#headers") == 0)

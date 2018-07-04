@@ -125,7 +125,7 @@ int Requests::addRequest(Arguments::Parameters params)
     req.RequestID = key;
     req.Url = params.Url;
     req.Method = params.Method;
-    req.Forms = params.Forms;
+    req.PostData = params.PostData;
     req.Headers = params.Headers;
     req.JsonToArray = params.JsonToArray;
 
@@ -221,8 +221,13 @@ void Requests::fetchRequest(Requests::Request req)
                     curl_easy_setopt(curl, CURLOPT_URL, req.Url.c_str());
                     curl_easy_setopt(curl, CURLOPT_USERAGENT, HTTP_VERSION);
                     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, req.Method.c_str());
+                    if (!req.Url.empty()) {
+                        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, req.PostData.c_str());
+                    }
+
                     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resStr);
                     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, RequestsCurlCallbackWriter);
+
                     cS = curl_easy_perform(curl);
                     
                     if (cS == CURLE_OK)

@@ -31,7 +31,7 @@ public:
     struct Client
     {
         bool JsonToArray;
-        std::string Url, Method, Forms; ///< The parameters of a persistent URL request.
+        std::string Url, Method, PostData; ///< The parameters of a persistent URL request.
         std::vector<std::string> Headers; ///< The headers of a persistent URL request.
     };
 
