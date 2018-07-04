@@ -16,8 +16,8 @@
 params [
 	["_url", "", [""]],
 	["_method", "", [""]],
-	["_params", [], [[]]],
 	["_headers", [], [[]]],
+	["_postData", "", [""]],
 	["_decodeJson", false, [false]]
 ];
 
@@ -36,9 +36,8 @@ if (_decodeJson) then {
 	_args pushBack "#jsonToArray";
 };
 
-if ((count _params) > 0) then {
-	_args pushBack "#parameters";
-	_args append _params;
+if (_postData != "") then {
+	_args append ["#postData", _postData];
 };
 
 if ((count _headers) > 0) then {

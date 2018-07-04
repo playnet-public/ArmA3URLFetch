@@ -160,9 +160,7 @@ bool Requests::removeResult(int id)
     if (f == results.end())
         return false;
     
-    resultsMtx.lock();
     results.erase(f);
-    resultsMtx.unlock();
 
     return true;
 };
@@ -173,9 +171,7 @@ int Requests::getResult(int id, Requests::Result *res)
     if (results.find(id) == results.end())
         return 2;
     
-    resultsMtx.lock_shared();
     *res = results[id]; //error 3 on request...
-    resultsMtx.unlock_shared();
 
     if (res->status > 0) removeResult(id);
 
@@ -316,8 +312,6 @@ int Requests::GetStatus(int id)
     if (results.find(id) == results.end())
         return 704;
     Requests::Result res;
-    resultsMtx.lock_shared();
     res = results[id]; //error 3 on request...
-    resultsMtx.unlock_shared();
     return 700 + res.status;
 }
