@@ -89,7 +89,7 @@ private:
     /*std::shared_mutex resultsMtx; ///< The list mutex.*/
     std::shared_timed_mutex resultsMtx;
     std::queue<Requests::Request> requestsQueue; ///< The queue for all requests.
-    std::mutex requestsQueueMtx; ///< The mutex of the queue.
+    std::shared_timed_mutex requestsQueueMtx; ///< The mutex of the queue.
     bool workersStarted = false; ///< The lock for a initialization once a time.
 
     /*!
