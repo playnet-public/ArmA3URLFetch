@@ -22,8 +22,8 @@ params [
 	["_cid", 0, [0]],
 	["_url", "", [""]],
 	["_method", "", [""]],
-	["_params", [], [[]]],
 	["_headers", [], [[]]],
+	["_postData", [], ["", []]],
 	["_decodeJson", false, [false]]
 ];
 
@@ -43,9 +43,13 @@ if (_decodeJson) then {
 	_args pushBack "#jsonToArray";
 };
 
-if ((count _params) > 0) then {
-	_args pushBack "#parameters";
-	_args append _params;
+if (_postData isEqualType "" && { _postData != "" }) then {
+	_args append ["#postData", _postData];
+} else {
+	if (_postData isEqualType [] && { (count _postData) > 0 }) then {
+		_args pushBack "#postData";
+		_args append _postData;
+	};
 };
 
 if ((count _headers) > 0) then {

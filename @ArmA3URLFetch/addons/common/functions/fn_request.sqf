@@ -17,7 +17,7 @@ params [
 	["_url", "", [""]],
 	["_method", "", [""]],
 	["_headers", [], [[]]],
-	["_postData", "", [""]],
+	["_postData", "", ["", []]],
 	["_decodeJson", false, [false]]
 ];
 
@@ -36,8 +36,13 @@ if (_decodeJson) then {
 	_args pushBack "#jsonToArray";
 };
 
-if (_postData != "") then {
+if (_postData isEqualType "" && { _postData != "" }) then {
 	_args append ["#postData", _postData];
+} else {
+	if (_postData isEqualType [] && { (count _postData) > 0 }) then {
+		_args pushBack "#postData";
+		_args append _postData;
+	};
 };
 
 if ((count _headers) > 0) then {

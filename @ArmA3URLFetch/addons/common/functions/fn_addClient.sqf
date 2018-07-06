@@ -16,8 +16,8 @@
 params [
 	["_url", "", [""]],
 	["_method", "", [""]],
-	["_params", [], [[]]],
 	["_headers", [], [[]]],
+	["_postData", "", [[], ""]], //<- can be array of strings or a string
 	["_decodeJson", false, [false]]
 ];
 
@@ -30,8 +30,13 @@ if (_method != "") then {
 	_args append ["#method", _method];
 };
 
-if ((count _params) > 0) then {
-	_args append _params;
+if (_postData isEqualType "" && { _postData != "" }) then {
+	_args append ["#postData", _postData];
+} else {
+	if (_postData isEqualType [] && { (count _postData) > 0 }) then {
+		_args pushBack "#postData";
+		_args append _postData;
+	};
 };
 
 if ((count _headers) > 0) then {
