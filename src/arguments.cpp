@@ -49,11 +49,10 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
         {
             while (i < argsCnt)
             {
-                if (i+1 >= argsCnt) return 4;
+                if (i+1 >= argsCnt) break;
                 if (strncmp(args[i+1], "\"#", 2) == 0) break;
                 tmp.append(args[i+1]);
                 A3URLCommon::StrUnqoute(&tmp);
-                if (tmp.at(0) == '#' || tmp.empty()) break;
                 params->PostData.append(tmp);
                 tmp.clear();
                 i++;
@@ -63,7 +62,7 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
         {
             while (i < argsCnt)
             {
-                if (i+2 >= argsCnt) return 5;
+                if (i+2 >= argsCnt) break;
                 if (strncmp(args[i+1], "\"#", 2) == 0 || strncmp(args[i+2], "\"#", 2) == 0) break;
                 tmpArg.append(args[i+1]);
                 A3URLCommon::StrUnqoute(&tmpArg);
