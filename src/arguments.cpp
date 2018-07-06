@@ -47,25 +47,23 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
         }
         else if (value.compare("#postData") == 0)
         {
-            if (i+1 < argsCnt)
+            while (i < argsCnt)
             {
-                i++;
-                tmp.append(args[i]);
+                if (i+1 >= argsCnt) return 4;
+                if (strncmp(args[i+1], "\"#", 2) == 0) break;
+                tmp.append(args[i+1]);
                 A3URLCommon::StrUnqoute(&tmp);
-                if (tmp.at(0) == '#' || tmp.empty()) return 5;
+                if (tmp.at(0) == '#' || tmp.empty()) break;
                 params->PostData.append(tmp);
                 tmp.clear();
-            }
-            else
-            {
-                return 5;
+                i++;
             }
         }
         else if (value.compare("#headers") == 0)
         {
             while (i < argsCnt)
             {
-                if (i+2 >= argsCnt) break;
+                if (i+2 >= argsCnt) return 5;
                 if (strncmp(args[i+1], "\"#", 2) == 0 || strncmp(args[i+2], "\"#", 2) == 0) break;
                 tmpArg.append(args[i+1]);
                 A3URLCommon::StrUnqoute(&tmpArg);
