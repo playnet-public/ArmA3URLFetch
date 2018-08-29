@@ -98,6 +98,18 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
                 return 6;
             }
         }
+        else if (value.compare("#redirect") == 0)
+        {
+            params->Redirect = true;
+            if (i+1 < argsCnt) {
+                i++;
+                tmp.append(args[i]);
+                A3URLCommon::StrUnqoute(&tmp);
+                if (tmp.at(0) == '#' || tmp.empty()) return 7;
+                params->MaxRedirects = A3URLCommon::StrToInt(tmp);
+                tmp.clear();
+            }
+        }
         tmpArg.clear();
         tmp.clear();
     }

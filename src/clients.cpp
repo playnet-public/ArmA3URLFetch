@@ -32,6 +32,8 @@ bool Clients::setClient(int id, Arguments::Parameters params)
     client.Headers = params.Headers;
     client.JsonToArray = params.JsonToArray;
     client.PostData = params.PostData;
+    client.MaxRedirects = params.MaxRedirects;
+    client.Redirect = params.Redirect;
     setClient(id, client);
 
     return true;
@@ -40,6 +42,8 @@ bool Clients::setClient(int id, Arguments::Parameters params)
 int Clients::addClient(Arguments::Parameters params)
 {
     Clients::Client client;
+    client.MaxRedirects = params.MaxRedirects;
+    client.Redirect = params.Redirect;
     client.PostData = params.PostData;
     client.Headers = params.Headers;
     client.JsonToArray = params.JsonToArray;

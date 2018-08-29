@@ -132,6 +132,8 @@ int Requests::addRequest(Arguments::Parameters params)
     req.PostData = params.PostData;
     req.Headers = params.Headers;
     req.JsonToArray = params.JsonToArray;
+    req.Redirect = params.Redirect;
+    req.MaxRedirects = params.MaxRedirects;
 
     requestsQueueMtx.lock();
     requestsQueue.push(req);
@@ -227,6 +229,12 @@ void Requests::fetchRequest(Requests::Request req)
                     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, req.Method.c_str());
                     if (!req.Url.empty()) {
                         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, req.PostData.c_str());
+                    }
+                    if (req.Redirect) {
+                        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+                        if (req.MaxRedirects != 0) {
+                            curl_easy_setopt(curl, CURLOPT_MAXREDIRS, (long int)req.MaxRedirects);
+                        }
                     }
 
                     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resStr);

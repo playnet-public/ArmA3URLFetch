@@ -30,7 +30,8 @@ public:
     */
     struct Client
     {
-        bool JsonToArray;
+        int MaxRedirects;
+        bool JsonToArray, Redirect;
         std::string Url, Method, PostData; ///< The parameters of a persistent URL request.
         std::vector<std::string> Headers; ///< The headers of a persistent URL request.
     };
