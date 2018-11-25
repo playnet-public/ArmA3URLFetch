@@ -7,6 +7,7 @@
 */
 
 #pragma once
+#include <stringstream>
 #include <string>
 #include <string.h>
 #include <stdexcept>
