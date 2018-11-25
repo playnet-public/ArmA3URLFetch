@@ -8,7 +8,7 @@ LIBS_x32=.build/usr/lib/curl/i386/lib/libcurl.a /usr/lib/i386-linux-gnu/libssl.a
 LDFLAGS=-shared -fPIC -pthread
 OUTPUT=""
 CURLSRC=https://github.com/curl/curl/releases/download/curl-7_59_0/curl-7.59.0.zip
-ARMAKE=$(abspath .build/bin/armake)
+ARMAKE=$(abspath tools/bin/armake)
 TAG=$(shell git describe --tag | sed "s/-.*-/-/")
 OUTPUTPATH=".build/@ArmA3URLFetch/"
 
@@ -114,14 +114,6 @@ cleanTest:
 	@echo "\tRM\t\tCleaning up tests"
 	@rm -f .build/test.a
 
-build_armake: prepare
-	if [ ! -d .build/armake ]; then git clone https://github.com/TheMysteriousVincent/armake.git .build/armake ; \
-		cd .build/armake \
-		&& make \
-		&& cd ../../ \
-		&& cp -f .build/armake/bin/armake .build/bin/ ; \
-	fi
-
 createKey: prepare
 ifndef PRVKEYFILE
 	rm -f .build/keys/*
@@ -131,7 +123,7 @@ ifndef PRVKEYFILE
 	cp -f .build/keys/*.bikey .build/@ArmA3URLFetch/keys
 endif
 
-build_mod: build_armake createKey a3uf_common a3uf_json
+build_mod: createKey a3uf_common a3uf_json
 
 prepare_deploy:
 	@rm -fR .builds/$(TAG)
