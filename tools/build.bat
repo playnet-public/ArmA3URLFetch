@@ -1,6 +1,7 @@
 
 call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
 cl /MD /LD /EHsc /Fe:arma3urlfetch.dll^
+    /I include\nlohmann^
     src\common.cpp^
     src\arguments.cpp^
     src\requests.cpp^
@@ -10,7 +11,6 @@ cl /MD /LD /EHsc /Fe:arma3urlfetch.dll^
     src\main.cpp^
     /DCURL_STATICLIB^
     /I include\windows\x86^
-    /I include^
     lib\windows\libcurl_a.lib^
     /std:c++17
 rm *.obj

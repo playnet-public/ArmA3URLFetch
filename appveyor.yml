@@ -15,7 +15,7 @@ build:
   verbosity: minimal
 
 build_script:
-#  - cmd: "tools/build.bat"
+  - cmd: "tools/build.bat"
   - cmd: "tools/build_x64.bat"
 
 artifacts:
