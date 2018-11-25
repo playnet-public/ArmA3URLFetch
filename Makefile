@@ -78,6 +78,7 @@ testLinux32: cleanTest
 	@echo "\tTEST\t\tLinux (x86/x32)"
 	@$(CXX) -m32 -pthread -fPIC -I.build/usr/lib/curl/i386/include/ \
 		-Isrc/ \
+		-Iinclude/nlohmann \
 		-std=c++14 \
 		src/common.cpp \
 		src/arguments.cpp \
@@ -96,6 +97,7 @@ testLinux64: cleanTest
 	@echo "\tTEST\t\tLinux (x64)"
 	@$(CXX) -Wall -pthread -fPIC -I.build/usr/lib/curl/include/ \
 		-Isrc/ \
+		-Iinclude/nlohmann \
 		-std=c++14 \
 		src/common.cpp \
 		src/arguments.cpp \
