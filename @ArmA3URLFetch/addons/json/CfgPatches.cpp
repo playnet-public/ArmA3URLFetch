@@ -4,8 +4,8 @@ class a3uf_json
     units[] = {};
     weapons[] = {};
     requiredAddons[] = {};
-    author[] = {"Vincent Heins"};
-    version = 0.9;
-    versionStr = "0.9";
-    versionAr[] = {"0.9"};
+    author[] = {"TheMysteriousVincent"};
+    version = "1.0.1";
+    versionStr = "1.0.1";
+    versionAr[] = {1, 0, 1};
 };

@@ -1,11 +1,10 @@
 
-class a3uf_common
-{
+class a3uf_common {
     units[] = {};
     weapons[] = {};
     requiredAddons[] = {};
-    author[] = {"Vincent Heins"};
-    version = 0.9;
-    versionStr = "0.9";
-    versionAr[] = {"0.9"};
+    author[] = {"TheMysteriousVincent"};
+    version = "1.0.1";
+    versionStr = "1.0.1";
+    versionAr[] = {1, 0, 1};
 };
