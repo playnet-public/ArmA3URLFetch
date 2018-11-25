@@ -2,6 +2,8 @@
 call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
 cl /MD /LD /Fe:arma3urlfetch_x64.dll^
     /I include\nlohmann^
+    /I include^
+    include\jsoncpp.cpp^
     src\common.cpp^
     src\arguments.cpp^
     src\requests.cpp^
