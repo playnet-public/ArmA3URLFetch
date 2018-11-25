@@ -123,7 +123,7 @@ std::string A3URLCommon::toArray_array(nlohmann::json j)
         }
         else if (j[i].is_null())
         {
-            res << "null";
+            res << "nil";
         }
         else if (j[i].is_object())
         {
@@ -156,7 +156,7 @@ std::string A3URLCommon::toArray_object(nlohmann::json j)
         }
         else if (it.value().is_null())
         {
-            res << "[\"" << it.key() << ",null]";
+            res << "[\"" << it.key() << "\",nil]";
         }
         else if (it.value().is_object())
         {
