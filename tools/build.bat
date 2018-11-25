@@ -1,6 +1,5 @@
 
-dir "C:\Program Files\Microsoft SDKs\Windows"
-call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"
+call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86
 cl /MD /LD /EHsc /Fe:arma3urlfetch.dll^
     src\common.cpp^
     src\arguments.cpp^
