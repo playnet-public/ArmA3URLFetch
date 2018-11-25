@@ -1,5 +1,5 @@
 
-call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
+call "C:\Program Files (x86)\Microsoft Visual Studio\2013\Community\VC\Auxiliary\Build\vcvars32.bat"
 cl /MD /LD /EHsc /Fe:arma3urlfetch.dll^
     src\common.cpp^
     src\arguments.cpp^
