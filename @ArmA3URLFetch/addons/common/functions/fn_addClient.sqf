@@ -9,7 +9,7 @@
 	
 	Example(s):
 		(Example 1)
-		private _clientID = ["https://httpbin.org/get", "GET", ["hey=there"], true] call a3uf_common_fnc_addClient;
+		private _clientID = ["https://httpbin.org/get", "GET", ["Authorization", "<some-token>"], "{"myPost": "data"}", true] call a3uf_common_fnc_addClient;
 		//_clientID = <int>
 */
 
@@ -43,8 +43,7 @@ if ((count _headers) > 0) then {
 	_args append _headers;
 };
 
-if (_decodeJson) then
-{
+if (_decodeJson) then {
 	_args pushBack "#jsonToArray";
 };
 

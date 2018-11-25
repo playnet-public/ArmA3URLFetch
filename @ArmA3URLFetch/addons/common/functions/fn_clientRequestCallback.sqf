@@ -25,8 +25,7 @@ if (_cid <= 0) exitWith {};
 
 private _res = ([_cid, _params] call a3uf_common_fnc_clientRequest);
 
-if (_code isEqualType "") then
-{
+if (_code isEqualType "") then {
 	private _code = (compile _code);
 };
 

@@ -11,7 +11,7 @@
 		(Example 1)
 		private _res = [{
 			systemChat str (_this select 0);
-		}, "https://httpbin.org/get", "GET", ["test=tester"], false] call a3uf_common_fnc_requestCallback;
+		}, "https://httpbin.org/get", "GET", ["Authorization", "<token>"], "{}", false] call a3uf_common_fnc_requestCallback;
 		//_res = <string>
 */
 
@@ -19,15 +19,14 @@ params [
 	["_code", {}, [{}, ""]],
 	["_url", "", [""]],
 	["_method", "", [""]],
-	["_params", [], [[]]],
 	["_headers", [], [[]]],
+	["_postData", "", [""]],
 	["_decodeJson", false, [false]]
 ];
 
-private _res = ([_url, _method, _params, _headers, _decodeJson] call a3uf_common_fnc_request);
+private _res = ([_url, _method, _headers, _postData, _decodeJson] call a3uf_common_fnc_request);
 
-if (_code isEqualType "") then
-{
+if (_code isEqualType "") then {
 	private _code = (compile _code);
 };
 
