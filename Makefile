@@ -79,7 +79,9 @@ testLinux32: cleanTest
 	@$(CXX) -m32 -pthread -fPIC -I.build/usr/lib/curl/i386/include/ \
 		-Isrc/ \
 		-Iinclude/nlohmann \
+		-Iinclude/jsoncpp \
 		-std=c++14 \
+		include/jsoncpp.cpp \
 		src/common.cpp \
 		src/arguments.cpp \
 		src/requests.cpp \
@@ -98,7 +100,9 @@ testLinux64: cleanTest
 	@$(CXX) -Wall -pthread -fPIC -I.build/usr/lib/curl/include/ \
 		-Isrc/ \
 		-Iinclude/nlohmann \
+		-Iinclude/jsoncpp \
 		-std=c++14 \
+		include/jsoncpp.cpp \
 		src/common.cpp \
 		src/arguments.cpp \
 		src/requests.cpp \

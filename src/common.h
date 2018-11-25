@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <map>
 #include "nlohmann/json.hpp"
+#include "json/json.h"
 
 /*!
     \class A3URLCommon

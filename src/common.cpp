@@ -91,6 +91,9 @@ std::map<std::string, std::string> A3URLCommon::MergeStringMaps(std::map<std::st
 //A3URLCommon::ToArray is the init function for the json array to ArmA 3 array convertion
 std::string A3URLCommon::ToArray(std::string jTxt)
 {
+    Json::Value root;
+    std::stringstream(jTxt) >> root;
+    
     nlohmann::json j = nlohmann::json::parse(jTxt);
     std::stringstream res;
 
