@@ -12,7 +12,7 @@ cl /MD /LD /EHsc /Fe:arma3urlfetch.dll^
     /DCURL_STATICLIB^
     /I include\windows\x86^
     lib\windows\libcurl_a.lib^
-    /std:c++11
+    /std:c++17
 rm *.obj
 rm *.lib
 rm *.exp
