@@ -1,5 +1,5 @@
 
-call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86
+call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
 cl /MD /LD /EHsc /Fe:arma3urlfetch.dll^
     src\common.cpp^
     src\arguments.cpp^
@@ -11,7 +11,7 @@ cl /MD /LD /EHsc /Fe:arma3urlfetch.dll^
     /DCURL_STATICLIB^
     /I include\windows\x86^
     lib\windows\libcurl_a.lib^
-    /std:c++11
+    /std:c++17
 rm *.obj
 rm *.lib
 rm *.exp
