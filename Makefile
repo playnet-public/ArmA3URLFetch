@@ -1,7 +1,7 @@
 
 CPPFLAGS=-Wall -fPIC -pthread -std=c++14
-INCLUDES=-I.build/usr/lib/curl/include -Iinclude/nlohmann
-INCLUDES_x32=-I.build/usr/lib/curl/i386/include -Iinclude/nlohmann
+INCLUDES=-I.build/usr/lib/curl/include -Iinclude/jsoncpp
+INCLUDES_x32=-I.build/usr/lib/curl/i386/include -Iinclude/jsoncpp
 OBJS=src/common.o src/arguments.o src/requests.o src/clients.o src/output.o src/handler.o src/main.o
 LIBS=.build/usr/lib/curl/lib/libcurl.a /usr/lib/x86_64-linux-gnu/libssl.a /usr/lib/x86_64-linux-gnu/libcrypto.a
 LIBS_x32=.build/usr/lib/curl/i386/lib/libcurl.a /usr/lib/i386-linux-gnu/libssl.a /usr/lib/i386-linux-gnu/libcrypto.a
@@ -78,7 +78,6 @@ testLinux32: cleanTest
 	@echo "\tTEST\t\tLinux (x86/x32)"
 	@$(CXX) -m32 -pthread -fPIC -I.build/usr/lib/curl/i386/include/ \
 		-Isrc/ \
-		-Iinclude/nlohmann \
 		-Iinclude/jsoncpp \
 		-std=c++14 \
 		include/jsoncpp.cpp \
@@ -99,7 +98,6 @@ testLinux64: cleanTest
 	@echo "\tTEST\t\tLinux (x64)"
 	@$(CXX) -Wall -pthread -fPIC -I.build/usr/lib/curl/include/ \
 		-Isrc/ \
-		-Iinclude/nlohmann \
 		-Iinclude/jsoncpp \
 		-std=c++14 \
 		include/jsoncpp.cpp \

@@ -93,84 +93,145 @@ std::string A3URLCommon::ToArray(std::string jTxt)
 {
     Json::Value root;
     std::stringstream(jTxt) >> root;
-    
-    nlohmann::json j = nlohmann::json::parse(jTxt);
     std::stringstream res;
 
-    if (j.is_array())
+    if (root.empty())
     {
-        res << "[\"array\"," << A3URLCommon::toArray_array(j) << "]";
+        res << "[]";
     }
-    else if (j.is_object())
+    else if (root.isArray())
     {
-        res << "[\"object\"," << A3URLCommon::toArray_object(j) << "]";
+        res << A3URLCommon::toArray_array(root);
+    }
+    else if (root.isObject())
+    {
+        res << A3URLCommon::toArray_object(root);
     }
 
     return res.str();
 };
 
 //A3URLCommon::toArray_array formats only JSON arrays to an ArmA 3 array
-std::string A3URLCommon::toArray_array(nlohmann::json j)
+std::string A3URLCommon::toArray_array(const Json::Value &root)
 {
     std::stringstream res;
 
-    res << "[";
-    for (unsigned int i = 0; i < j.size(); i++)
+    res << "[\"array\",";
+    if (root.size() > 0)
     {
-        if (i != 0)
-            res << ",";
-
-        if (j[i].is_number() || j[i].is_boolean() || j[i].is_string())
+        for (Json::Value::const_iterator it = root.begin(); it != root.end(); it++)
         {
-            res << j[i];
-        }
-        else if (j[i].is_null())
-        {
-            res << "nil";
-        }
-        else if (j[i].is_object())
-        {
-            res << "[\"object\"," << A3URLCommon::toArray_object(j[i]) << "]";
-        }
-        else if (j[i].is_array())
-        {
-            res << "[\"array\"," << A3URLCommon::toArray_array(j[i]) << "]";
+            if (it != root.begin())
+                res << ",";
+            
+            if (it->isBool())
+            {
+                res << Json::valueToString(it->asBool());
+            }
+            else if (it->isInt())
+            {
+                res << Json::valueToString(it->asInt());
+            }
+            else if (it->isInt64())
+            {
+                res << Json::valueToString(it->asInt64());
+            }
+            else if (it->isUInt())
+            {
+                res << Json::valueToString(it->asUInt());
+            }
+            else if (it->isUInt64())
+            {
+                res << Json::valueToString(it->asUInt64());
+            }
+            else if (it->isDouble())
+            {
+                res << Json::valueToString(it->asDouble());
+            }
+            else if (it->isString())
+            {
+                res << Json::valueToQuotedString(it->asString().c_str());
+            }
+            else if (it->isObject())
+            {
+                res << A3URLCommon::toArray_object(*it);
+            }
+            else if (it->isArray())
+            {
+                res << A3URLCommon::toArray_array(*it);
+            }
+            else
+            {
+                res << "nil";
+            }
         }
     }
-    res << "]";
+    res << "]]";
 
     return res.str();
 };
 
 //A3URLCommon::toArray_object formats a JSON object to an ArmA 3 array
-std::string A3URLCommon::toArray_object(nlohmann::json j)
+std::string A3URLCommon::toArray_object(const Json::Value &root)
 {
     std::stringstream res;
 
-    res << "[";
-    for (nlohmann::json::iterator it = j.begin(); it != j.end(); ++it)
+    res << "[\"object\",[";
+    if (root.size() > 0)
     {
-        if (it != j.begin())
-            res << ",";
+        for (Json::Value::const_iterator it = root.begin(); it != root.end(); it++)
+        {
+            if (it != root.begin())
+                res << ",";
+            
+            res << "[" << Json::valueToQuotedString(it.key().asString().c_str()) << ",";
 
-        if (it.value().is_number() || it.value().is_boolean() || it.value().is_string())
-        {
-            res << "[\"" << it.key() << "\"," << it.value() << "]";
-        }
-        else if (it.value().is_null())
-        {
-            res << "[\"" << it.key() << "\",nil]";
-        }
-        else if (it.value().is_object())
-        {
-            res << "[\"" << it.key() << "\",[\"object\"," << A3URLCommon::toArray_object(it.value()) << "]]";
-        }
-        else if (it.value().is_array())
-        {
-            res << "[\"" << it.key() << "\",[\"array\"," << A3URLCommon::toArray_array(it.value()) << "]]";
+            if (it->isBool())
+            {
+                res << Json::valueToString(it->asBool());
+            }
+            else if (it->isInt())
+            {
+                res << Json::valueToString(it->asInt());
+            }
+            else if (it->isInt64())
+            {
+                res << Json::valueToString(it->asInt64());
+            }
+            else if (it->isUInt())
+            {
+                res << Json::valueToString(it->asUInt());
+            }
+            else if (it->isUInt64())
+            {
+                res << Json::valueToString(it->asUInt64());
+            }
+            else if (it->isDouble())
+            {
+                res << Json::valueToString(it->asDouble());
+            }
+            else if (it->isString())
+            {
+                res << Json::valueToQuotedString(it->asString().c_str());
+            }
+            else if (it->isObject())
+            {
+                res << A3URLCommon::toArray_object(*it);
+            }
+            else if (it->isArray())
+            {
+                res << A3URLCommon::toArray_array(*it);
+            }
+            else
+            {
+                res << "nil";
+            }
+
+            res << "]";
         }
     }
-    res << "]";
+
+    res << "]]";
 
     return res.str();
 };

@@ -13,7 +13,6 @@
 #include <vector>
 #include <atomic>
 #include <mutex>
-#include <shared_mutex>
 #include <queue>
 #include <thread>
 #include <curl/curl.h>
@@ -87,10 +86,9 @@ public:
     int GetStatus(int id);
 private:
     std::map<int, Requests::Result> results; ///< The list of all pending results/requests.
-    /*std::shared_mutex resultsMtx; ///< The list mutex.*/
-    std::shared_timed_mutex resultsMtx;
+    std::mutex resultsMtx; ///< The list mutex.
     std::queue<Requests::Request> requestsQueue; ///< The queue for all requests.
-    std::shared_timed_mutex requestsQueueMtx; ///< The mutex of the queue.
+    std::mutex requestsQueueMtx; ///< The mutex of the queue.
     bool workersStarted = false; ///< The lock for a initialization once a time.
 
     /*!

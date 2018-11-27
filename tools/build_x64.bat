@@ -1,7 +1,7 @@
 
-call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+call "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64
+call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86_amd
 cl /MD /LD /Fe:arma3urlfetch_x64.dll^
-    /I include\nlohmann^
     /I include\jsoncpp^
     include\jsoncpp.cpp^
     src\common.cpp^

@@ -96,14 +96,14 @@ int Requests::addResult()
 {
     int key = 1;
 
-    resultsMtx.lock_shared();
+    resultsMtx.lock();
     while (true)
     {
         if (results.find(key) == results.end())
             break;
         key++;
     };
-    resultsMtx.unlock_shared();
+    resultsMtx.unlock();
 
     Requests::Result res;
     res.status = 0;
@@ -179,9 +179,9 @@ int Requests::getResult(int id, Requests::Result *res)
     if (results.find(id) == results.end())
         return 2;
     
-    resultsMtx.lock_shared();
+    resultsMtx.lock();
     *res = results[id]; //error 3 on request...
-    resultsMtx.unlock_shared();
+    resultsMtx.unlock();
 
     if (res->status > 0) removeResult(id);
 
@@ -329,9 +329,9 @@ int Requests::GetStatus(int id)
         return 704;
     Requests::Result res;
 
-    resultsMtx.lock_shared();
+    resultsMtx.lock();
     res = results[id]; //error 3 on request...
-    resultsMtx.unlock_shared();
+    resultsMtx.unlock();
 
     return 700 + res.status;
 }

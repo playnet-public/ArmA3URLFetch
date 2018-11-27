@@ -12,7 +12,6 @@
 #include <string.h>
 #include <stdexcept>
 #include <map>
-#include "nlohmann/json.hpp"
 #include "json/json.h"
 
 /*!
@@ -69,11 +68,11 @@ private:
         \fn static std::string toArray_object(nlohmann::json j)
         \brief Is a recursive function of A3URLCommon::ToArray().
     */
-    static std::string toArray_object(nlohmann::json j);
+    static std::string toArray_object(const Json::Value &root);
 
     /*!
         \fn static std::string toArray_array(nlohmann::json j)
         \brief Is a recursive function of A3URLCommon::ToArray().
     */
-    static std::string toArray_array(nlohmann::json j);
+    static std::string toArray_array(const Json::Value &root);
 };
