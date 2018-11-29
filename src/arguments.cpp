@@ -20,13 +20,13 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
                 i++;
                 tmp.append(args[i]);
                 A3URLCommon::StrUnqoute(&tmp);
-                if (tmp.at(0) == '#' || tmp.empty()) return 2;
+                if (tmp.at(0) == '#' || tmp.empty()) return 10;
                 params->Url = tmp;
                 tmp.clear();
             }
             else
             {
-                return 1;
+                return 11;
             }
         }
         else if (value.compare("#method") == 0)
@@ -36,13 +36,13 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
                 i++;
                 tmp.append(args[i]);
                 A3URLCommon::StrUnqoute(&tmp);
-                if (tmp.at(0) == '#' || tmp.empty()) return 4;
+                if (tmp.at(0) == '#' || tmp.empty()) return 12;
                 params->Method = tmp;
                 tmp.clear();
             }
             else
             {
-                return 3;
+                return 13;
             }
         }
         else if (value.compare("#postData") == 0)
@@ -89,13 +89,13 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
                 i++;
                 tmp.append(args[i]);
                 A3URLCommon::StrUnqoute(&tmp);
-                if (tmp.at(0) == '#' || tmp.empty()) return 5;
+                if (tmp.at(0) == '#' || tmp.empty()) return 14;
                 params->ClientID = A3URLCommon::StrToInt(tmp);
                 tmp.clear();
             }
             else
             {
-                return 6;
+                return 15;
             }
         }
         else if (value.compare("#redirect") == 0)
@@ -105,7 +105,7 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
                 i++;
                 tmp.append(args[i]);
                 A3URLCommon::StrUnqoute(&tmp);
-                if (tmp.at(0) == '#' || tmp.empty()) return 7;
+                if (tmp.at(0) == '#' || tmp.empty()) return 16;
                 params->MaxRedirects = A3URLCommon::StrToInt(tmp);
                 tmp.clear();
             }
