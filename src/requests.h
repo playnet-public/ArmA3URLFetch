@@ -45,6 +45,7 @@ public:
     struct Result
     {
         int status; ///< Status of the result.
+        long httpCode;
         std::string result; ///< URL content of the URL request.
     };
 
@@ -108,13 +109,7 @@ private:
         \brief Processes a request. Is called by Requests::workerThread().
     */
     void fetchRequest(Requests::Request req);
-
-    /*!
-        \fn bool isValidMethod(std::string method)
-        \brief Checks if the given method exists.
-    */
-    bool isValidMethod(std::string method);
-
+// 0 = text pending, 1 = pending, 2 = error
     /*!
         \fn bool isValidParameter(std::string param)
         \brief Checks the validity of the given parameter
