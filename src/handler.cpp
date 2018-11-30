@@ -45,7 +45,7 @@ int Handler::CallExtensionArgs(char * output, int outputSize, const char *functi
     op->WriteBufFlush(output, outputSize);
     
     delete op;
-    return rC == 0 ? 2 : rC;
+    return rC;
 };
 
 int Handler::addClient(Output *op, const char **args, int argsCnt)

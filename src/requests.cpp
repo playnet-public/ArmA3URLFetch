@@ -261,7 +261,7 @@ int Requests::getResultString(int id, std::string *str)
     Requests::Result res;
     res.status = getResult(id, &res);
 
-    if (res.status == 1)
+    if (res.status == 0)
     {
         if (res.result.size() > 10200)
         {
@@ -273,7 +273,7 @@ int Requests::getResultString(int id, std::string *str)
         {
             *str = res.result;
             removeResult(id);
-            return (int)res.httpCode;
+            res.status = res.httpCode;
         }
     }
 
