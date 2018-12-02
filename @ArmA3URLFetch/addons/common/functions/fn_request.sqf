@@ -21,8 +21,7 @@ params [
 	["_decodeJson", false, [false]]
 ];
 
-if (_url == "") exitWith { ""; };
-if (_method == "" || !(_method in ["GET", "PUT", "POST", "PATCH", "DELETE", "TRACE"])) exitWith { ""; };
+if (_url == "") exitWith { []; };
 
 private _args = [];
 
@@ -52,25 +51,27 @@ if ((count _headers) > 0) then {
 
 private _res = [];
 _res = "arma3urlfetch" callExtension ["SENDRQ", _args];
-
-if ((_res select 1) == 501) exitWith { ""; };
+if ((_res select 1) == 2) exitWith { []; };
 
 private _rID = (parseNumber (_res select 0));
-if (_rID <= 0) exitWith { ""; };
+if (_rID <= 0) exitWith { []; };
 
-_res = [];
-_res = "arma3urlfetch" callExtension ["GETRQ", [_rID]];
+private _response = "";
+private _httpCode = 0;
 
-private _text = (_res select 0);
-if ((_res select 1) == 602) then {
-	waitUntil { uiSleep 0.1; (("arma3urlfetch" callExtension ["GETST", [_rID]]) select 1) != 700; };
-
-	while {
-		_res = "arma3urlfetch" callExtension ["GETRQ", [_rID]];
-		(_res select 0) != "";
-	} do {
-		_text = _text + (_res select 0);
-	};
+waitUntil {
+	uiSleep 0.05;
+	("arma3urlfetch" callExtension ["GETST", [_rID]]) select 1 == 0;
 };
 
-_text;
+while {
+	_res = "arma3urlfetch" callExtension ["GETRQ", [_rID]];
+	(_res select 1) == 0;
+} do {
+	_response = _response + (_res select 0);
+};
+
+_response = _response + (_res select 0);
+_httpCode = _res select 1;
+
+[_response, _httpCode];
