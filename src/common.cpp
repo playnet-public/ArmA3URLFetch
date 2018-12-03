@@ -116,7 +116,7 @@ std::string A3URLCommon::toArray_array(const Json::Value &root)
 {
     std::stringstream res;
 
-    res << "[\"array\",";
+    res << "[\"array\",[";
     if (root.size() > 0)
     {
         for (Json::Value::const_iterator it = root.begin(); it != root.end(); it++)
