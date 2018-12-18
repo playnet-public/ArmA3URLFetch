@@ -95,7 +95,7 @@ std::string A3URLCommon::ToArray(std::string jTxt)
     std::stringstream(jTxt) >> root;
     std::stringstream res;
 
-    if (root.empty())
+    if (root.empty() || root.isNull())
     {
         res << "[]";
     }
