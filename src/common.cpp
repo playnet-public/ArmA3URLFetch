@@ -70,11 +70,33 @@ void A3URLCommon::StrUnqoute(std::string *s)
 {
     if (s->size() > 0)
     {
-        if (s->compare(s->size() - 1, 1, "\"") == 0)
-            s->erase(s->size() - 1);
-
-        if (s->compare(0, 1, "\"") == 0)
+        if (s->front() == '"')
             s->erase(0, 1);
+        if (s->back() == '"')
+            s->erase(s->size() - 1);
+        
+        //unquote '""' quotes to '"'
+        bool lastQuoted = false;
+        for (std::string::iterator it = s->begin(); it != s->end(); it++)
+        {
+            if (*it == '"')
+            {
+                if (!lastQuoted)
+                {
+                    lastQuoted = true;
+                }
+                else
+                {
+                    s->erase(it);
+                    it--;
+                    lastQuoted = false;
+                }
+            }
+            else
+            {
+                lastQuoted = false;
+            }
+        }
     }
 };
 
