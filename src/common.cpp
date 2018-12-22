@@ -184,7 +184,7 @@ std::string A3URLCommon::toArray_array(const Json::Value &root)
             }
             else
             {
-                res << "nil";
+                res << "objNull";
             }
         }
     }
@@ -246,7 +246,7 @@ std::string A3URLCommon::toArray_object(const Json::Value &root)
             }
             else
             {
-                res << "nil";
+                res << "objNull";
             }
 
             res << "]";
