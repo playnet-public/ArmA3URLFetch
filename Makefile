@@ -15,8 +15,8 @@ OUTPUTPATH=".build/@ArmA3URLFetch/"
 
 all: linux64 linux32 build_mod deploy_mod
 
-linux64: prepare clean build_obj_linux_x64 link
-linux32: prepare clean build_obj_linux_x32 link
+linux64: prepare clean build_obj_linux_x64 link clean
+linux32: prepare clean build_obj_linux_x32 link clean
 
 clean_curl:
 	@rm -fR .build/curl/
