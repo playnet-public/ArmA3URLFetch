@@ -172,7 +172,7 @@ std::string A3URLCommon::toArray_array(const Json::Value &root)
             }
             else if (it->isString())
             {
-                res << Json::valueToQuotedString(it->asString().c_str());
+                res << '\'' << it->asString().c_str() << '\'';
             }
             else if (it->isObject())
             {
@@ -234,7 +234,7 @@ std::string A3URLCommon::toArray_object(const Json::Value &root)
             }
             else if (it->isString())
             {
-                res << Json::valueToQuotedString(it->asString().c_str());
+                res << '\'' << it->asString().c_str() << '\'';
             }
             else if (it->isObject())
             {
