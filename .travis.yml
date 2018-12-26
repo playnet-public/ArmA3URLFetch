@@ -14,9 +14,6 @@ matrix:
       before_script:
       - make curl
       script:
-      - find /usr -name "libcurl*"
-      - find /usr -name "libssl*"
-      - find /usr -name "libcrypto*"
       - make linux32 CXX=g++-5
       - make linux64 CXX=g++-5
       - make testLinux32 CXX=g++-5

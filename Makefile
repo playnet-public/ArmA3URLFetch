@@ -71,6 +71,7 @@ link:
 clean:
 	@echo "\tCLEANUP"
 	@rm -f src/*.o
+	@rm -f include/*.o
 
 test: testLinux64 testLinux32
 
