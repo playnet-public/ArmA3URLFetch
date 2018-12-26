@@ -1,8 +1,8 @@
 
-CPPFLAGS=-Wall -fPIC -pthread -std=c++14
+CPPFLAGS=-Wall -fPIC -pthread -std=c++11
 INCLUDES=-I.build/usr/lib/curl/include -Iinclude/jsoncpp
 INCLUDES_x32=-I.build/usr/lib/curl/i386/include -Iinclude/jsoncpp
-OBJS=src/common.o src/arguments.o src/requests.o src/clients.o src/output.o src/handler.o src/main.o
+OBJS=include/jsoncpp.o src/common.o src/arguments.o src/requests.o src/clients.o src/output.o src/handler.o src/main.o
 LIBS=.build/usr/lib/curl/lib/libcurl.a /usr/lib/x86_64-linux-gnu/libssl.a /usr/lib/x86_64-linux-gnu/libcrypto.a
 LIBS_x32=.build/usr/lib/curl/i386/lib/libcurl.a /usr/lib/i386-linux-gnu/libssl.a /usr/lib/i386-linux-gnu/libcrypto.a
 LDFLAGS=-shared -fPIC -pthread
@@ -79,7 +79,7 @@ testLinux32: cleanTest
 	@$(CXX) -m32 -pthread -fPIC -I.build/usr/lib/curl/i386/include/ \
 		-Isrc/ \
 		-Iinclude/jsoncpp \
-		-std=c++14 \
+		-std=c++11 \
 		include/jsoncpp.cpp \
 		src/common.cpp \
 		src/arguments.cpp \
@@ -99,7 +99,7 @@ testLinux64: cleanTest
 	@$(CXX) -Wall -pthread -fPIC -I.build/usr/lib/curl/include/ \
 		-Isrc/ \
 		-Iinclude/jsoncpp \
-		-std=c++14 \
+		-std=c++11 \
 		include/jsoncpp.cpp \
 		src/common.cpp \
 		src/arguments.cpp \
