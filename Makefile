@@ -1,20 +1,17 @@
 
-CPPFLAGS=-Wall -fPIC -pthread -std=c++11
-INCLUDES=-I.build/usr/lib/curl/include -Iinclude/jsoncpp
+CPPFLAGS=-m32 -Wall -fPIC -pthread -std=c++11
 INCLUDES_x32=-I.build/usr/lib/curl/i386/include -Iinclude/jsoncpp
 OBJS=include/jsoncpp.o src/common.o src/arguments.o src/requests.o src/clients.o src/output.o src/handler.o src/main.o
-LIBS=.build/usr/lib/curl/lib/libcurl.a /usr/lib/x86_64-linux-gnu/libssl.a /usr/lib/x86_64-linux-gnu/libcrypto.a
 LIBS_x32=.build/usr/lib/curl/i386/lib/libcurl.a /usr/lib/i386-linux-gnu/libssl.a /usr/lib/i386-linux-gnu/libcrypto.a
-LDFLAGS=-shared -fPIC -pthread
+LDFLAGS=-m32 -shared -fPIC -pthread
 OUTPUT=""
 CURLSRC=https://github.com/curl/curl/releases/download/curl-7_59_0/curl-7.59.0.zip
 ARMAKE=$(abspath tools/bin/armake)
 TAG=$(shell git describe --tag | sed "s/-.*-/-/")
 OUTPUTPATH=".build/@ArmA3URLFetch/"
 
-all: linux64 linux32 build_mod deploy_mod
+all: linux32 build_mod deploy_mod
 
-linux64: prepare clean build_obj_linux_x64 link
 linux32: prepare clean build_obj_linux_x32 link
 
 clean_curl:
@@ -32,13 +29,7 @@ build_i386_curl:
 		make && \
 		make install
 
-build_curl:
-	@cd .build/curl/ && \
-		./configure --prefix=$(shell pwd)/.build/usr/lib/curl/ --without-librtmp --disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smb --disable-smtp --disable-gopher --disable-manual --enable-ipv6 --disable-pthreads --enable-crypto-auth --enable-cookies --without-zlib --disable-threaded-resolver --without-brotli --with-ssl=/usr/lib/x86_64-linux-gnu && \
-		make && \
-		make install
-
-curl: get_curl build_curl build_i386_curl
+curl: get_curl build_i386_curl
 
 prepare:
 	@mkdir -p .build/
@@ -47,21 +38,13 @@ prepare:
 	@mkdir -p .build/keys
 	@mkdir -p .build/bin
 
-build_obj_linux_x64: $(OBJS)
-	$(eval OUTPUT=$(OUTPUTPATH)/arma3urlfetch_x64.so)
-
-build_prep_linux_x32:
-	$(eval CPPFLAGS+= -m32)
-	$(eval LDFLAGS+= -m32)
-	$(eval INCLUDES=$(INCLUDES_x32))
-
-build_obj_linux_x32: build_prep_linux_x32 $(OBJS)
+build_obj_linux_x32: $(OBJS)
 	$(eval LIBS=$(LIBS_x32))
 	$(eval OUTPUT=$(OUTPUTPATH)/arma3urlfetch.so)
 
 %.o: %.cpp
 	@echo "\tCXX\t\t$@"
-	@$(CXX) $(INCLUDES) $(CPPFLAGS) -ldl -c $< -o $@
+	@$(CXX) $(INCLUDES_x32) $(CPPFLAGS) -ldl -c $< -o $@
 
 link:
 	@echo "\tLD\t\t$(OUTPUT)"
