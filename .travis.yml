@@ -9,7 +9,7 @@ matrix:
       before_install:
       - sudo dpkg --add-architecture i386
       - sudo apt-get update
-      - sudo apt-get install -y -f build-essential software-properties-common libc6-dev libc6-dev:i386 libssl-dev libssl-dev:i386
+      - sudo apt-get install -y -f libc6-dev libc6-dev:i386 libssl-dev libssl-dev:i386
       before_script:
       - make curl
       script:
