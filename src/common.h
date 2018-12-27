@@ -40,6 +40,13 @@ public:
     static int StrToInt(std::string s);
 
     /*!
+        \fn static void ArmaStrQuote(std::string *s)
+        \brief Quotes a string for ArmA 3
+        \param s The string to be quoted.
+    */
+   static void ArmaStrQuote(std::string *s);
+
+    /*!
         \fn static void StrUnqoute(std::string *s)
         \brief Removes (outer) ""-quotes from a std::string
         \param s The string to be unquoted.

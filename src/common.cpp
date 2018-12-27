@@ -65,6 +65,16 @@ int A3URLCommon::StrToInt(std::string s)
     return i;
 };
 
+void A3URLCommon::ArmaStrQuote(std::string *s)
+{
+    size_t found = s->find("\"");
+    while (found != std::string::npos)
+    {
+        s->insert(found, "\"");
+        found = s->find("\"", found + 2);
+    }
+}
+
 //A3URLCommon::StrUnquote unquotes a given string pointer
 void A3URLCommon::StrUnqoute(std::string *s)
 {
@@ -172,7 +182,9 @@ std::string A3URLCommon::toArray_array(const Json::Value &root)
             }
             else if (it->isString())
             {
-                res << '\'' << it->asString().c_str() << '\'';
+                std::string tmp = it->asString();
+                A3URLCommon::ArmaStrQuote(&tmp);
+                res << '"' << tmp.c_str() << '"';
             }
             else if (it->isObject())
             {
@@ -234,7 +246,9 @@ std::string A3URLCommon::toArray_object(const Json::Value &root)
             }
             else if (it->isString())
             {
-                res << '\'' << it->asString().c_str() << '\'';
+                std::string tmp = it->asString();
+                A3URLCommon::ArmaStrQuote(&tmp);
+                res << '"' << tmp.c_str() << '"';
             }
             else if (it->isObject())
             {
