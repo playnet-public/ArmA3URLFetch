@@ -12,7 +12,6 @@ ARMAKE=$(abspath tools/bin/armake)
 TAG=$(shell git describe --tag | sed "s/-.*-/-/")
 OUTPUTPATH=".build/@ArmA3URLFetch/"
 
-
 all: linux64 linux32 build_mod deploy_mod
 
 linux64: prepare clean build_obj_linux_x64 link
@@ -66,7 +65,7 @@ build_obj_linux_x32: build_prep_linux_x32 $(OBJS)
 
 link:
 	@echo "\tLD\t\t$(OUTPUT)"
-	@$(CXX) $(LIBS) $(OBJS) $(LDFLAGS) -ldl -o $(OUTPUT)
+	@$(CXX) $(OBJS) $(LIBS) $(LDFLAGS) -ldl -o $(OUTPUT)
 
 clean:
 	@echo "\tCLEANUP"
