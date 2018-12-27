@@ -5,7 +5,7 @@ matrix:
       compiler: g++
       language: cpp
       sudo: required
-      dist: trusty
+      dist: xenial
       before_install:
       - sudo dpkg --add-architecture i386
       - sudo apt-get update
