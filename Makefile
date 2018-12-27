@@ -65,7 +65,7 @@ build_obj_linux_x32: build_prep_linux_x32 $(OBJS)
 
 link:
 	@echo "\tLD\t\t$(OUTPUT)"
-	@$(CXX) $(OBJS) $(LIBS) $(LDFLAGS) -ldl -o $(OUTPUT)
+	@$(CXX) $(LDFLAGS) $(OBJS) $(LIBS) -ldl -o $(OUTPUT)
 
 clean:
 	@echo "\tCLEANUP"
