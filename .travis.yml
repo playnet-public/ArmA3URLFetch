@@ -9,11 +9,11 @@ matrix:
       before_install:
       - sudo dpkg --add-architecture i386
       - sudo apt-get update
-      - sudo apt-get install -y -f libc6-dev libc6-dev:i386 libssl-dev libssl-dev:i386
+      - sudo apt-get install -y -f g++-6-multilib gcc-6-multilib libc6-dev libc6-dev:i386 libssl-dev libssl-dev:i386
       before_script:
       - make curl
       script:
-      - make testLinux32
-      - make linux64
-      - make testLinux32
-      - make testLinux64
+      - make testLinux32 CXX=g++-6
+      - make linux64 CXX=g++-6
+      - make testLinux32 CXX=g++-6
+      - make testLinux64 CXX=g++-6
