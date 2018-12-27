@@ -1,5 +1,5 @@
 
-CPPFLAGS=-Wall -fPIC -pthread -std=c++11
+CPPFLAGS=-fPIC -Wall -pthread -std=c++11
 INCLUDES=-I.build/usr/lib/curl/include -Iinclude/jsoncpp
 INCLUDES_x32=-I.build/usr/lib/curl/i386/include -Iinclude/jsoncpp
 OBJS=include/jsoncpp.o src/common.o src/arguments.o src/requests.o src/clients.o src/output.o src/handler.o src/main.o
@@ -61,7 +61,7 @@ build_obj_linux_x32: build_prep_linux_x32 $(OBJS)
 
 %.o: %.cpp
 	@echo "\tCXX\t\t$@"
-	@$(CXX) $(INCLUDES) $(CPPFLAGS) -ldl -c $< -o $@
+	@$(CXX) $(CPPFLAGS) $(INCLUDES) -ldl -c $< -o $@
 
 link:
 	@echo "\tLD\t\t$(OUTPUT)"
