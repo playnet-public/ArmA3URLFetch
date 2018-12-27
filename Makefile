@@ -55,7 +55,7 @@ clean:
 	@rm -f src/*.o
 	@rm -f include/*.o
 
-test: testLinux64 testLinux32
+test: testLinux32
 
 testLinux32: cleanTest
 	@echo "\tTEST\t\tLinux (x86/x32)"
@@ -75,26 +75,6 @@ testLinux32: cleanTest
 		-ldl \
 		-o .build/test.a
 	@echo "\tTEST\t\ttest.a (x86/x32)"
-	@.build/test.a
-
-testLinux64: cleanTest
-	@echo "\tTEST\t\tLinux (x64)"
-	@$(CXX) -Wall -pthread -fPIC -I.build/usr/lib/curl/include/ \
-		-Isrc/ \
-		-Iinclude/jsoncpp \
-		-std=c++11 \
-		include/jsoncpp.cpp \
-		src/common.cpp \
-		src/arguments.cpp \
-		src/requests.cpp \
-		src/clients.cpp \
-		src/output.cpp \
-		src/handler.cpp \
-		test/main.cpp \
-		$(LIBS) \
-		-ldl \
-		-o .build/test.a
-	@echo "\tTEST\t\ttest.a (x64)"
 	@.build/test.a
 
 cleanTest:
