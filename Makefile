@@ -2,7 +2,7 @@
 CPPFLAGS=-m32 -Wall -fPIC -pthread -std=c++11
 INCLUDES_x32=-I/usr/local/include -Iinclude/jsoncpp
 OBJS=include/jsoncpp.o src/common.o src/arguments.o src/requests.o src/clients.o src/output.o src/handler.o src/main.o
-LIBS_x32=/usr/local/libcurl.a /usr/local/libssl.a /usr/local/libcrypto.a
+LIBS_x32=/usr/local/lib/libcurl.a /usr/local/lib/libssl.a /usr/local/lib/libcrypto.a
 LDFLAGS=-m32 -shared -fPIC -pthread
 OUTPUT=""
 OPENSSLSRC=https://www.openssl.org/source/openssl-1.1.0f.tar.gz
