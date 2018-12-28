@@ -1,8 +1,8 @@
 
 CPPFLAGS=-m32 -Wall -fPIC -pthread -std=c++11
-INCLUDES_x32=-I.build/usr/lib/curl/include -Iinclude/jsoncpp
+INCLUDES_x32=-I/usr/local/include -Iinclude/jsoncpp
 OBJS=include/jsoncpp.o src/common.o src/arguments.o src/requests.o src/clients.o src/output.o src/handler.o src/main.o
-LIBS_x32=.build/usr/lib/curl/lib/libcurl.a .build/usr/lib/openssl/lib/libssl.a .build/usr/lib/openssl/lib/libcrypto.a
+LIBS_x32=/usr/local/libcurl.a /usr/local/libssl.a /usr/local/libcrypto.a
 LDFLAGS=-m32 -shared -fPIC -pthread
 OUTPUT=""
 OPENSSLSRC=https://www.openssl.org/source/openssl-1.1.0f.tar.gz
@@ -14,55 +14,6 @@ OUTPUTPATH=".build/@ArmA3URLFetch/"
 all: linux32 build_mod deploy_mod
 
 linux32: prepare clean build_obj_linux_x32 link
-
-openssl_clean:
-	@echo "\tCLEAN    openssl"
-	@rm -fR .build/openssl .build/usr/lib/openssl .build/openssl-1.1.0f.tar.gz
-
-openssl: openssl_clean
-	@echo "\tGET    openssl"
-	@mkdir -p .build/openssl
-	@wget -P .build/ $(OPENSSLSRC)
-	@cd .build/ && tar xzvf openssl-1.1.0f.tar.gz
-	@mv .build/openssl-1.1.0f/* .build/openssl
-	@rm -R .build/openssl-1.1.0f/
-	@cd .build/openssl && setarch i386 ./config -m32 --prefix=$(abspath .build/usr/lib/openssl) no-ui no-ssl3 shared && make && make install
-
-curl_clean:
-	@echo "\tCLEAN    curl"
-	@rm -fR .build/curl/ .build/usr/lib/curl
-
-curl: curl_clean
-	@wget -P .build/ $(CURLSRC)
-	@unzip .build/curl-7.59.0.zip -d .build/
-	@rm .build/curl-7.59.0.zip
-	@cd .build/openssl && CFLAGS=-m32 $(abspath .build/curl-7.59.0/configure) --prefix=$(abspath .build/usr/lib/curl) \
-		--without-librtmp \
-		--host=i686-pc-linux-gnu \
-		--disable-ftp \
-		--disable-file \
-		--disable-ldap \
-		--disable-ldaps \
-		--disable-rtsp \
-		--disable-dict \
-		--disable-telnet \
-		--disable-tftp \
-		--disable-pop3 \
-		--disable-imap \
-		--disable-smb \
-		--disable-smtp \
-		--disable-gopher \
-		--disable-manual \
-		--enable-ipv6 \
-		--disable-pthreads \
-		--enable-crypto-auth \
-		--enable-cookies \
-		--without-zlib \
-		--disable-threaded-resolver \
-		--without-brotli \
-		--with-ssl=$(abspath .build/usr/lib/openssl/lib) && \
-		make && \
-		make install
 
 prepare:
 	@mkdir -p .build/
@@ -92,7 +43,7 @@ test: testLinux32
 
 testLinux32: cleanTest
 	@echo "\tTEST\t\tLinux (x86/x32)"
-	@$(CXX) -m32 -pthread -fPIC -I.build/usr/lib/curl/include/ \
+	@$(CXX) -m32 -pthread -fPIC -I.build/usr/local/include/ \
 		-Isrc/ \
 		-Iinclude/jsoncpp \
 		-std=c++11 \
