@@ -28,7 +28,6 @@ openssl: openssl_clean
 	@rm -R .build/openssl-1.1.0f/
 	@cd .build/openssl && setarch i386 ./config -m32 --prefix=$(abspath .build/usr/lib/openssl) no-ui no-ssl3 shared
 	@$(MAKE) -C .build/openssl
-	@$(MAKE) -C .build/openssl test
 	@$(MAKE) -C .build/openssl install
 
 curl_clean:
