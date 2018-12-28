@@ -20,7 +20,7 @@ jobs:
           command: make testLinux32
       - run:
           name: x86 binary
-          command: make linux32
+          command: make test
       - store_artifacts:
           path: .build/\@ArmA3URLFetch/arma3urlfetch.so
           destination: arma3urlfetch.so
