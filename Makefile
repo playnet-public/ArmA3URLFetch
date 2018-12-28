@@ -71,7 +71,7 @@ test: testLinux32
 
 testLinux32: cleanTest
 	@echo "\tTEST\t\tLinux (x86/x32)"
-	@$(CXX) -m32 -pthread -fPIC -I.build/usr/lib/curl/i386/include/ \
+	@$(CXX) -m32 -pthread -fPIC -I.build/usr/lib/curl/include/ \
 		-Isrc/ \
 		-Iinclude/jsoncpp \
 		-std=c++11 \
