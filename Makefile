@@ -26,9 +26,7 @@ openssl: openssl_clean
 	@cd .build/ && tar xzvf openssl-1.1.0f.tar.gz
 	@mv .build/openssl-1.1.0f/* .build/openssl
 	@rm -R .build/openssl-1.1.0f/
-	@cd .build/openssl && setarch i386 ./config -m32 --prefix=$(abspath .build/usr/lib/openssl) no-ui no-ssl3 shared
-	@$(MAKE) -C .build/openssl
-	@$(MAKE) -C .build/openssl install
+	@cd .build/openssl && setarch i386 ./config -m32 --prefix=$(abspath .build/usr/lib/openssl) no-ui no-ssl3 shared && make && make install
 
 curl_clean:
 	@echo "\tCLEAN    curl"
@@ -38,7 +36,7 @@ curl: curl_clean
 	@wget -P .build/ $(CURLSRC)
 	@unzip .build/curl-7.59.0.zip -d .build/
 	@rm .build/curl-7.59.0.zip
-	@CFLAGS=-m32 $(abspath .build/curl-7.59.0/configure) --prefix=$(abspath .build/usr/lib/curl) \
+	@cd .build/openssl && CFLAGS=-m32 $(abspath .build/curl-7.59.0/configure) --prefix=$(abspath .build/usr/lib/curl) \
 		--without-librtmp \
 		--host=i686-pc-linux-gnu \
 		--disable-ftp \
@@ -62,9 +60,9 @@ curl: curl_clean
 		--without-zlib \
 		--disable-threaded-resolver \
 		--without-brotli \
-		--with-ssl=$(abspath .build/usr/lib/openssl/lib)
-	@$(MAKE) -C .build/curl-7.59.0/
-	@$(MAKE) -C .build/curl-7.59.0/ install
+		--with-ssl=$(abspath .build/usr/lib/openssl/lib) && \
+		make && \
+		make install
 
 prepare:
 	@mkdir -p .build/
