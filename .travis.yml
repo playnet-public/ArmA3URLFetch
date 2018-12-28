@@ -12,8 +12,8 @@ matrix:
       - sudo apt-get update
       - sudo apt-get install -y -f build-essential software-properties-common g++-5-multilib gcc-5-multilib libc6-dev libc6-dev:i386
       before_script:
-      - make openssl
-      - make curl
+      - sudo make openssl
+      - sudo make curl
       script:
       - make linux32 CXX=g++-5
       - make testLinux32 CXX=g++-5
