@@ -7,6 +7,7 @@
 class Arguments {
 public:
     struct Parameters {
+        long MaxTimeout;
         int ClientID, MaxRedirects;
         bool JsonToArray, Redirect;
         std::string Url, Method, PostData;

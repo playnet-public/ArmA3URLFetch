@@ -102,12 +102,30 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
         {
             params->Redirect = true;
             if (i+1 < argsCnt) {
+                if (strcmp(args[i+1], "#") != 0)
+                    continue;
                 i++;
                 tmp.append(args[i]);
                 A3URLCommon::StrUnqoute(&tmp);
-                if (tmp.at(0) == '#' || tmp.empty()) return 16;
+                if (tmp.empty()) return 16;
                 params->MaxRedirects = A3URLCommon::StrToInt(tmp);
                 tmp.clear();
+            }
+        }
+        else if (value.compare("#timeout") == 0)
+        {
+            if (i+1 < argsCnt)
+            {
+                i++;
+                tmp.append(args[i]);
+                A3URLCommon::StrUnqoute(&tmp);
+                if (tmp.at(0) == '#' || tmp.empty()) return 17;
+                params->MaxTimeout = (long int)(A3URLCommon::StrToInt(tmp));
+                tmp.clear();
+            }
+            else
+            {
+                return 18;
             }
         }
         tmpArg.clear();
