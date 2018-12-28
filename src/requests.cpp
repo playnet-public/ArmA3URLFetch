@@ -216,10 +216,8 @@ void Requests::fetchRequest(Requests::Request req)
                         curl_easy_setopt(curl, CURLOPT_MAXREDIRS, (long int)req.MaxRedirects);
                     }
                 }
-                if (req.MaxTimeout > 0) {
-                    curl_easy_setopt(curl, CURLOPT_TIMEOUT, req.MaxTimeout);
-                }
 
+                curl_easy_setopt(curl, CURLOPT_TIMEOUT, req.MaxTimeout);
                 curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resStr);
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, RequestsCurlCallbackWriter);
 
