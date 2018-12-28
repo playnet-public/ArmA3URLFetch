@@ -1,8 +1,8 @@
 
 CPPFLAGS=-m32 -Wall -fPIC -pthread -std=c++11
-INCLUDES_x32=-I.build/usr/lib/curl/i386/include -Iinclude/jsoncpp
+INCLUDES_x32=-I.build/usr/lib/curl/include -Iinclude/jsoncpp
 OBJS=include/jsoncpp.o src/common.o src/arguments.o src/requests.o src/clients.o src/output.o src/handler.o src/main.o
-LIBS_x32=.build/usr/lib/curl/i386/lib/libcurl.a .build/usr/lib/openssl/lib/libssl.a .build/usr/lib/openssl/lib/libcrypto.a
+LIBS_x32=.build/usr/lib/curl/lib/libcurl.a .build/usr/lib/openssl/lib/libssl.a .build/usr/lib/openssl/lib/libcrypto.a
 LDFLAGS=-m32 -shared -fPIC -pthread
 OUTPUT=""
 OPENSSLSRC=https://www.openssl.org/source/openssl-1.1.0f.tar.gz
