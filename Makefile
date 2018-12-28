@@ -39,7 +39,7 @@ clean:
 	@rm -f src/*.o
 	@rm -f include/*.o
 
-test: testLinux32
+test: prepare testLinux32
 
 testLinux32: cleanTest
 	@echo "\tTEST\t\tLinux (x86/x32)"
