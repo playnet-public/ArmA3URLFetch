@@ -56,7 +56,7 @@ void makeRequest() {
     const char *args2[1];
     args2[0] = std::string(output).c_str();
     std::cout << args2[0] << std::endl;
-    hndl->CallExtensionArgs(output, outputSize, "GETRQ", args2, 1);
+    while (hndl->CallExtensionArgs(output, outputSize, "GETST", args2, 1) == 1) {}
     args2[0] = std::string(output).c_str();
     std::cout << args2[0] << std::endl;
     auto finish = std::chrono::high_resolution_clock::now();
