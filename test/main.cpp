@@ -29,7 +29,7 @@ void makeRequest() {
     const char *tmp4 = "\"{\"test\":2}\"";
     const char *tmp5 = "\"\"";
     const char *tmp6 = "\"\"";
-    const char *tmp7 = "\"#jsonToArray\"";
+    const char *tmp7 = "\"\"";
     const char *tmp8 = "\"#headers\"";
     const char *tmp9 = "\"Content-Type\"";
     const char *tmp10 = "\"application/json\"";
