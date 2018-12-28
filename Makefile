@@ -15,31 +15,34 @@ all: linux32 build_mod deploy_mod
 
 linux32: prepare clean build_obj_linux_x32 link
 
-openssl:
+openssl_clean:
+	@echo "\tCLEAN    openssl"
+	@rm -fR .build/openssl .build/usr/lib/openssl .build/openssl-1.1.0f.tar.gz
+
+openssl: openssl_clean
 	@echo "\tGET    openssl"
 	@mkdir -p .build/openssl
 	@wget -P .build/ $(OPENSSLSRC)
-	@setarch i386 ./config -m32 --prefix=$(abspath .build/usr/lib/openssl) no-ui no-ssl3 shared \
-		make && \
-		make test && \
-		make install
+	@cd .build/ && tar xzvf openssl-1.1.0f.tar.gz
+	@mv .build/openssl-1.1.0f/* .build/openssl
+	@rm -R .build/openssl-1.1.0f/
+	@cd .build/openssl && setarch i386 ./config -m32 --prefix=$(abspath .build/usr/lib/openssl) no-ui no-ssl3 shared
+	@$(MAKE) -C .build/openssl
+	@$(MAKE) -C .build/openssl test
+	@$(MAKE) -C .build/openssl install
 
-clean_curl:
-	@rm -fR .build/curl/
+curl_clean:
+	@echo "\tCLEAN    curl"
+	@rm -fR .build/curl/ .build/usr/lib/curl
 
-get_curl: clean_curl
+curl: curl_clean
 	@wget -P .build/ $(CURLSRC)
 	@unzip .build/curl-7.59.0.zip -d .build/
 	@mv .build/curl-7.59.0 .build/curl/
 	@rm .build/curl-7.59.0.zip
-
-build_i386_curl:
-	@cd .build/curl/ && \
-		CFLAGS=-m32 ./configure --prefix=$(shell pwd)/.build/usr/lib/curl/i386/ --without-librtmp --host=i686-pc-linux-gnu --disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smb --disable-smtp --disable-gopher --disable-manual --enable-ipv6 --disable-pthreads --enable-crypto-auth --enable-cookies --without-zlib --disable-threaded-resolver --without-brotli --with-ssl=/usr/lib/i386-linux-gnu && \
-		make && \
-		make install
-
-curl: get_curl build_i386_curl
+	@cd .build/curl/ CFLAGS=-m32 ./configure --prefix=$(shell pwd)/.build/usr/lib/curl/i386/ --without-librtmp --host=i686-pc-linux-gnu --disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smb --disable-smtp --disable-gopher --disable-manual --enable-ipv6 --disable-pthreads --enable-crypto-auth --enable-cookies --without-zlib --disable-threaded-resolver --without-brotli --with-ssl=/usr/lib/i386-linux-gnu
+	@$(MAKE) -C .build/curl
+	@$(MAKE) -C .build/curl install
 
 prepare:
 	@mkdir -p .build/
