@@ -48,6 +48,7 @@ jobs:
           destination: arma3urlfetch.so
 workflows:
   version: 2
-  build_distros:
-    - build_ubuntu
-    - build_debian
+  build:
+    jobs:
+      - build_ubuntu
+      - build_debian
