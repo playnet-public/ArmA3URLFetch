@@ -37,10 +37,34 @@ curl_clean:
 curl: curl_clean
 	@wget -P .build/ $(CURLSRC)
 	@unzip .build/curl-7.59.0.zip -d .build/
-	@mv .build/curl-7.59.0 .build/curl/
 	@rm .build/curl-7.59.0.zip
-	@mkdir -p .build/usr/lib/curl
-	@cd .build/curl/ CFLAGS=-m32 ./configure --prefix=$(abspath .build/usr/lib/curl) --without-librtmp --host=i686-pc-linux-gnu --disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smb --disable-smtp --disable-gopher --disable-manual --enable-ipv6 --disable-pthreads --enable-crypto-auth --enable-cookies --without-zlib --disable-threaded-resolver --without-brotli --with-ssl=$(abspath .build/usr/lib/openssl/lib) && make && make install
+	@CFLAGS=-m32 $(abspath .build/curl-7.59.0/configure) --prefix=$(abspath .build/usr/lib/curl) \
+		--without-librtmp \
+		--host=i686-pc-linux-gnu \
+		--disable-ftp \
+		--disable-file \
+		--disable-ldap \
+		--disable-ldaps \
+		--disable-rtsp \
+		--disable-dict \
+		--disable-telnet \
+		--disable-tftp \
+		--disable-pop3 \
+		--disable-imap \
+		--disable-smb \
+		--disable-smtp \
+		--disable-gopher \
+		--disable-manual \
+		--enable-ipv6 \
+		--disable-pthreads \
+		--enable-crypto-auth \
+		--enable-cookies \
+		--without-zlib \
+		--disable-threaded-resolver \
+		--without-brotli \
+		--with-ssl=$(abspath .build/usr/lib/openssl/lib)
+	@$(MAKE) -C .build/curl-7.59.0/
+	@$(MAKE) -C .build/curl-7.59.0/ install
 
 prepare:
 	@mkdir -p .build/
