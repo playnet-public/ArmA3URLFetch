@@ -39,7 +39,7 @@ curl: curl_clean
 	@unzip .build/curl-7.59.0.zip -d .build/
 	@mv .build/curl-7.59.0 .build/curl/
 	@rm .build/curl-7.59.0.zip
-	@cd .build/curl/ CFLAGS=-m32 ./configure --prefix=$(shell pwd)/.build/usr/lib/curl/i386/ --without-librtmp --host=i686-pc-linux-gnu --disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smb --disable-smtp --disable-gopher --disable-manual --enable-ipv6 --disable-pthreads --enable-crypto-auth --enable-cookies --without-zlib --disable-threaded-resolver --without-brotli --with-ssl=/usr/lib/i386-linux-gnu
+	@cd .build/curl/ CFLAGS=-m32 ./configure --prefix=$(shell pwd)/.build/usr/lib/curl/ --without-librtmp --host=i686-pc-linux-gnu --disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smb --disable-smtp --disable-gopher --disable-manual --enable-ipv6 --disable-pthreads --enable-crypto-auth --enable-cookies --without-zlib --disable-threaded-resolver --without-brotli --with-ssl=$(abspath .build/usr/lib/openssl/lib)
 	@$(MAKE) -C .build/curl
 	@$(MAKE) -C .build/curl install
 
