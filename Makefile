@@ -2,9 +2,10 @@
 CPPFLAGS=-m32 -Wall -fPIC -pthread -std=c++11
 INCLUDES_x32=-I.build/usr/lib/curl/i386/include -Iinclude/jsoncpp
 OBJS=include/jsoncpp.o src/common.o src/arguments.o src/requests.o src/clients.o src/output.o src/handler.o src/main.o
-LIBS_x32=.build/usr/lib/curl/i386/lib/libcurl.a /usr/lib/i386-linux-gnu/libssl.a /usr/lib/i386-linux-gnu/libcrypto.a
+LIBS_x32=.build/usr/lib/curl/i386/lib/libcurl.a .build/usr/lib/openssl/lib/libssl.a .build/usr/lib/openssl/lib/libcrypto.a
 LDFLAGS=-m32 -shared -fPIC -pthread
 OUTPUT=""
+OPENSSLSRC=https://www.openssl.org/source/openssl-1.1.0f.tar.gz
 CURLSRC=https://github.com/curl/curl/releases/download/curl-7_59_0/curl-7.59.0.zip
 ARMAKE=$(abspath tools/bin/armake)
 TAG=$(shell git describe --tag | sed "s/-.*-/-/")
@@ -13,6 +14,15 @@ OUTPUTPATH=".build/@ArmA3URLFetch/"
 all: linux32 build_mod deploy_mod
 
 linux32: prepare clean build_obj_linux_x32 link
+
+openssl:
+	@echo "\tGET    openssl"
+	@mkdir -p .build/openssl
+	@wget -P .build/ $(OPENSSLSRC)
+	@setarch i386 ./config -m32 --prefix=$(abspath .build/usr/lib/openssl) no-ui no-ssl3 shared \
+		make && \
+		make test && \
+		make install
 
 clean_curl:
 	@rm -fR .build/curl/
