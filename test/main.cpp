@@ -24,7 +24,7 @@ void makeRequest() {
     const char *function = "SENDRQ";
     const char *args[12];
     const char *tmp1 = "\"#url\"";
-    const char *tmp2 = "\"https://httpbins.org/post\"";
+    const char *tmp2 = "\"https://httpbins.org/delay/10\"";
     const char *tmp3 = "\"#postData\"";
     const char *tmp4 = "\"{\"test\":2}\"";
     const char *tmp5 = "\"\"";
@@ -34,7 +34,7 @@ void makeRequest() {
     const char *tmp9 = "\"Content-Type\"";
     const char *tmp10 = "\"application/json\"";
     const char *tmp11 = "\"#timeout\"";
-    const char *tmp12 = "\"10\"";
+    const char *tmp12 = "\"5\"";
     args[0] = tmp1;
     args[1] = tmp2;
     args[2] = tmp3;
