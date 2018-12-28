@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  build_debian:
     docker:
       - image: debian:stretch
     steps:
@@ -23,3 +23,31 @@ jobs:
       - store_artifacts:
           path: .build/@ArmA3URLFetch/arma3urlfetch.so
           destination: arma3urlfetch.so
+  build_ubuntu:
+    docker:
+      - image: ubuntu:xenial
+    steps:
+      - checkout
+      - run:
+          name: dependencies
+          command: dpkg --add-architecture i386 && apt-get update && apt-get install -y -f build-essential software-properties-common g++-multilib gcc-multilib libc6-dev libc6-dev:i386 unzip zip wget
+      - run:
+          name: openssl
+          command: make openssl
+      - run:
+          name: curl
+          command: make curl
+      - run:
+          name: test x86 binary
+          command: make test
+      - run:
+          name: x86 binary
+          command: make linux32
+      - store_artifacts:
+          path: .build/@ArmA3URLFetch/arma3urlfetch.so
+          destination: arma3urlfetch.so
+workflows:
+  version: 2
+  build:
+    - build_ubuntu
+    - build_debian
