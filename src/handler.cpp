@@ -87,7 +87,7 @@ int Handler::sendRequest(Output *op, const char **args, int argsCnt)
         }
     }
 
-    op->Write(&params.PostData);
+    op->Write(params.PostData.c_str());
 
     return requests->AddRequest(op, params);
 };
