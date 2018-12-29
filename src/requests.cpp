@@ -205,9 +205,11 @@ void Requests::fetchRequest(Requests::Request req)
                 curl_easy_setopt(curl, CURLOPT_URL, req.Url.c_str());
                 curl_easy_setopt(curl, CURLOPT_USERAGENT, HTTP_VERSION);
                 curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, req.Method.c_str());
+
                 if (!req.Url.empty()) {
                     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, req.PostData.c_str());
                 }
+
                 if (req.Redirect) {
                     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
                     if (req.MaxRedirects != 0) {
@@ -221,6 +223,8 @@ void Requests::fetchRequest(Requests::Request req)
 
                 cS = curl_easy_perform(curl);
                 
+                std::cout << req.PostData.c_str() << std::endl;
+
                 if (cS == CURLE_OK)
                 {
                     if (req.JsonToArray)

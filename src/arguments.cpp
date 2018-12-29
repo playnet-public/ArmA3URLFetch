@@ -112,7 +112,7 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
                 tmp.clear();
             }
         }
-        /*else if (value.compare("#timeout") == 0)
+        else if (value.compare("#timeout") == 0)
         {
             if (i+1 < argsCnt)
             {
@@ -127,7 +127,7 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
             {
                 return 18;
             }
-        }*/
+        }
         tmpArg.clear();
         tmp.clear();
     }
