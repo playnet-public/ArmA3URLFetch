@@ -54,6 +54,7 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
                 tmp.append(args[i+1]);
                 A3URLCommon::StrUnqoute(&tmp);
                 params->PostData.append(tmp);
+                stdd::cout << params->c_str() << std::endl;
                 tmp.clear();
                 i++;
             }
