@@ -197,8 +197,6 @@ void Requests::fetchRequest(Requests::Request req)
                 headers = curl_slist_append(headers, req.Headers[i].c_str());
             }
 
-            req.Url.append(req.Forms);
-
             std::string resStr;
 
             if (curl)

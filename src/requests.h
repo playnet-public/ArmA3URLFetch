@@ -59,7 +59,7 @@ public:
         int MaxRedirects;
         long MaxTimeout;
         bool JsonToArray, Redirect;
-        std::string Url, Method, Forms, PostData; ///< Parameters of the request.
+        std::string Url, Method, PostData; ///< Parameters of the request.
         std::vector<std::string> Headers; ///< Headers of the request.
     };
 
