@@ -30,7 +30,7 @@ jobs:
           destination: arma3urlfetch.so
   linting:
     docker:
-      - image: quay.io/playnet/arma3urlfetch-ci-debian:1
+      - image: acemod/sqflint
     steps:
       - checkout
       - run:
