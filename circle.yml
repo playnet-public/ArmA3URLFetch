@@ -28,9 +28,22 @@ jobs:
       - store_artifacts:
           path: .build/@ArmA3URLFetch/arma3urlfetch.so
           destination: arma3urlfetch.so
+  linting:
+    docker:
+      - image: quay.io/playnet/arma3urlfetch-ci-debian:1
+    steps:
+      - checkout
+      - run:
+          name: linting
+          command: sqflint --exit=e -d addons
 workflows:
   version: 2
   build:
     jobs:
-      - build_ubuntu
-      - build_debian
+      - linting
+      - build_ubuntu:
+          requires:
+            - linting
+      - build_debian:
+          requires:
+            - linting

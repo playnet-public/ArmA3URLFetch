@@ -92,8 +92,6 @@ cleanTest:
 
 build: $(patsubst addons/%, $(BUILD_PATH)/$(BIN)/addons/$(PREFIX)_%.pbo, $(wildcard addons/*))
 
-
-
 createKey: prepare
 ifndef PRVKEYFILE
 	rm -f .build/keys/*
