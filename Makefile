@@ -14,12 +14,7 @@ OPENSSLSRC=https://www.openssl.org/source/openssl-1.1.0f.tar.gz
 CURLSRC=https://github.com/curl/curl/releases/download/curl-7_59_0/curl-7.59.0.zip
 TAG=$(shell git describe --tag | sed "s/-.*-/-/")
 OUTPUTPATH=".build/@ArmA3URLFetch/"
-
-ifeq ($(OS), Windows_NT)
-	ARMAKE = ./tools/armake_w64.exe
-else
-	ARMAKE = ./tools/armake
-endif
+ARMAKE=armake
 
 all: linux32 build_mod deploy_mod
 
