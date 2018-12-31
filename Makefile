@@ -75,46 +75,29 @@ cleanTest:
 	@echo "\tRM\t\tCleaning up tests"
 	@rm -f .build/test.a
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 build: $(patsubst addons/%, $(BUILD_PATH)/$(BIN)/addons/$(PREFIX)_%.pbo, $(wildcard addons/*))
 
+$(BUILD_PATH)/$(BIN)/addons/$(PREFIX)_%.pbo: addons/%
+	@mkdir -p $(BUILD_PATH)/$(BIN)/addons
+	@echo "    PBO   $@"
+	@${ARMAKE} build $(FLAGS) -p -f -e "version=$(GIT_HASH)" $< $@
 
+$(BUILD_PATH)/keys/%.biprivatekey:
+	@mkdir -p $(BUILD_PATH)/keys
+	@echo "    KEY   $@"
+	@${ARMAKE} keygen -f $(patsubst $(BUILD_PATH)/keys/%.biprivatekey, $(BUILD_PATH)/keys/%, $@)
 
-createKey: prepare
-ifndef PRVKEYFILE
-	rm -f .build/keys/*
-	cd .build/keys/ && $(ARMAKE) keygen -f a3uf_$(TAG)
-	$(eval KEY := a3uf_$(TAG))
-	$(eval PRVKEYFILE := .build/keys/$(KEY).biprivatekey)
-	cp -f .build/keys/*.bikey .build/@ArmA3URLFetch/keys
-endif
+$(BUILD_PATH)/$(BIN)/addons/$(PREFIX)_%.pbo.lil_$(GIT_HASH).bisign: $(BUILD_PATH)/$(BIN)/addons/$(PREFIX)_%.pbo $(BUILD_PATH)/keys/lil_$(GIT_HASH).biprivatekey
+	@echo "    SIG   $@"
+	@${ARMAKE} sign -f -s $@ $(BUILD_PATH)/keys/lil_$(GIT_HASH).biprivatekey $<
 
-build_mod: createKey a3uf_common a3uf_json
+signatures: $(patsubst addons/%, $(BUILD_PATH)/$(BIN)/addons/$(PREFIX)_%.pbo.lil_$(GIT_HASH).bisign, $(wildcard addons/*))
 
-prepare_deploy:
-	@rm -fR .builds/$(TAG)
-	@mkdir -p .builds/$(TAG)
+mod_clean:
+	rm -Rf $(BUILD_PATH)/$(BIN) $(BUILD_PATH)/keys
 
-deploy_mod: prepare_deploy
-	@mv .build/@ArmA3URLFetch .builds/$(TAG)
-	@mv .build/keys .builds/$(TAG)
-
-a3uf_common: prepare
-	$(ARMAKE) build -p --force -k $(PRVKEYFILE) -e prefix=x\\a3uf\\addons\\common @ArmA3URLFetch/addons/common .build/@ArmA3URLFetch/addons/$@.pbo
-
-a3uf_json: prepare
-	$(ARMAKE) build -p --force -k $(PRVKEYFILE) -e prefix=x\\a3uf\\addons\\json @ArmA3URLFetch/addons/json .build/@ArmA3URLFetch/addons/$@.pbo
+release: mod_clean
+	@"$(MAKE)" $(MAKEFLAGS) signatures
+	@mkdir -p $(BUILDS_PATH)/$(GIT_HASH)
+	@echo "    CP   $(BUILD_PATH)/* to $(BUILDS_PATH)/$(GIT_HASH)"
+	@cp -Rf $(BUILD_PATH)/$(BIN) $(BUILD_PATH)/keys $(BUILDS_PATH)/$(GIT_HASH)/

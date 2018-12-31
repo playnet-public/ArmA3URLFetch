@@ -36,11 +36,22 @@ jobs:
       - run:
           name: linting
           command: sqflint --exit=e -d addons
+  build_mod:
+    docker:
+      - image: acemod/armake
+    steps:
+      - checkout
+      - run:
+          name: building
+          command: make release
 workflows:
   version: 2
   build:
     jobs:
       - linting
+      - build_mod:
+          requires:
+            - linting
       - build_ubuntu:
           requires:
             - linting
