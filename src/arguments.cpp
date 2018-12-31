@@ -26,7 +26,7 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
             }
             else
             {
-                return 11;
+                return 10;
             }
         }
         else if (value.compare("#method") == 0)
@@ -36,13 +36,13 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
                 i++;
                 tmp.append(args[i]);
                 A3URLCommon::StrUnqoute(&tmp);
-                if (tmp.at(0) == '#' || tmp.empty()) return 12;
+                if (tmp.at(0) == '#' || tmp.empty()) return 11;
                 params->Method = tmp;
                 tmp.clear();
             }
             else
             {
-                return 13;
+                return 11;
             }
         }
         else if (value.compare("#postData") == 0)
@@ -89,13 +89,13 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
                 i++;
                 tmp.append(args[i]);
                 A3URLCommon::StrUnqoute(&tmp);
-                if (tmp.at(0) == '#' || tmp.empty()) return 14;
+                if (tmp.at(0) == '#' || tmp.empty()) return 12;
                 params->ClientID = A3URLCommon::StrToInt(tmp);
                 tmp.clear();
             }
             else
             {
-                return 15;
+                return 12;
             }
         }
         else if (value.compare("#redirect") == 0)
@@ -107,7 +107,7 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
                 i++;
                 tmp.append(args[i]);
                 A3URLCommon::StrUnqoute(&tmp);
-                if (tmp.empty()) return 16;
+                if (tmp.empty()) return 13;
                 params->MaxRedirects = A3URLCommon::StrToInt(tmp);
                 tmp.clear();
             }
@@ -119,13 +119,13 @@ int Arguments::ParseArguments(Arguments::Parameters *params, const char **args, 
                 i++;
                 tmp.append(args[i]);
                 A3URLCommon::StrUnqoute(&tmp);
-                if (tmp.at(0) == '#' || tmp.empty()) return 17;
+                if (tmp.at(0) == '#' || tmp.empty()) return 14;
                 params->MaxTimeout = (long int)(A3URLCommon::StrToInt(tmp));
                 tmp.clear();
             }
             else
             {
-                return 18;
+                return 14;
             }
         }
         tmpArg.clear();

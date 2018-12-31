@@ -217,7 +217,7 @@ void Requests::fetchRequest(Requests::Request req)
                     }
                 }
 
-                curl_easy_setopt(curl, CURLOPT_TIMEOUT, req.MaxTimeout);
+                curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, req.MaxTimeout);
                 curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resStr);
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, RequestsCurlCallbackWriter);
 
