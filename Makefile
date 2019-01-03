@@ -82,17 +82,19 @@ $(BUILD_PATH)/keys/%.biprivatekey:
 	@echo "    KEY   $@"
 	@${ARMAKE} keygen -f $(patsubst $(BUILD_PATH)/keys/%.biprivatekey, $(BUILD_PATH)/keys/%, $@)
 
-$(BUILD_PATH)/$(BIN)/addons/$(PREFIX)_%.pbo.lil_$(GIT_HASH).bisign: $(BUILD_PATH)/$(BIN)/addons/$(PREFIX)_%.pbo $(BUILD_PATH)/keys/lil_$(GIT_HASH).biprivatekey
+$(BUILD_PATH)/$(BIN)/addons/$(PREFIX)_%.pbo.a3uf_$(GIT_HASH).bisign: $(BUILD_PATH)/$(BIN)/addons/$(PREFIX)_%.pbo $(BUILD_PATH)/keys/a3uf_$(GIT_HASH).biprivatekey
 	@echo "    SIG   $@"
-	@${ARMAKE} sign -f -s $@ $(BUILD_PATH)/keys/lil_$(GIT_HASH).biprivatekey $<
+	@${ARMAKE} sign -f -s $@ $(BUILD_PATH)/keys/a3uf_$(GIT_HASH).biprivatekey $<
 
-signatures: $(patsubst addons/%, $(BUILD_PATH)/$(BIN)/addons/$(PREFIX)_%.pbo.lil_$(GIT_HASH).bisign, $(wildcard addons/*))
+signatures: $(patsubst addons/%, $(BUILD_PATH)/$(BIN)/addons/$(PREFIX)_%.pbo.a3uf_$(GIT_HASH).bisign, $(wildcard addons/*))
 
 mod_clean:
-	rm -Rf $(BUILD_PATH)/$(BIN) $(BUILD_PATH)/keys
+	rm -Rf $(BUILD_PATH)/$(BIN) $(BUILD_PATH)/keys $(BUILDS_PATH)/$(GIT_HASH)
 
 release: mod_clean
 	@"$(MAKE)" $(MAKEFLAGS) signatures
 	@mkdir -p $(BUILDS_PATH)/$(GIT_HASH)
 	@echo "    CP   $(BUILD_PATH)/* to $(BUILDS_PATH)/$(GIT_HASH)"
 	@cp -Rf $(BUILD_PATH)/$(BIN) $(BUILD_PATH)/keys $(BUILDS_PATH)/$(GIT_HASH)/
+	@mkdir -p $(BUILDS_PATH)/$(GIT_HASH)/$(BIN)/keys/
+	@cp -f $(BUILDS_PATH)/$(GIT_HASH)/keys/a3uf_$(GIT_HASH).bikey $(BUILDS_PATH)/$(GIT_HASH)/$(BIN)/keys/
