@@ -127,9 +127,9 @@ std::string A3URLCommon::ToArray(std::string jTxt)
     std::stringstream(jTxt) >> root;
     std::stringstream res;
 
-    if (root.empty() || root.isNull())
+    if (root.isNull())
     {
-        res << "[]";
+        res << "objNull";
     }
     else if (root.isArray())
     {
