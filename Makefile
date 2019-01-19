@@ -16,6 +16,10 @@ TAG=$(shell git describe --tag | sed "s/-.*-/-/")
 OUTPUTPATH=".build/@ArmA3URLFetch/"
 ARMAKE=armake
 
+ifeq ($(OS), Windows_NT)
+	ARMAKE = ./tools/armake_w64.exe
+endif
+
 all: linux32 build_mod deploy_mod
 
 linux32: prepare clean build_obj_linux_x32 link
