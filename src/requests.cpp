@@ -19,26 +19,24 @@ void Requests::getPopRequest(Requests::Request *req)
 //Request::workerThread is the main function for the worker thread(s)
 void Requests::workerThread()
 {
-    while (true)
+    std::unique_lock<std::mutex> lock(requestsQueueMtx);
+
+    while (1)
     {
-        if (!requestsQueue.empty())
+        threadCondVar.wait(lock, [this]{
+            return (requestsQueue.size());
+        });
+
+        if (requestsQueue.size())
         {
-            requestsQueueMtx.lock();
-            if (!requestsQueue.empty())
-            {
-                Requests::Request req;
-                getPopRequest(&req);
-                requestsQueueMtx.unlock();
-                fetchRequest(req);
-            }
-            else
-            {
-                requestsQueueMtx.unlock();
-            }
-        }
-        else
-        {
-            std::this_thread::yield();
+            Requests::Request req;
+            getPopRequest(&req);
+
+            lock.unlock();
+
+            fetchRequest(req);
+
+            lock.lock();
         }
     }
 };

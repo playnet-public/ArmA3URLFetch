@@ -22,6 +22,7 @@
 #include "output.h"
 #include "macros.h"
 #include "common.h"
+#include <condition_variable>
 
 /*!
     \class Requests
@@ -87,6 +88,7 @@ public:
 
     int GetStatus(int id);
 private:
+    std::condition_variable threadCondVar;
     std::map<int, Requests::Result> results; ///< The list of all pending results/requests.
     std::mutex resultsMtx; ///< The list mutex.
     std::queue<Requests::Request> requestsQueue; ///< The queue for all requests.
