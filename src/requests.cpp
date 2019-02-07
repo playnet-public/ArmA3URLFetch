@@ -53,6 +53,7 @@ void Requests::startWorkers()
 
         for (int i = 0; i < THREADS; i++)
         {
+            std::cout << "starting worker: " << i+1 << std::endl;
             std::thread newThread(&Requests::workerThread, this);
             newThread.detach();
         };
