@@ -60,7 +60,6 @@ void makeRequest() {
 
     hndl->CallExtensionArgs(output, outputSize, "GETRQ", args2, 1);
     args2[0] = std::string(output).c_str();
-    std::cout << args2[0] << std::endl;
     auto finish = std::chrono::high_resolution_clock::now();
     std::cout << "Time Results:" << std::chrono::duration_cast<std::chrono::nanoseconds>(finish-start).count() << std::endl << "---" << std::endl;
 
