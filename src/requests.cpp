@@ -49,14 +49,13 @@ void Requests::startWorkers()
 {
     if (!workersStarted)
     {
-        workersStarted = true;
-
         for (int i = 0; i < THREADS; i++)
         {
             std::cout << "starting worker: " << i+1 << std::endl;
-            std::thread newThread(&Requests::workerThread, this);
-            newThread.detach();
+            std::thread t(&Requests::workerThread, this);
+            t.detach();
         };
+        workersStarted = true;
     }
 };
 
@@ -249,8 +248,8 @@ void Requests::fetchRequest(Requests::Request req)
 //Requests::AddRequest call Requests::addRequest and writes the output to an pointer class Output
 int Requests::AddRequest(Output *op, Arguments::Parameters params)
 {
-    std::cout << "adding request" << std::endl;
     int id = addRequest(params);
+    threadCondVar.notify_one();
     op->Write(id);
 
     if (id <= 0)
