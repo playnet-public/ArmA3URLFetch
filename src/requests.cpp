@@ -249,6 +249,7 @@ void Requests::fetchRequest(Requests::Request req)
 //Requests::AddRequest call Requests::addRequest and writes the output to an pointer class Output
 int Requests::AddRequest(Output *op, Arguments::Parameters params)
 {
+    std::cout << "adding request" << std::endl;
     int id = addRequest(params);
     op->Write(id);
 
