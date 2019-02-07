@@ -4,6 +4,8 @@ jobs:
     docker:
       - image: quay.io/playnet/arma3urlfetch-ci-debian:1
     steps:
+      - run:
+          command: apt-get install -f -y git
       - checkout
       - run:
           name: test x86 binary
@@ -18,6 +20,8 @@ jobs:
     docker:
       - image: quay.io/playnet/arma3urlfetch-ci-ubuntu:1
     steps:
+      - run:
+          command: apt-get install -f -y git
       - checkout
       - run:
           name: test x86 binary
