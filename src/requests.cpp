@@ -19,6 +19,7 @@ void Requests::getPopRequest(Requests::Request *req)
 //Request::workerThread is the main function for the worker thread(s)
 void Requests::workerThread()
 {
+    std::cout << "creating unique lock" << std::endl;
     std::unique_lock<std::mutex> lock(requestsQueueMtx);
 
     while (1)
@@ -26,9 +27,11 @@ void Requests::workerThread()
         threadCondVar.wait(lock, [this]{
             return (requestsQueue.size());
         });
+        std::cout << "condition is true" << std::endl;
 
         if (requestsQueue.size())
         {
+            std::cout << "queue is filled" << std::endl;
             Requests::Request req;
             getPopRequest(&req);
 
