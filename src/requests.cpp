@@ -29,12 +29,12 @@ void Requests::workerThread()
 
         if (requestsQueue.size())
         {
-            Requests::Request *req;
-            getPopRequest(req);
+            Requests::Request req;
+            getPopRequest(&req);
 
             lock.unlock();
 
-            fetchRequest(*req);
+            fetchRequest(req);
 
             lock.lock();
         }
