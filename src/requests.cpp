@@ -12,7 +12,7 @@ Requests::Requests() {
 //Requests::getPopRequest returns the first request of a queue
 void Requests::getPopRequest(Requests::Request *req)
 {
-    *req = requestsQueue.front();
+    req = requestsQueue.front();
     requestsQueue.pop();
 };
 
@@ -29,12 +29,12 @@ void Requests::workerThread()
 
         if (requestsQueue.size())
         {
-            Requests::Request req;
-            getPopRequest(&req);
+            Requests::Request *req;
+            getPopRequest(req);
 
             lock.unlock();
 
-            fetchRequest(req);
+            fetchRequest(*req);
 
             lock.lock();
         }
@@ -91,7 +91,7 @@ int Requests::addResult()
     Requests::Result res;
     res.status = 1; // 0 = text pending, 1 = pending, 2 = error
     resultsMtx.lock();
-    results.insert(std::pair<int, Requests::Result>(key, res));
+    results.insert(std::pair<int, Requests::Result*>(key, &res));
     resultsMtx.unlock();
 
     #ifdef _MSC_VER
@@ -120,7 +120,7 @@ int Requests::addRequest(Arguments::Parameters params)
     req.MaxTimeout = params.MaxTimeout;
 
     requestsQueueMtx.lock();
-    requestsQueue.push(req);
+    requestsQueue.push(&req);
     requestsQueueMtx.unlock();
 
     return key;
@@ -136,7 +136,7 @@ void Requests::setResult(int id, Requests::Result res)
 
     if (results.find(id) != results.end())
     {
-        results[id] = res;
+        results[id] = &res;
     }
 
     resultsMtx.unlock();
@@ -145,12 +145,14 @@ void Requests::setResult(int id, Requests::Result res)
 //Requests::removeResult removes an existing result from the map
 bool Requests::removeResult(int id)
 {
-    std::map<int, Requests::Result>::iterator f;
+    std::map<int, Requests::Result*>::iterator f;
     f = results.find(id);
     if (f == results.end())
         return false;
     
     resultsMtx.lock();
+    Requests::Result *r = f->second;
+    delete r;
     results.erase(f);
     resultsMtx.unlock();
 
@@ -164,7 +166,7 @@ int Requests::getResult(int id, Requests::Result *res)
         return 2;
     
     resultsMtx.lock();
-    *res = results[id]; //error 3 on request...
+    res = results[id]; //error 3 on request...
     resultsMtx.unlock();
 
     if (res->status == 2) removeResult(id);
@@ -175,7 +177,7 @@ int Requests::getResult(int id, Requests::Result *res)
 //Requests::fetchRequest processes a given request by the parameters of Requests::Request
 void Requests::fetchRequest(Requests::Request req)
 {
-    if (!results.empty())
+    if (!results.size())
     {
         Requests::Result res;
 
@@ -295,11 +297,11 @@ int Requests::GetStatus(int id)
 {
     if (results.find(id) == results.end())
         return 3;
-    Requests::Result res;
+    Requests::Result *res;
 
     resultsMtx.lock();
     res = results[id];
     resultsMtx.unlock();
 
-    return res.status;
+    return res->status;
 }
