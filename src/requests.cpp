@@ -35,6 +35,8 @@ void Requests::workerThread()
             lock.unlock();
 
             fetchRequest(req);
+            delete &req;
+            std::cout << req.Url << std::endl;
 
             lock.lock();
         }
