@@ -93,7 +93,7 @@ $(BUILD_PATH)/$(BIN)/addons/$(PREFIX)_%.pbo.a3uf_$(GIT_HASH).bisign: $(BUILD_PAT
 signatures: $(patsubst addons/%, $(BUILD_PATH)/$(BIN)/addons/$(PREFIX)_%.pbo.a3uf_$(GIT_HASH).bisign, $(wildcard addons/*))
 
 mod_clean:
-	rm -Rf $(BUILD_PATH)/$(BIN) $(BUILD_PATH)/keys $(BUILDS_PATH)/$(GIT_HASH)
+	@rm -Rf $(BUILD_PATH)/$(BIN) $(BUILD_PATH)/keys $(BUILDS_PATH)/$(GIT_HASH)
 
 release: mod_clean
 	@"$(MAKE)" $(MAKEFLAGS) signatures
