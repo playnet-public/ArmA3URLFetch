@@ -92,7 +92,6 @@ int Requests::addResult()
 int Requests::addRequest(Arguments::Parameters params)
 {
     int key = addResult();
-    std::cout << "lastID: " << key << std::endl;
     
     if (key < 1)
         return 0;
