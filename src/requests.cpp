@@ -19,7 +19,6 @@ void Requests::getPopRequest(Requests::Request *req)
 //Request::workerThread is the main function for the worker thread(s)
 void Requests::workerThread()
 {
-    std::cout << "creating unique lock" << std::endl;
     std::unique_lock<std::mutex> lock(requestsQueueMtx);
 
     while (1)
@@ -27,11 +26,9 @@ void Requests::workerThread()
         threadCondVar.wait(lock, [this]{
             return (requestsQueue.size());
         });
-        std::cout << "condition is true" << std::endl;
 
         if (requestsQueue.size())
         {
-            std::cout << "queue is filled" << std::endl;
             Requests::Request req;
             getPopRequest(&req);
 
@@ -51,7 +48,6 @@ void Requests::startWorkers()
     {
         for (int i = 0; i < THREADS; i++)
         {
-            std::cout << "starting worker: " << i+1 << std::endl;
             std::thread t(&Requests::workerThread, this);
             t.detach();
         };
@@ -223,8 +219,6 @@ void Requests::fetchRequest(Requests::Request req)
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, RequestsCurlCallbackWriter);
 
                 cS = curl_easy_perform(curl);
-                
-                std::cout << req.PostData.c_str() << std::endl;
 
                 if (cS == CURLE_OK)
                 {
