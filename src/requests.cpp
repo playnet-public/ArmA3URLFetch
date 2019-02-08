@@ -29,14 +29,13 @@ void Requests::workerThread()
 
         if (requestsQueue.size())
         {
-            Requests::Request req;
-            getPopRequest(&req);
+            Requests::Request *req;
+            getPopRequest(req);
 
             lock.unlock();
 
-            fetchRequest(req);
-            delete &req;
-            std::cout << req.Url << std::endl;
+            fetchRequest(*req);
+            delete req;
 
             lock.lock();
         }
@@ -90,10 +89,10 @@ int Requests::addResult()
     };
     resultsMtx.unlock();
 
-    Requests::Result res;
-    res.status = 1; // 0 = text pending, 1 = pending, 2 = error
+    Requests::Result *res = new Requests::Result();
+    res->status = 1; // 0 = text pending, 1 = pending, 2 = error
     resultsMtx.lock();
-    results.insert(std::pair<int, Requests::Result*>(key, &res));
+    results.insert(std::pair<int, Requests::Result*>(key, res));
     resultsMtx.unlock();
 
     #ifdef _MSC_VER
@@ -110,26 +109,26 @@ int Requests::addRequest(Arguments::Parameters params)
     if (key < 1)
         return 0;
 
-    Requests::Request req;
-    req.RequestID = key;
-    req.Url = params.Url;
-    req.Method = params.Method;
-    req.PostData = params.PostData;
-    req.Headers = params.Headers;
-    req.JsonToArray = params.JsonToArray;
-    req.Redirect = params.Redirect;
-    req.MaxRedirects = params.MaxRedirects;
-    req.MaxTimeout = params.MaxTimeout;
+    Requests::Request *req = new Requests::Request();
+    req->RequestID = key;
+    req->Url = params.Url;
+    req->Method = params.Method;
+    req->PostData = params.PostData;
+    req->Headers = params.Headers;
+    req->JsonToArray = params.JsonToArray;
+    req->Redirect = params.Redirect;
+    req->MaxRedirects = params.MaxRedirects;
+    req->MaxTimeout = params.MaxTimeout;
 
     requestsQueueMtx.lock();
-    requestsQueue.push(&req);
+    requestsQueue.push(req);
     requestsQueueMtx.unlock();
 
     return key;
 };
 
 //Requests::setResult sets a specific result by its id
-void Requests::setResult(int id, Requests::Result res)
+void Requests::setResult(int id, Requests::Result *res)
 {
     if (id <= 0)
         return;
@@ -138,7 +137,7 @@ void Requests::setResult(int id, Requests::Result res)
 
     if (results.find(id) != results.end())
     {
-        results[id] = &res;
+        results[id] = res;
     }
 
     resultsMtx.unlock();
@@ -153,8 +152,7 @@ bool Requests::removeResult(int id)
         return false;
     
     resultsMtx.lock();
-    Requests::Result *r = f->second;
-    delete r;
+    delete f->second;
     results.erase(f);
     resultsMtx.unlock();
 
@@ -181,10 +179,10 @@ void Requests::fetchRequest(Requests::Request req)
 {
     if (!results.empty())
     {
-        Requests::Result res;
+        Requests::Result *res;
 
-        int status = getResult(req.RequestID, &res);
-        res.status = 2;
+        int status = getResult(req.RequestID, res);
+        res->status = 2;
 
         if (status == 1) {
             CURL *curl;
@@ -231,10 +229,10 @@ void Requests::fetchRequest(Requests::Request req)
                         resStr = A3URLCommon::ToArray(resStr);
                     }
 
-                    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &res.httpCode);
+                    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &res->httpCode);
 
-                    res.result = resStr;
-                    res.status = 0;
+                    res->result = resStr;
+                    res->status = 0;
                 }
             }
 
@@ -262,26 +260,26 @@ int Requests::getResultString(int id, std::string *str)
     if (results.find(id) == results.end())
         return 2;
 
-    Requests::Result res;
-    res.status = getResult(id, &res);
+    Requests::Result *res;
+    res->status = getResult(id, res);
 
-    if (res.status == 0)
+    if (res->status == 0)
     {
-        if (res.result.size() > 10200)
+        if (res->result.size() > 10200)
         {
-            *str = res.result.substr(0, 10200);
-            res.result.erase(res.result.begin(), (res.result.begin() + 10200));
+            *str = res->result.substr(0, 10200);
+            res->result.erase(res->result.begin(), (res->result.begin() + 10200));
             setResult(id, res);
         }
-        else if (res.result.size() <= 10200)
+        else if (res->result.size() <= 10200)
         {
-            *str = res.result;
+            *str = res->result;
             removeResult(id);
-            res.status = res.httpCode;
+            res->status = res->httpCode;
         }
     }
 
-    return res.status;
+    return res->status;
 };
 
 //Requests::GetResult copies the result of an result to an sstream Output

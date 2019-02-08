@@ -45,6 +45,9 @@ public:
     */
     struct Result
     {
+        ~Result() {
+            result.clear();
+        }
         int status; ///< Status of the result.
         long httpCode;
         std::string result; ///< URL content of the URL request.
@@ -56,6 +59,12 @@ public:
     */
     struct Request
     {
+        ~Request() {
+            Url.clear();
+            Method.clear();
+            PostData.clear();
+            Headers.clear();
+        }
         int RequestID; ///< Unique ID of the request.
         int MaxRedirects;
         long MaxTimeout;
@@ -141,7 +150,7 @@ private:
         \fn void setResult(int id, Requests::Result res)
         \brief Sets a specifc result available in Requests::results by id.
     */
-    void setResult(int id, Requests::Result res);
+    void setResult(int id, Requests::Result *res);
     
     /*!
         \fn bool removeResult(int id)
