@@ -32,13 +32,11 @@
 class Requests
 {
 public:
-    #ifdef __linux__
     /*!
         \fn Requests()
         \brief Is the initialization of Requests
     */
     Requests();
-    #endif
 
     /*!
         \struct Result
