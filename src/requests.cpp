@@ -181,6 +181,7 @@ void Requests::fetchRequest(Requests::Request *req)
         Requests::Result res;
 
         int status = getResult(req->RequestID, &res);
+        std::cout << req->RequestID << std::endl;
         res.status = 2;
 
         if (status == 1) {
