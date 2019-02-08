@@ -23,6 +23,7 @@
 #include "macros.h"
 #include "common.h"
 #include <condition_variable>
+#include <atomic>
 
 /*!
     \class Requests
@@ -45,6 +46,9 @@ public:
     */
     struct Result
     {
+        Result(int s) {
+            status = s;
+        }
         ~Result() {
             result.clear();
         }
@@ -59,6 +63,25 @@ public:
     */
     struct Request
     {
+        Request(int id,
+            int maxRedirects,
+            long maxTimeout,
+            bool jsonToArray,
+            bool redirect,
+            std::string url,
+            std::string method,
+            std::string postData,
+            std::vector<std::string> headers) {
+                RequestID = id;
+                MaxRedirects = maxRedirects;
+                MaxTimeout = maxTimeout;
+                JsonToArray = jsonToArray;
+                Redirect = redirect;
+                Url = url;
+                Method = method;
+                PostData = postData;
+                Headers = headers;
+        }
         ~Request() {
             Url.clear();
             Method.clear();
@@ -97,18 +120,16 @@ public:
 
     int GetStatus(int id);
 private:
-    std::condition_variable threadCondVar;
-    std::map<int, Requests::Result> results; ///< The list of all pending results/requests.
-    std::mutex resultsMtx; ///< The list mutex.
-    std::queue<Requests::Request> requestsQueue; ///< The queue for all requests.
-    std::mutex requestsQueueMtx; ///< The mutex of the queue.
-    bool workersStarted = false; ///< The lock for a initialization once a time.
+    std::queue<Requests::Request*> requests; ///< The queue for all requests.
+    std::mutex m_requests; ///< The mutex of the queue.
+    std::condition_variable cv_requests;
 
-    /*!
-        \fn void getPopRequest(Requests::Request *req)
-        \brief Copies the first request from the queue and removes it from the queue.
-    */
-    void getPopRequest(Requests::Request *req);
+    std::map<int, Requests::Result*> results; ///< The list of all pending results/requests.
+    std::mutex m_results; ///< The list mutex.
+
+    std::atomic_int lastID;
+
+    bool workersStarted = false; ///< The lock for a initialization once a time.
 
     /*!
         \fn void startWorkers()
@@ -159,10 +180,10 @@ private:
     bool removeResult(int id);
 
     /*!
-        \fn int getResult(int id, Requests::Result *req)
+        \fn Requests::Result* getResult(int id)
         \brief Copies a specific struct Requests::Result to a given pointer.
     */
-    int getResult(int id, Requests::Result *req); //0, 1, 2
+    Requests::Result* getResult(int id); //0, 1, 2
     
     /*!
         \fn int getResultString(int id, std::string *str)

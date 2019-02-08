@@ -9,32 +9,27 @@ Requests::Requests() {
 };
 #endif
 
-//Requests::getPopRequest returns the first request of a queue
-void Requests::getPopRequest(Requests::Request *req)
-{
-    *req = requestsQueue.front();
-    requestsQueue.pop();
-};
-
 //Request::workerThread is the main function for the worker thread(s)
 void Requests::workerThread()
 {
-    std::unique_lock<std::mutex> lock(requestsQueueMtx);
+    std::unique_lock<std::mutex> lock(m_requests);
 
     while (1)
     {
-        threadCondVar.wait(lock, [this]{
-            return (requestsQueue.size());
+        cv_requests.wait(lock, [this]{
+            return (requests.size());
         });
 
-        if (requestsQueue.size())
+        if (requests.size())
         {
-            Requests::Request req;
-            getPopRequest(&req);
+            Requests::Request *req = requests.front();
+            requests.pop();
 
             lock.unlock();
 
-            fetchRequest(req);
+            fetchRequest(*req);
+
+            delete req;
 
             lock.lock();
         }
@@ -77,22 +72,12 @@ bool Requests::isValidParameter(std::string param)
 //Requests::addResult adds a struct of Requests::Result to the result map and returns its id
 int Requests::addResult()
 {
-    int key = 1;
+    int key = lastID++;
 
-    resultsMtx.lock();
-    while (true)
-    {
-        if (results.find(key) == results.end())
-            break;
-        key++;
-    };
-    resultsMtx.unlock();
-
-    Requests::Result res;
-    res.status = 1; // 0 = text pending, 1 = pending, 2 = error
-    resultsMtx.lock();
-    results.insert(std::pair<int, Requests::Result>(key, res));
-    resultsMtx.unlock();
+    Requests::Result *res = new Requests::Result(1); // 0 = text pending, 1 = pending, 2 = error
+    m_results.lock();
+    results.insert(std::pair<int, Requests::Result*>(key, res));
+    m_results.unlock();
 
     #ifdef _MSC_VER
     startWorkers();
@@ -110,7 +95,7 @@ int Requests::addRequest(Arguments::Parameters params)
     
     std::cout << "key: " << key << std::endl;
 
-    Requests::Request req{
+    Requests::Request *req = new Requests::Request(
         key,
         params.MaxRedirects,
         params.MaxTimeout,
@@ -119,62 +104,38 @@ int Requests::addRequest(Arguments::Parameters params)
         params.Url,
         params.Method,
         params.PostData,
-        params.Headers,
-    };
+        params.Headers
+    );
 
-    requestsQueueMtx.lock();
-    requestsQueue.push(req);
-    requestsQueueMtx.unlock();
+    m_requests.lock();
+    requests.push(req);
+    m_requests.unlock();
 
     return key;
-};
-
-//Requests::setResult sets a specific result by its id
-void Requests::setResult(int id, Requests::Result res)
-{
-    if (id <= 0)
-        return;
-
-    resultsMtx.lock();
-
-    std::map<int, Requests::Result>::iterator f = results.find(id);
-    if (f != results.end())
-    {
-        results.erase(f);
-        results[id] = res;
-    }
-
-    resultsMtx.unlock();
 };
 
 //Requests::removeResult removes an existing result from the map
 bool Requests::removeResult(int id)
 {
-    std::map<int, Requests::Result>::iterator f;
+    std::map<int, Requests::Result*>::iterator f;
     f = results.find(id);
     if (f == results.end())
         return false;
     
-    resultsMtx.lock();
+    m_results.lock();
     results.erase(f);
-    resultsMtx.unlock();
+    delete f->second;
+    m_results.unlock();
 
     return true;
 };
 
 //Requests::getResult sets the address of an given result pointer and return its status
-int Requests::getResult(int id, Requests::Result *res)
+Requests::Result* Requests::getResult(int id)
 {
-    if (results.find(id) == results.end())
-        return 2;
-    
-    resultsMtx.lock();
-    *res = results[id]; //error 3 on request...
-    resultsMtx.unlock();
-
-    if (res->status == 2) removeResult(id);
-
-    return res->status;
+    std::lock_guard<std::mutex> lock(m_results);
+    //if (res->status == 2) removeResult(id);
+    return results[id];
 };
 
 //Requests::fetchRequest processes a given request by the parameters of Requests::Request
@@ -182,64 +143,74 @@ void Requests::fetchRequest(Requests::Request req)
 {
     if (!results.empty())
     {
-        Requests::Result res;
+        Requests::Result *res = getResult(req.RequestID);
 
-        int status = getResult(req.RequestID, &res);
-        res.status = 2;
+        if (res != nullptr) {
+            m_results.lock();
+            int status = res->status;
+            m_results.unlock();
 
-        if (status == 1) {
-            CURL *curl;
-            CURLcode cS;
-
-            curl = curl_easy_init();
-
-            struct curl_slist *headers = NULL;
-            for (unsigned int i = 0; i < req.Headers.size(); i++)
-            {
-                headers = curl_slist_append(headers, req.Headers[i].c_str());
-            }
-
+            long httpCode = 0;
             std::string resStr;
 
-            if (curl)
-            {
-                curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-                curl_easy_setopt(curl, CURLOPT_URL, req.Url.c_str());
-                curl_easy_setopt(curl, CURLOPT_USERAGENT, HTTP_VERSION);
-                curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, req.Method.c_str());
+            if (status == 1) {
+                CURL *curl;
+                CURLcode cS;
 
-                if (!req.Url.empty()) {
-                    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, req.PostData.c_str());
-                }
+                curl = curl_easy_init();
 
-                if (req.Redirect) {
-                    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-                    if (req.MaxRedirects != 0) {
-                        curl_easy_setopt(curl, CURLOPT_MAXREDIRS, (long int)req.MaxRedirects);
-                    }
-                }
-
-                curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, req.MaxTimeout);
-                curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resStr);
-                curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, RequestsCurlCallbackWriter);
-
-                cS = curl_easy_perform(curl);
-
-                if (cS == CURLE_OK)
+                struct curl_slist *headers = NULL;
+                for (unsigned int i = 0; i < req.Headers.size(); i++)
                 {
-                    if (req.JsonToArray)
-                    {
-                        resStr = A3URLCommon::ToArray(resStr);
+                    headers = curl_slist_append(headers, req.Headers[i].c_str());
+                }
+
+                if (curl)
+                {
+                    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+                    curl_easy_setopt(curl, CURLOPT_URL, req.Url.c_str());
+                    curl_easy_setopt(curl, CURLOPT_USERAGENT, HTTP_VERSION);
+                    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, req.Method.c_str());
+
+                    if (!req.Url.empty()) {
+                        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, req.PostData.c_str());
                     }
 
-                    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &res.httpCode);
+                    if (req.Redirect) {
+                        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+                        if (req.MaxRedirects != 0) {
+                            curl_easy_setopt(curl, CURLOPT_MAXREDIRS, (long int)req.MaxRedirects);
+                        }
+                    }
 
-                    res.result = resStr;
-                    res.status = 0;
+                    curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, req.MaxTimeout);
+                    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resStr);
+                    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, RequestsCurlCallbackWriter);
+
+                    cS = curl_easy_perform(curl);
+
+                    if (cS == CURLE_OK)
+                    {
+                        if (req.JsonToArray)
+                        {
+                            resStr = A3URLCommon::ToArray(resStr);
+                        }
+
+                        curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+                        status = 0;
+                    } else {
+                        status = 2;
+                    }
+                } else {
+                    status = 2;
                 }
-            }
 
-            setResult(req.RequestID, res);
+                m_results.lock();
+                res->status = status;
+                res->httpCode = httpCode;
+                res->result = resStr;
+                m_results.unlock();
+            }
         }
     }
 };
@@ -248,7 +219,7 @@ void Requests::fetchRequest(Requests::Request req)
 int Requests::AddRequest(Output *op, Arguments::Parameters params)
 {
     int id = addRequest(params);
-    threadCondVar.notify_one();
+    cv_requests.notify_one();
     op->Write(id);
 
     if (id <= 0)
@@ -263,8 +234,7 @@ int Requests::getResultString(int id, std::string *str)
     if (results.find(id) == results.end())
         return 2;
 
-    Requests::Result res;
-    res.status = getResult(id, &res);
+    Requests::Result res = *getResult(id);
 
     if (res.status == 0)
     {
@@ -298,12 +268,8 @@ int Requests::GetResult(Output *op, int id)
 
 int Requests::GetStatus(int id)
 {
-    if (results.find(id) == results.end())
-        return 3;
+    std::lock_guard<std::mutex> lock(m_results);
 
-    resultsMtx.lock();
-    Requests::Result res = results[id];
-    resultsMtx.unlock();
-
-    return res.status;
+    Requests::Result *res = results[id];
+    return (res == nullptr) ? 3 : res->status;
 }
