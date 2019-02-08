@@ -179,7 +179,7 @@ int Requests::getResult(int id, Requests::Result *res)
 //Requests::fetchRequest processes a given request by the parameters of Requests::Request
 void Requests::fetchRequest(Requests::Request req)
 {
-    if (!results.size())
+    if (!results.empty())
     {
         Requests::Result res;
 
