@@ -179,10 +179,10 @@ void Requests::fetchRequest(Requests::Request *req)
 {
     if (!results.empty())
     {
-        Requests::Result *res;
+        Requests::Result res;
 
-        int status = getResult(req->RequestID, res);
-        res->status = 2;
+        int status = getResult(req->RequestID, &res);
+        res.status = 2;
 
         if (status == 1) {
             CURL *curl;
@@ -229,14 +229,14 @@ void Requests::fetchRequest(Requests::Request *req)
                         resStr = A3URLCommon::ToArray(resStr);
                     }
 
-                    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &res->httpCode);
+                    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &res.httpCode);
 
-                    res->result = resStr;
-                    res->status = 0;
+                    res.result = resStr;
+                    res.status = 0;
                 }
             }
 
-            setResult(req->RequestID, res);
+            setResult(req->RequestID, &res);
         }
     }
 };
