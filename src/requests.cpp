@@ -29,13 +29,13 @@ void Requests::workerThread()
 
         if (requestsQueue.size())
         {
-            Requests::Request *req;
-            getPopRequest(req);
+            Requests::Request req;
+            getPopRequest(&req);
 
             lock.unlock();
 
-            fetchRequest(*req);
-            delete req;
+            fetchRequest(&req);
+            delete &req;
 
             lock.lock();
         }
@@ -175,13 +175,13 @@ int Requests::getResult(int id, Requests::Result *res)
 };
 
 //Requests::fetchRequest processes a given request by the parameters of Requests::Request
-void Requests::fetchRequest(Requests::Request req)
+void Requests::fetchRequest(Requests::Request *req)
 {
     if (!results.empty())
     {
         Requests::Result *res;
 
-        int status = getResult(req.RequestID, res);
+        int status = getResult(req->RequestID, res);
         res->status = 2;
 
         if (status == 1) {
@@ -191,9 +191,9 @@ void Requests::fetchRequest(Requests::Request req)
             curl = curl_easy_init();
 
             struct curl_slist *headers = NULL;
-            for (unsigned int i = 0; i < req.Headers.size(); i++)
+            for (unsigned int i = 0; i < req->Headers.size(); i++)
             {
-                headers = curl_slist_append(headers, req.Headers[i].c_str());
+                headers = curl_slist_append(headers, req->Headers[i].c_str());
             }
 
             std::string resStr;
@@ -201,22 +201,22 @@ void Requests::fetchRequest(Requests::Request req)
             if (curl)
             {
                 curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-                curl_easy_setopt(curl, CURLOPT_URL, req.Url.c_str());
+                curl_easy_setopt(curl, CURLOPT_URL, req->Url.c_str());
                 curl_easy_setopt(curl, CURLOPT_USERAGENT, HTTP_VERSION);
-                curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, req.Method.c_str());
+                curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, req->Method.c_str());
 
-                if (!req.Url.empty()) {
-                    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, req.PostData.c_str());
+                if (!req->Url.empty()) {
+                    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, req->PostData.c_str());
                 }
 
-                if (req.Redirect) {
+                if (req->Redirect) {
                     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-                    if (req.MaxRedirects != 0) {
-                        curl_easy_setopt(curl, CURLOPT_MAXREDIRS, (long int)req.MaxRedirects);
+                    if (req->MaxRedirects != 0) {
+                        curl_easy_setopt(curl, CURLOPT_MAXREDIRS, (long int)req->MaxRedirects);
                     }
                 }
 
-                curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, req.MaxTimeout);
+                curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, req->MaxTimeout);
                 curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resStr);
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, RequestsCurlCallbackWriter);
 
@@ -224,7 +224,7 @@ void Requests::fetchRequest(Requests::Request req)
 
                 if (cS == CURLE_OK)
                 {
-                    if (req.JsonToArray)
+                    if (req->JsonToArray)
                     {
                         resStr = A3URLCommon::ToArray(resStr);
                     }
@@ -236,7 +236,7 @@ void Requests::fetchRequest(Requests::Request req)
                 }
             }
 
-            setResult(req.RequestID, res);
+            setResult(req->RequestID, res);
         }
     }
 };
@@ -260,26 +260,26 @@ int Requests::getResultString(int id, std::string *str)
     if (results.find(id) == results.end())
         return 2;
 
-    Requests::Result *res;
-    res->status = getResult(id, res);
+    Requests::Result res;
+    res.status = getResult(id, &res);
 
-    if (res->status == 0)
+    if (res.status == 0)
     {
-        if (res->result.size() > 10200)
+        if (res.result.size() > 10200)
         {
-            *str = res->result.substr(0, 10200);
-            res->result.erase(res->result.begin(), (res->result.begin() + 10200));
-            setResult(id, res);
+            *str = res.result.substr(0, 10200);
+            res.result.erase(res.result.begin(), (res.result.begin() + 10200));
+            setResult(id, &res);
         }
-        else if (res->result.size() <= 10200)
+        else if (res.result.size() <= 10200)
         {
-            *str = res->result;
+            *str = res.result;
             removeResult(id);
-            res->status = res->httpCode;
+            res.status = res.httpCode;
         }
     }
 
-    return res->status;
+    return res.status;
 };
 
 //Requests::GetResult copies the result of an result to an sstream Output
@@ -297,6 +297,7 @@ int Requests::GetStatus(int id)
 {
     if (results.find(id) == results.end())
         return 3;
+
     Requests::Result *res;
 
     resultsMtx.lock();

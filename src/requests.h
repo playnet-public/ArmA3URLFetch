@@ -120,7 +120,7 @@ private:
         \fn void fetchRequest(Requests::Request req)
         \brief Processes a request. Is called by Requests::workerThread().
     */
-    void fetchRequest(Requests::Request req);
+    void fetchRequest(Requests::Request *req);
 // 0 = text pending, 1 = pending, 2 = error
     /*!
         \fn bool isValidParameter(std::string param)
