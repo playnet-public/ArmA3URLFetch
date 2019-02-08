@@ -12,7 +12,7 @@ Requests::Requests() {
 //Requests::getPopRequest returns the first request of a queue
 void Requests::getPopRequest(Requests::Request *req)
 {
-    req = requestsQueue.front();
+    *req = requestsQueue.front();
     requestsQueue.pop();
 };
 
@@ -34,7 +34,7 @@ void Requests::workerThread()
 
             lock.unlock();
 
-            fetchRequest(&req);
+            fetchRequest(req);
 
             lock.lock();
         }
@@ -88,10 +88,10 @@ int Requests::addResult()
     };
     resultsMtx.unlock();
 
-    Requests::Result *res = new Requests::Result();
-    res->status = 1; // 0 = text pending, 1 = pending, 2 = error
+    Requests::Result res;
+    res.status = 1; // 0 = text pending, 1 = pending, 2 = error
     resultsMtx.lock();
-    results.insert(std::pair<int, Requests::Result*>(key, res));
+    results.insert(std::pair<int, Requests::Result>(key, res));
     resultsMtx.unlock();
 
     #ifdef _MSC_VER
@@ -107,17 +107,20 @@ int Requests::addRequest(Arguments::Parameters params)
     
     if (key < 1)
         return 0;
+    
+    std::cout << "key: " << key << std::endl;
 
-    Requests::Request *req = new Requests::Request();
-    req->RequestID = key;
-    req->Url = params.Url;
-    req->Method = params.Method;
-    req->PostData = params.PostData;
-    req->Headers = params.Headers;
-    req->JsonToArray = params.JsonToArray;
-    req->Redirect = params.Redirect;
-    req->MaxRedirects = params.MaxRedirects;
-    req->MaxTimeout = params.MaxTimeout;
+    Requests::Request req{
+        key,
+        params.MaxRedirects,
+        params.MaxTimeout,
+        params.JsonToArray,
+        params.Redirect,
+        params.Url,
+        params.Method,
+        params.PostData,
+        params.Headers,
+    };
 
     requestsQueueMtx.lock();
     requestsQueue.push(req);
@@ -127,15 +130,17 @@ int Requests::addRequest(Arguments::Parameters params)
 };
 
 //Requests::setResult sets a specific result by its id
-void Requests::setResult(int id, Requests::Result *res)
+void Requests::setResult(int id, Requests::Result res)
 {
     if (id <= 0)
         return;
 
     resultsMtx.lock();
 
-    if (results.find(id) != results.end())
+    std::map<int, Requests::Result>::iterator f = results.find(id);
+    if (f != results.end())
     {
+        results.erase(f);
         results[id] = res;
     }
 
@@ -145,13 +150,12 @@ void Requests::setResult(int id, Requests::Result *res)
 //Requests::removeResult removes an existing result from the map
 bool Requests::removeResult(int id)
 {
-    std::map<int, Requests::Result*>::iterator f;
+    std::map<int, Requests::Result>::iterator f;
     f = results.find(id);
     if (f == results.end())
         return false;
     
     resultsMtx.lock();
-    delete f->second;
     results.erase(f);
     resultsMtx.unlock();
 
@@ -165,7 +169,7 @@ int Requests::getResult(int id, Requests::Result *res)
         return 2;
     
     resultsMtx.lock();
-    res = results[id]; //error 3 on request...
+    *res = results[id]; //error 3 on request...
     resultsMtx.unlock();
 
     if (res->status == 2) removeResult(id);
@@ -174,14 +178,13 @@ int Requests::getResult(int id, Requests::Result *res)
 };
 
 //Requests::fetchRequest processes a given request by the parameters of Requests::Request
-void Requests::fetchRequest(Requests::Request *req)
+void Requests::fetchRequest(Requests::Request req)
 {
     if (!results.empty())
     {
         Requests::Result res;
 
-        int status = getResult(req->RequestID, &res);
-        std::cout << req->RequestID << std::endl;
+        int status = getResult(req.RequestID, &res);
         res.status = 2;
 
         if (status == 1) {
@@ -191,9 +194,9 @@ void Requests::fetchRequest(Requests::Request *req)
             curl = curl_easy_init();
 
             struct curl_slist *headers = NULL;
-            for (unsigned int i = 0; i < req->Headers.size(); i++)
+            for (unsigned int i = 0; i < req.Headers.size(); i++)
             {
-                headers = curl_slist_append(headers, req->Headers[i].c_str());
+                headers = curl_slist_append(headers, req.Headers[i].c_str());
             }
 
             std::string resStr;
@@ -201,22 +204,22 @@ void Requests::fetchRequest(Requests::Request *req)
             if (curl)
             {
                 curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-                curl_easy_setopt(curl, CURLOPT_URL, req->Url.c_str());
+                curl_easy_setopt(curl, CURLOPT_URL, req.Url.c_str());
                 curl_easy_setopt(curl, CURLOPT_USERAGENT, HTTP_VERSION);
-                curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, req->Method.c_str());
+                curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, req.Method.c_str());
 
-                if (!req->Url.empty()) {
-                    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, req->PostData.c_str());
+                if (!req.Url.empty()) {
+                    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, req.PostData.c_str());
                 }
 
-                if (req->Redirect) {
+                if (req.Redirect) {
                     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-                    if (req->MaxRedirects != 0) {
-                        curl_easy_setopt(curl, CURLOPT_MAXREDIRS, (long int)req->MaxRedirects);
+                    if (req.MaxRedirects != 0) {
+                        curl_easy_setopt(curl, CURLOPT_MAXREDIRS, (long int)req.MaxRedirects);
                     }
                 }
 
-                curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, req->MaxTimeout);
+                curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, req.MaxTimeout);
                 curl_easy_setopt(curl, CURLOPT_WRITEDATA, &resStr);
                 curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, RequestsCurlCallbackWriter);
 
@@ -224,7 +227,7 @@ void Requests::fetchRequest(Requests::Request *req)
 
                 if (cS == CURLE_OK)
                 {
-                    if (req->JsonToArray)
+                    if (req.JsonToArray)
                     {
                         resStr = A3URLCommon::ToArray(resStr);
                     }
@@ -236,7 +239,7 @@ void Requests::fetchRequest(Requests::Request *req)
                 }
             }
 
-            setResult(req->RequestID, &res);
+            setResult(req.RequestID, res);
         }
     }
 };
@@ -269,7 +272,7 @@ int Requests::getResultString(int id, std::string *str)
         {
             *str = res.result.substr(0, 10200);
             res.result.erase(res.result.begin(), (res.result.begin() + 10200));
-            setResult(id, &res);
+            setResult(id, res);
         }
         else if (res.result.size() <= 10200)
         {
@@ -298,11 +301,9 @@ int Requests::GetStatus(int id)
     if (results.find(id) == results.end())
         return 3;
 
-    Requests::Result *res;
-
     resultsMtx.lock();
-    res = results[id];
+    Requests::Result res = results[id];
     resultsMtx.unlock();
 
-    return res->status;
+    return res.status;
 }

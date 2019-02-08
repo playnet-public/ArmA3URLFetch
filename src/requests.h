@@ -98,9 +98,9 @@ public:
     int GetStatus(int id);
 private:
     std::condition_variable threadCondVar;
-    std::map<int, Requests::Result*> results; ///< The list of all pending results/requests.
+    std::map<int, Requests::Result> results; ///< The list of all pending results/requests.
     std::mutex resultsMtx; ///< The list mutex.
-    std::queue<Requests::Request*> requestsQueue; ///< The queue for all requests.
+    std::queue<Requests::Request> requestsQueue; ///< The queue for all requests.
     std::mutex requestsQueueMtx; ///< The mutex of the queue.
     bool workersStarted = false; ///< The lock for a initialization once a time.
 
@@ -120,7 +120,7 @@ private:
         \fn void fetchRequest(Requests::Request req)
         \brief Processes a request. Is called by Requests::workerThread().
     */
-    void fetchRequest(Requests::Request *req);
+    void fetchRequest(Requests::Request req);
 // 0 = text pending, 1 = pending, 2 = error
     /*!
         \fn bool isValidParameter(std::string param)
@@ -150,7 +150,7 @@ private:
         \fn void setResult(int id, Requests::Result res)
         \brief Sets a specifc result available in Requests::results by id.
     */
-    void setResult(int id, Requests::Result *res);
+    void setResult(int id, Requests::Result res);
     
     /*!
         \fn bool removeResult(int id)
