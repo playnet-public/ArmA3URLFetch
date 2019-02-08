@@ -3,11 +3,13 @@
 #include "macros.h"
 #include <iostream>
 
-#ifdef __linux__
+
 Requests::Requests() {
+    lastID = 1;
+    #ifdef __linux__
     startWorkers();
+    #endif
 };
-#endif
 
 //Request::workerThread is the main function for the worker thread(s)
 void Requests::workerThread()
@@ -75,6 +77,7 @@ int Requests::addResult()
     int key = lastID++;
 
     Requests::Result *res = new Requests::Result(1); // 0 = text pending, 1 = pending, 2 = error
+
     m_results.lock();
     results.insert(std::pair<int, Requests::Result*>(key, res));
     m_results.unlock();
@@ -89,11 +92,10 @@ int Requests::addResult()
 int Requests::addRequest(Arguments::Parameters params)
 {
     int key = addResult();
+    std::cout << "lastID: " << key << std::endl;
     
     if (key < 1)
         return 0;
-    
-    std::cout << "key: " << key << std::endl;
 
     Requests::Request *req = new Requests::Request(
         key,
