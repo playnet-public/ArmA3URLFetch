@@ -166,12 +166,6 @@ private:
         \brief Adds an empty struct Requests::Result to the list Requests::results.
     */
     int addResult();
-
-    /*!
-        \fn void setResult(int id, Requests::Result res)
-        \brief Sets a specifc result available in Requests::results by id.
-    */
-    void setResult(int id, Requests::Result res);
     
     /*!
         \fn bool removeResult(int id)

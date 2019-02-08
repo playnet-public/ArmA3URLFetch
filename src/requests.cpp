@@ -234,25 +234,35 @@ int Requests::getResultString(int id, std::string *str)
     if (results.find(id) == results.end())
         return 2;
 
-    Requests::Result res = *getResult(id);
+    Requests::Result *res = getResult(id);
 
-    if (res.status == 0)
+    m_results.lock();
+    if (res->status == 0)
     {
-        if (res.result.size() > 10200)
+        m_results.unlock();
+
+        if (res->result.size() > 10200)
         {
-            *str = res.result.substr(0, 10200);
-            res.result.erase(res.result.begin(), (res.result.begin() + 10200));
-            setResult(id, res);
+            m_results.lock();
+            *str = res->result.substr(0, 10200);
+            res->result.erase(res->result.begin(), (res->result.begin() + 10200));
+            m_results.unlock();
         }
-        else if (res.result.size() <= 10200)
+        else if (res->result.size() <= 10200)
         {
-            *str = res.result;
+            m_results.lock();
+            *str = res->result;
+            res->status = res->httpCode;
+            m_results.unlock();
+
             removeResult(id);
-            res.status = res.httpCode;
         }
+    } else {
+        m_results.unlock();
     }
 
-    return res.status;
+    std::lock_guard<std::mutex> lock(m_results);
+    return res->status;
 };
 
 //Requests::GetResult copies the result of an result to an sstream Output
