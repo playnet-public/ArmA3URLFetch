@@ -35,7 +35,6 @@ void Requests::workerThread()
             lock.unlock();
 
             fetchRequest(&req);
-            delete &req;
 
             lock.lock();
         }
