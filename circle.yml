@@ -40,9 +40,6 @@ workflows:
       - build_mod:
           requires:
             - linting
-      - build_ubuntu:
-          requires:
-            - linting
       - build_debian:
           requires:
             - linting
