@@ -16,22 +16,6 @@ jobs:
       - store_artifacts:
           path: .build/@ArmA3URLFetch/arma3urlfetch.so
           destination: arma3urlfetch.so
-  build_ubuntu:
-    docker:
-      - image: quay.io/playnet/arma3urlfetch-ci-ubuntu:1
-    steps:
-      - run:
-          command: apt-get install --fix-missing -f -y git
-      - checkout
-      - run:
-          name: test x86 binary
-          command: make test
-      - run:
-          name: x86 binary
-          command: make linux32
-      - store_artifacts:
-          path: .build/@ArmA3URLFetch/arma3urlfetch.so
-          destination: arma3urlfetch.so
   linting:
     docker:
       - image: acemod/sqflint
