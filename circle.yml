@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build_debian:
+  build_debian_x32:
     docker:
       - image: quay.io/playnet/arma3urlfetch-ci-debian:1
     steps:
@@ -11,11 +11,27 @@ jobs:
           name: test x86 binary
           command: make test
       - run:
-          name: x86 binary
+          name: build x86 binary
           command: make linux32
       - store_artifacts:
           path: .build/@ArmA3URLFetch/arma3urlfetch.so
           destination: arma3urlfetch.so
+  build_debian_x64:
+    docker:
+      - image: quay.io/playnet/arma3urlfetch-ci-debian:x64
+    steps:
+      - run:
+          command: apt-get install --fix-missing -f -y git
+      - checkout
+      - run:
+          name: test x64 binary
+          command: make testLinux64
+      - run:
+          name: build x64 binary
+          command: make linux64
+      - store_artifacts:
+          path: .build/@ArmA3URLFetch/arma3urlfetch_x64.so
+          destination: arma3urlfetch_x64.so
   linting:
     docker:
       - image: acemod/sqflint
