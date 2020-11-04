@@ -4,11 +4,12 @@ BUILD_PATH=.build
 BUILDS_PATH=.builds
 GIT_HASH=$(shell git describe --tag | sed "s/-.*-/-/")
 ARMAKE_FLAGS=-w unquoted-string -w redefinition-wo-undef
-CPPFLAGS=-m32 -Wall -fPIC -pthread -std=c++11
+CPPFLAGS=-Wall -fPIC -pthread -std=c++11
 INCLUDES_x32=-I/usr/local/include -Iinclude/jsoncpp
 OBJS=include/jsoncpp.o src/common.o src/arguments.o src/requests.o src/clients.o src/output.o src/handler.o src/main.o
 LIBS_x32=/usr/local/lib/libcurl.a /usr/local/lib/libssl.a /usr/local/lib/libcrypto.a
-LDFLAGS=-m32 -shared -fPIC -pthread
+LIBS_x64=/usr/local/lib/libcurl.a /usr/local/lib/libssl.a /usr/local/lib/libcrypto.a
+LDFLAGS=-shared -fPIC -pthread
 OUTPUT=""
 OPENSSLSRC=https://www.openssl.org/source/openssl-1.1.0f.tar.gz
 CURLSRC=https://github.com/curl/curl/releases/download/curl-7_59_0/curl-7.59.0.zip
@@ -24,6 +25,8 @@ all: linux32 build_mod deploy_mod
 
 linux32: prepare clean build_obj_linux_x32 link
 
+linux64: prepare clean build_obj_linux_x64 link
+
 prepare:
 	@mkdir -p .build/
 	@mkdir -p .build/@ArmA3URLFetch/addons
@@ -32,8 +35,16 @@ prepare:
 	@mkdir -p .build/bin
 
 build_obj_linux_x32: $(OBJS)
+	@$(eval CPPFLAGS = -m32 $(CPPFLAGS))
+	@$(eval LDFLAGS = -m32 $(LDFLAGS))
 	$(eval LIBS=$(LIBS_x32))
 	$(eval OUTPUT=$(OUTPUTPATH)/arma3urlfetch.so)
+
+build_obj_linux_x64: $(OBJS)
+	@$(eval CPPFLAGS = -m64 $(CPPFLAGS))
+	@$(eval LDFLAGS = -m64 $(LDFLAGS))
+	$(eval LIBS=$(LIBS_x64))
+	$(eval OUTPUT=$(OUTPUTPATH)/arma3urlfetch_x64.so)
 
 %.o: %.cpp
 	@echo "\tCXX\t\t$@"
@@ -51,6 +62,8 @@ clean:
 test: prepare testLinux32
 
 testLinux32: cleanTest
+	@$(eval CPPFLAGS = -m32 $(CPPFLAGS))
+	@$(eval LDFLAGS = -m32 $(LDFLAGS))
 	@echo "\tTEST\t\tLinux (x86/x32)"
 	@$(CXX) -m32 -pthread -fPIC -I.build/usr/local/include/ \
 		-Isrc/ \
@@ -68,6 +81,28 @@ testLinux32: cleanTest
 		-ldl \
 		-o .build/test.a
 	@echo "\tTEST\t\ttest.a (x86/x32)"
+	@.build/test.a
+
+testLinux64: cleanTest
+	@$(eval CPPFLAGS = -m64 $(CPPFLAGS))
+	@$(eval LDFLAGS = -m64 $(LDFLAGS))
+	@echo "\tTEST\t\tLinux (x86/x64)"
+	@$(CXX) -m64 -pthread -fPIC -I.build/usr/local/include/ \
+		-Isrc/ \
+		-Iinclude/jsoncpp \
+		-std=c++11 \
+		include/jsoncpp.cpp \
+		src/common.cpp \
+		src/arguments.cpp \
+		src/requests.cpp \
+		src/clients.cpp \
+		src/output.cpp \
+		src/handler.cpp \
+		test/main.cpp \
+		$(LIBS_x64) \
+		-ldl \
+		-o .build/test.a
+	@echo "\tTEST\t\ttest.a (x86/x64)"
 	@.build/test.a
 
 cleanTest:
