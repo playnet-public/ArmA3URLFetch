@@ -8,10 +8,11 @@ on:
 
 jobs:
   build-debian-x32:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: prepare
         run: |
+          sudo su && \
           dpkg --add-architecture i386 && \
           apt-get update && \
           apt-get install -y -f build-essential \
