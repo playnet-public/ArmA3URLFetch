@@ -1,0 +1,20 @@
+name: DefaultCI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: []
+
+jobs:
+  build-debian-x32:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: checkout
+      - name: "test x86 binary"
+        uses: docker://quay.io/playnet/arma3urlfetch-ci-debian:1
+        run: make test
+      - name: "build x86 binary"
+        uses: docker://quay.io/playnet/arma3urlfetch-ci-debian:1
+        run: make linux32
