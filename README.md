@@ -1,4 +1,6 @@
-# ArmA3URLFetch ![alt text](https://img2.picload.org/image/dgdiaori/a3uf_transparent_icon_x64.png)
+![alt text](https://raw.githubusercontent.com/playnet-public/ArmA3URLFetch/master/icons/icon_transparent_x256.png)
+
+# ArmA3URLFetch
 [![GitHub license](https://img.shields.io/github/license/playnet-public/ArmA3URLFetch.svg)](https://github.com/playnet-public/ArmA3URLFetch/blob/master/LICENSE)
 [![Downloads](https://img.shields.io/github/downloads/playnet-public/ArmA3URLFetch/total.svg)](https://github.com/playnet-public/ArmA3URLFetch/releases)
 
