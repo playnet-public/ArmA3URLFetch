@@ -33,7 +33,7 @@ jobs:
           sudo dpkg --add-architecture i386 &&
           sudo apt-get update
       - name: install apt pkgs
-        run: sudo apt-get install -y -f build-essential software-properties-common g++-multilib gcc-multilib libc6-dev libc6-dev:i386 libpsl-dev:i386 libpsl:i386 unzip zip wget
+        run: sudo apt-get install -y -f build-essential software-properties-common g++-multilib gcc-multilib libc6-dev libc6-dev:i386 libpsl-dev:i386 libpsl5t64:i386 unzip zip wget
       - name: build openssl x32
         run: |
           wget -q $OPENSSL_SRC &&
