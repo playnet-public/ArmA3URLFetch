@@ -41,8 +41,7 @@ jobs:
           sudo setarch i386 sudo ./config --prefix=/usr/local/ -m32 no-ssl3 shared &&
           sudo make &&
           sudo make install &&
-          cd ../ &&
-          rm -Rf openssl-3.4.1 openssl-3.4.1.tar.gz
+          cd ../
       - name: build curl x32
         run: |
           wget -q $CURL_SRC &&
@@ -51,7 +50,8 @@ jobs:
           sudo CFLAGS=-m32 ./configure --prefix=/usr/local/ --without-librtmp --host=i686-pc-linux-gnu --disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smb --disable-smtp --disable-gopher --disable-manual --enable-ipv6 --disable-pthreads --enable-crypto-auth --enable-cookies --without-zlib --disable-threaded-resolver --without-brotli --with-ssl=/usr/local &&
           make &&
           sudo make install &&
-          cd ../ &&
-          rm -Rf curl-8.12.1 curl-8.12.1.zip
+          cd ../
+      - name: build x86 binary
+        run: make linux32
       - name: "test x86 binary"
-        run: make test
+        run: make testLinux32
