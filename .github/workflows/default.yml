@@ -10,8 +10,8 @@ jobs:
   build-debian-x32:
     runs-on: ubuntu-latest
     env:
-      OPENSSL_SRC: https://www.openssl.org/source/openssl-1.1.0f.tar.gz
-      CURL_SRC: https://github.com/curl/curl/releases/download/curl-7_59_0/curl-7.59.0.zip
+      OPENSSL_SRC: https://github.com/openssl/openssl/releases/download/openssl-3.4.1/openssl-3.4.1.tar.gz
+      CURL_SRC: https://github.com/curl/curl/releases/download/curl-8_12_1/curl-8.12.1.zip
     steps:
       - name: add x86 architecture
         run: |
@@ -22,23 +22,23 @@ jobs:
       - name: build openssl x32
         run: |
           wget -q $OPENSSL_SRC &&
-          tar xzf openssl-1.1.0f.tar.gz &&
-          cd openssl-1.1.0f &&
+          tar xzf openssl-3.4.1.tar.gz &&
+          cd openssl-3.4.1 &&
           sudo setarch i386 sudo ./config --prefix=/usr/local/ -m32 no-ssl3 shared &&
           sudo make &&
           sudo make install &&
           cd ../ &&
-          rm -Rf openssl-1.1.0f openssl-1.1.0f.tar.gz
+          rm -Rf openssl-3.4.1 openssl-3.4.1.tar.gz
       - name: build curl x32
         run: |
           wget -q $CURL_SRC &&
-          unzip -qq curl-7.59.0.zip &&
-          cd curl-7.59.0 &&
+          unzip -qq curl-8.12.1.zip &&
+          cd curl-8.12.1 &&
           sudo CFLAGS=-m32 ./configure --prefix=/usr/local/ --without-librtmp --host=i686-pc-linux-gnu --disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smb --disable-smtp --disable-gopher --disable-manual --enable-ipv6 --disable-pthreads --enable-crypto-auth --enable-cookies --without-zlib --disable-threaded-resolver --without-brotli --with-ssl=/usr/local &&
           make &&
           sudo make install &&
           cd ../ &&
-          rm -Rf curl-7.59.0 curl-7.59.0.zip
+          rm -Rf curl-8.12.1 curl-8.12.1.zip
       - uses: actions/checkout@v2
         name: checkout
       - name: "test x86 binary"
