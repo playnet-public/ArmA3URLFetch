@@ -20,7 +20,7 @@ jobs:
         with:
           arch: x64
       - name: build x64 binary
-        run: "& build_x64.bat"
+        run: ".\\build_x64.bat"
   build-debian-x32:
     runs-on: ubuntu-latest
     env:
