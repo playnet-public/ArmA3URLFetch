@@ -21,10 +21,8 @@ jobs:
 
       - name: Install Visual Studio 2013 build tools
         run: |
-          & ".\BuildTools.exe"
+          & ".\BuildTools.exe" /help
 
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
       - uses: TheMrMilchmann/setup-msvc-dev@v3
         with:
           arch: x64
