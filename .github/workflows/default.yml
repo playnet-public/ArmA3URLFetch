@@ -49,7 +49,7 @@ jobs:
           tar xzf openssl-3.4.1.tar.gz
       - name: configure openssl x32
         working-directory: openssl-3.4.1
-        run: setarch i386 sudo ./config --prefix=/usr/local/ -m32 no-ssl3 shared
+        run: setarch i386 sudo ./config -m32 no-ssl3 shared
       - name: make openssl x32
         working-directory: openssl-3.4.1
         run: make
@@ -63,7 +63,7 @@ jobs:
           unzip -qq curl-8.12.1.zip
       - name: configure curl x32
         working-directory: curl-8.12.1
-        run: CFLAGS=-m32 ./configure --prefix=/usr/local/ --without-librtmp --host=i686-pc-linux-gnu --disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smb --disable-smtp --disable-gopher --disable-manual --enable-ipv6 --disable-pthreads --enable-crypto-auth --enable-cookies --without-zlib --disable-threaded-resolver --without-brotli --with-ssl=/usr/local
+        run: CFLAGS=-m32 ./configure --prefix=/usr/local --without-librtmp --host=i686-pc-linux-gnu --disable-ftp --disable-file --disable-ldap --disable-ldaps --disable-rtsp --disable-dict --disable-telnet --disable-tftp --disable-pop3 --disable-imap --disable-smb --disable-smtp --disable-gopher --disable-manual --enable-ipv6 --disable-pthreads --enable-crypto-auth --enable-cookies --without-zlib --disable-threaded-resolver --without-brotli --with-ssl=/usr/local/ssl
       - name: make curl x32
         working-directory: curl-8.12.1
         run: make
