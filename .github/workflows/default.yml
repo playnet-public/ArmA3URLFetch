@@ -10,12 +10,18 @@ jobs:
   build-windows-x32:
     runs-on: windows-latest
     steps:
+      - uses: actions/checkout@v4
+        name: checkout
+
       - uses: TheMrMilchmann/setup-msvc-dev@v3
         with:
           arch: x86
   build-windows-x64:
     runs-on: windows-latest
     steps:
+      - uses: actions/checkout@v4
+        name: checkout
+
       - uses: TheMrMilchmann/setup-msvc-dev@v3
         with:
           arch: x64
