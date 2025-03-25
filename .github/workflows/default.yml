@@ -16,6 +16,13 @@ jobs:
   build-windows-x64:
     runs-on: windows-latest
     steps:
+      - name: Download Visual Studio 2013 build tools
+        run: Invoke-WebRequest https://download.microsoft.com/download/9/b/b/9bb1309e-1a8f-4a47-a6c5-ecf76672a3b3/BuildTools_Full.exe -OutFile BuildTools.exe
+
+      - name: Install Visual Studio 2013 build tools
+        run: |
+          & ".\BuildTools.exe"
+
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v2
       - uses: TheMrMilchmann/setup-msvc-dev@v3
