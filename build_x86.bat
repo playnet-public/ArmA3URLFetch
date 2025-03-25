@@ -1,5 +1,4 @@
 
-call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" x86
 cl /MD /LD /EHsc /Fe:arma3urlfetch.dll^
     /EHsc^
     /I include\jsoncpp^
