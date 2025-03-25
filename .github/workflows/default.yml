@@ -35,12 +35,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         name: checkout
-      - name: add x86 architecture
-        run: |
-          sudo dpkg --add-architecture i386 &&
-          sudo apt-get update
-      - name: install apt pkgs
-        run: sudo apt-get install -y -f build-essential software-properties-common g++-multilib gcc-multilib libc6-dev libc6-dev:i386 libpsl-dev:i386 libpsl5t64:i386 unzip zip wget
+
+      - name: add apt x86 architecture
+        run: dpkg --add-architecture i386
+      - name: update apt repositories
+        run: sudo apt update
+      - name: install required apt packages
+        run: sudo apt install -y -f build-essential software-properties-common g++-multilib gcc-multilib libc6-dev libc6-dev:i386 libpsl-dev:i386 libpsl5t64:i386 unzip zip wget
       
       - name: unpack openssl x32
         run: |
@@ -54,7 +55,7 @@ jobs:
         run: make
       - name: install openssl x32
         working-directory: openssl-3.4.1
-        run: make install
+        run: sudo make install
       
       - name: unpack curl x32
         run: |
@@ -68,7 +69,7 @@ jobs:
         run: make
       - name: install curl x32
         working-directory: curl-8.12.1
-        run: make install
+        run: sudo make install
 
       - name: build x86 binary
         run: make linux32
